@@ -22,6 +22,10 @@ import HistoriquePage from "../pages/HistoriqueLog/HistoriquePage";
 import SourceDeFinancementPage from "../pages/Source De Financement/SourceDeFinancementPage";
 import DocumentTypePage from "../pages/DomentType/DocumentTypePage";
 import DocumentPage from "../pages/Document/DocumentPage";
+import ConfigurationStructure from "../pages/Organigrame/ConfigurationStructure";
+import EntiteeUnPage from "../pages/Organigrame/EntiteeUn/EntiteeUnPage";
+import EntiteeDeuxPage from "../pages/Organigrame/EntiteeDeux/EntiteeDeuxPage";
+import EntiteeTroisPage from "../pages/Organigrame/EntiteeTrois/EntiteeTroisPage";
 
 // 🔥FIX ICI🔥
 const PrivateRoute: React.FC<{ children: ReactElement }> = ({ children }) => {
@@ -198,6 +202,38 @@ export default function AppRouter() {
         element={
           <PrivateRoute>
             <DocumentTypePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/organigrame"
+        element={
+          <PrivateRoute>
+            <ConfigurationStructure />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/entiteeUn"
+        element={
+          <PrivateRoute>
+            <EntiteeUnPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/entiteeDeux"
+        element={
+          <PrivateRoute>
+            <EntiteeDeuxPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/entiteeTrois"
+        element={
+          <PrivateRoute>
+            <EntiteeTroisPage />
           </PrivateRoute>
         }
       />

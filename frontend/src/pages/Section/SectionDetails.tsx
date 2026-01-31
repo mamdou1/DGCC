@@ -78,9 +78,9 @@ export default function SectionDetails({ visible, onHide, section }: any) {
           </div>
           <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
             {section.libelle}
-            {/* <span className="text-slate-600 text-sm font-normal">
-              #SEC-{section.id}
-            </span> */}
+            <span className="text-slate-600 text-sm font-normal">
+              {section.code_section}
+            </span>
           </h2>
         </div>
 

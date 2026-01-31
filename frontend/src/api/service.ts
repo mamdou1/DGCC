@@ -1,12 +1,3 @@
-// import axios from 'axios';
-// import { Service, Fonction } from '../interfaces';
-
-// const API_URL = '/api/services';
-
-// export const getAllServices = () => axios.get<Service[]>(API_URL);
-// export const createService = (data: Partial<Service>) => axios.post(API_URL, data);
-// export const getFunctionsByService = (id: number) => axios.get<Fonction[]>(`${API_URL}/${id}/fonctions`);
-
 import api from "./axios";
 import type { Service, Fonction } from "../interfaces";
 

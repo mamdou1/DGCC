@@ -67,14 +67,15 @@ exports.getFunctionsByDivision = async (req, res) => {
 
 exports.updateDivision = async (req, res) => {
   try {
+    console.log("Payload reçu:", req.body);
     const { id } = req.params;
     const payload = req.body;
     const div = await Division.findByPk(id);
 
     if (!div) return res.status(404).json({ message: "Division non trouvé" });
-    await div.update({
-      libelle: payload.libelle ?? div.libelle,
-    });
+    await div.update(payload);
+
+    console.log("Payload reçu:", div);
 
     const updated = await Division.findByPk(id, {
       include: [{ model: Service }],

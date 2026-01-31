@@ -35,5 +35,12 @@ router.delete(
   authorizePermission("documentType", "delete"),
   ctrl.remove,
 );
+router.post(
+  "/:id/pieces",
+  verifyToken,
+  authorizePermission("documentType", "create"),
+  //authorizeRoles("ADMIN", "MEMBRE", "MEMBRE_AUTHORIZE"),
+  ctrl.addPiecesToTypeDocument,
+);
 
 module.exports = router;

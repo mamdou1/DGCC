@@ -17,12 +17,14 @@ import {
   Settings,
   Search,
   Layers,
+  FilePlus,
 } from "lucide-react";
 import {
   getTypeDocuments,
   createTypeDocument,
   updateTypeDocument,
   deleteTypeDocument,
+  addPiecesToTypeDocument,
 } from "../../api/typeDocument";
 import { getAllDivision } from "../../api/division";
 import {
@@ -30,14 +32,18 @@ import {
   Division,
   TypeDocument,
   MetaField,
+  AddPiecesToTypeDocumentPayload,
+  Pieces,
 } from "../../interfaces";
 import { createMetaField, updateMetaField } from "../../api/metaField";
 import Pagination from "../../components/layout/Pagination";
+import TypeDocumentAjoutPieces from "./TypeDocumentAjoutPieces";
+import { getPieces } from "../../api/pieces";
 
 export default function DocumentTypePage() {
   const [allDivisions, setAllDivisions] = useState<Division[]>([]);
-  const [allMeta, setAllMeta] = useState<MetaField[]>([]);
   const [types, setTypes] = useState<TypeDocument[]>([]);
+  const [pieces, setPieces] = useState<Pieces[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [editing, setEditing] = useState<any>(null);
   const [formVisible, setFormVisible] = useState(false);
@@ -47,11 +53,43 @@ export default function DocumentTypePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const toast = useRef<Toast>(null);
+  const [formPiecesVisible, setFormPiecesVisible] = useState(false);
 
   const load = async () => {
-    const [ty, div] = await Promise.all([getTypeDocuments(), getAllDivision()]);
-    setTypes(Array.isArray(ty) ? ty : []);
-    setAllDivisions(Array.isArray(div) ? div : []);
+    try {
+      const [resTy, resDiv, resP] = await Promise.all([
+        getTypeDocuments(),
+        getAllDivision(),
+        getPieces(),
+      ]);
+
+      // Adaptation au formatage du backend
+      // On vérifie si resTy contient la clé typeDocument (formatée) ou est un tableau direct
+      const typesData = resTy.typeDocument || resTy;
+
+      setTypes(
+        Array.isArray(typesData)
+          ? typesData.map((t: any) => ({
+              id: t.id,
+              code: t.code,
+              nom: t.nom,
+              division: t.division,
+              metaFields: t.metaFields || [],
+              pieces: t.pieces || [], // Les pièces sont maintenant là !
+              createdAt: t.createdAt,
+            }))
+          : [],
+      );
+
+      setAllDivisions(Array.isArray(resDiv) ? resDiv : []);
+      setPieces(Array.isArray(resP) ? resP : []);
+    } catch (err) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Erreur",
+        detail: "Impossible de charger les données",
+      });
+    }
   };
 
   useEffect(() => {
@@ -118,6 +156,32 @@ export default function DocumentTypePage() {
       toast.current?.show({
         severity: "error",
         summary: "Erreur lors de la mise à jour",
+      });
+    }
+  };
+
+  const onAddPieces = async (
+    typeId: string,
+    payload: AddPiecesToTypeDocumentPayload,
+  ) => {
+    try {
+      await addPiecesToTypeDocument(typeId, payload);
+
+      toast.current?.show({
+        severity: "success",
+        summary: "OK",
+        detail: "Pièces ajoutées avec succès",
+      });
+
+      // 🔄 Recharger la liste complète
+      load();
+
+      setFormPiecesVisible(false);
+    } catch (err: any) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Erreur",
+        detail: err?.response?.data?.message || "Erreur ajout pièces",
       });
     }
   };
@@ -230,6 +294,17 @@ export default function DocumentTypePage() {
                 <td className="p-6">
                   <div className="flex justify-center gap-2">
                     <button
+                      title="Ajouter des pièces"
+                      onClick={(e) => {
+                        setSelected(t);
+                        setFormPiecesVisible(true);
+                        e.stopPropagation();
+                      }}
+                      className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
+                    >
+                      <FilePlus size={18} />
+                    </button>
+                    <button
                       onClick={(e) => {
                         setSelected(t);
                         setDetailsVisible(true);
@@ -299,8 +374,17 @@ export default function DocumentTypePage() {
       <DocumentTypeMetaForm
         visible={metaVisible}
         onHide={() => setMetaVisible(false)}
-        onSubmit={handleMetaSubmit} // Cette fonction gérera les appels API
-        type={selected} // On passe l'objet complet du Type de Document
+        onSubmit={handleMetaSubmit}
+        type={selected}
+      />
+
+      <TypeDocumentAjoutPieces
+        visible={formPiecesVisible}
+        onHide={() => setFormPiecesVisible(false)}
+        onSubmit={onAddPieces}
+        initial={selected}
+        title={"Ajouter des pièces au dossier"}
+        pieces={pieces}
       />
     </Layout>
   );

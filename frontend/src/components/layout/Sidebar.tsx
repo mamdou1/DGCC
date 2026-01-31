@@ -23,15 +23,18 @@ import {
   Landmark,
   History,
   Database,
-  BanknoteArrowUp,
+  Pyramid,
 } from "lucide-react";
 
 import logo from "../../assets/logoArchi.png";
 import profil from "../../assets/homme.jpg";
 import { Link, useLocation } from "react-router-dom";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { SidebarProps, SidebarContextType } from "../../interfaces/composant";
 import { useAuth } from "../../context/AuthContext";
+import { getEntiteeUnTitre } from "../../api/entiteeUn";
+import { getEntiteeDeuxTitre } from "../../api/entiteeDeux";
+import { getEntiteeTroisTitre } from "../../api/entiteeTrois";
 
 export const SidebarContext = createContext<SidebarContextType>({
   expended: true,
@@ -48,6 +51,34 @@ export default function Sidebar({ children }: SidebarProps) {
     const saved = localStorage.getItem("sidebar-tree");
     return saved ? JSON.parse(saved) : {};
   });
+
+  // 1. État pour stocker les titres dynamiques
+  const [dynamicTitles, setDynamicTitles] = useState({
+    titre1: "",
+    titre2: "",
+    titre3: "",
+  });
+
+  // 2. Récupération des titres au chargement
+  useEffect(() => {
+    const fetchTitles = async () => {
+      try {
+        const [t1, t2, t3] = await Promise.all([
+          getEntiteeUnTitre(),
+          getEntiteeDeuxTitre(),
+          getEntiteeTroisTitre(),
+        ]);
+        setDynamicTitles({
+          titre1: t1.titre || "",
+          titre2: t2.titre || "",
+          titre3: t3.titre || "",
+        });
+      } catch (error) {
+        console.error("Erreur lors du chargement des titres sidebar", error);
+      }
+    };
+    fetchTitles();
+  }, []);
 
   const toggleTree = (label: string) => {
     setTreeOpen((prev) => {
@@ -104,13 +135,94 @@ export default function Sidebar({ children }: SidebarProps) {
                 }`}
               />
 
-              {can("liquidation", "read") && (
+              {/* {can("liquidation", "read") && (
                 <SidebarLink
                   icon={CircleDollarSign}
                   text="Liquidations"
                   to="/liquidations"
                   active={location.pathname.startsWith("/liquidations")}
                 />
+              )} */}
+
+              {/* ================= ORGANIGRAMME ================= */}
+
+              <SidebarTree label="Organigrame" icon={GitFork}>
+                {/* Condition : Affiché seulement si titre1 existe */}
+                {dynamicTitles.titre1 && (
+                  <SidebarLink
+                    icon={Landmark}
+                    text={dynamicTitles.titre1}
+                    to="/entiteeUn"
+                    active={location.pathname.startsWith("/entiteeUn")}
+                  />
+                )}
+
+                {/* Condition : Affiché seulement si titre2 existe */}
+                {dynamicTitles.titre2 && (
+                  <SidebarLink
+                    icon={Split}
+                    text={dynamicTitles.titre2}
+                    to="/entiteeDeux"
+                    active={location.pathname.startsWith("/entiteeDeux")}
+                  />
+                )}
+
+                {/* Condition : Affiché seulement si titre3 existe */}
+                {dynamicTitles.titre3 && (
+                  <SidebarLink
+                    icon={TableOfContents}
+                    text={dynamicTitles.titre3}
+                    to="/entiteeTrois"
+                    active={location.pathname.startsWith("/entiteeTrois")}
+                  />
+                )}
+                <SidebarLink
+                  icon={Pyramid}
+                  text="Configuration"
+                  to="/organigrame"
+                  active={location.pathname.startsWith("/organigrame")}
+                />
+              </SidebarTree>
+
+              {/* ================= GESTION ================= */}
+              {(can("type", "read") ||
+                can("pieces", "read") ||
+                can("documentType", "read") ||
+                can("document", "read")) && (
+                <SidebarTree label="Gestion" icon={FolderPen}>
+                  {can("type", "read") && (
+                    <SidebarLink
+                      icon={ArrowBigDown}
+                      text="Type de dossier"
+                      to="/type"
+                      active={location.pathname.startsWith("/type")}
+                    />
+                  )}
+                  {can("pieces", "read") && (
+                    <SidebarLink
+                      icon={FolderPen}
+                      text="Type de pièces"
+                      to="/pieces"
+                      active={location.pathname.startsWith("/pieces")}
+                    />
+                  )}
+                  {can("documentType", "read") && (
+                    <SidebarLink
+                      icon={Database}
+                      text="DocumentType"
+                      to="/dossierType"
+                      active={location.pathname.startsWith("/dossierType")}
+                    />
+                  )}
+                  {can("document", "read") && (
+                    <SidebarLink
+                      icon={FileText}
+                      text="Document"
+                      to="/document"
+                      active={location.pathname.startsWith("/document")}
+                    />
+                  )}
+                </SidebarTree>
               )}
 
               {/* ================= PARAMETRAGE ================= */}
@@ -121,7 +233,7 @@ export default function Sidebar({ children }: SidebarProps) {
                 can("fournisseur", "read") ||
                 can("serviceBeneficiaire", "read")) && (
                 <SidebarTree label="Paramétrage" icon={Layers}>
-                  {can("exercice", "read") && (
+                  {/* {can("exercice", "read") && (
                     <SidebarLink
                       icon={Boxes}
                       text="Exercices"
@@ -180,80 +292,7 @@ export default function Sidebar({ children }: SidebarProps) {
                         "/sourceDeFinancement",
                       )}
                     />
-                  )}
-                </SidebarTree>
-              )}
-
-              {/* ================= GESTION ================= */}
-              {(can("type", "read") ||
-                can("pieces", "read") ||
-                can("documentType", "read") ||
-                can("document", "read")) && (
-                <SidebarTree label="Gestion" icon={FolderPen}>
-                  {can("type", "read") && (
-                    <SidebarLink
-                      icon={ArrowBigDown}
-                      text="Type de dossier"
-                      to="/type"
-                      active={location.pathname.startsWith("/type")}
-                    />
-                  )}
-                  {can("pieces", "read") && (
-                    <SidebarLink
-                      icon={FolderPen}
-                      text="Type de pièces"
-                      to="/pieces"
-                      active={location.pathname.startsWith("/pieces")}
-                    />
-                  )}
-                  {can("documentType", "read") && (
-                    <SidebarLink
-                      icon={Database}
-                      text="DocumentType"
-                      to="/dossierType"
-                      active={location.pathname.startsWith("/dossierType")}
-                    />
-                  )}
-                  {can("document", "read") && (
-                    <SidebarLink
-                      icon={FileText}
-                      text="Document"
-                      to="/document"
-                      active={location.pathname.startsWith("/document")}
-                    />
-                  )}
-                </SidebarTree>
-              )}
-
-              {/* ================= ORGANIGRAMME ================= */}
-              {(can("service", "read") ||
-                can("division", "read") ||
-                can("section", "read")) && (
-                <SidebarTree label="Organigrame" icon={GitFork}>
-                  {can("service", "read") && (
-                    <SidebarLink
-                      icon={Landmark}
-                      text="Service"
-                      to="/service"
-                      active={location.pathname.startsWith("/service")}
-                    />
-                  )}
-                  {can("division", "read") && (
-                    <SidebarLink
-                      icon={Split}
-                      text="Division"
-                      to="/division"
-                      active={location.pathname.startsWith("/division")}
-                    />
-                  )}
-                  {can("section", "read") && (
-                    <SidebarLink
-                      icon={TableOfContents}
-                      text="Section"
-                      to="/section"
-                      active={location.pathname.startsWith("/section")}
-                    />
-                  )}
+                  )} */}
                 </SidebarTree>
               )}
 
@@ -304,11 +343,27 @@ export default function Sidebar({ children }: SidebarProps) {
         {/* Footer - Profil Utilisateur */}
         <div className="p-4 bg-emerald-900/40 backdrop-blur-sm border-t border-emerald-800">
           <div className="flex items-center gap-3">
-            <img
-              src={profil}
-              className="w-10 h-10 rounded-lg object-cover border-2 border-emerald-600 shadow-md"
-              alt="profile"
-            />
+            <div className="relative">
+              {user?.photo_profil ? (
+                <img
+                  src={`http://localhost:5000/uploads/profiles/${user.photo_profil}`}
+                  alt="Profil"
+                  className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow-sm"
+                />
+              ) : (
+                /* ✅ On utilise l'image 'profil' importée dans une balise img */
+                <img
+                  src={profil}
+                  alt="Par défaut"
+                  className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow-sm"
+                />
+              )}
+              <div
+                className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                  user?.role === "ADMIN" ? "bg-amber-400" : "bg-emerald-400"
+                }`}
+              ></div>
+            </div>
 
             <div
               className={`transition-all duration-300 overflow-hidden ${

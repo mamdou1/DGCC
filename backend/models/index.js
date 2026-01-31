@@ -49,6 +49,32 @@ db.MetaField = require("./MetaField.model")(sequelize, DataTypes);
 db.Document = require("./Document.model")(sequelize, DataTypes);
 db.DocumentValue = require("./DocumentValue.model")(sequelize, DataTypes);
 db.DocumentFile = require("./DocumentFIle.model")(sequelize, DataTypes);
+
+// =====================
+// 🔹 NOUVEAUX MODÈLES Archive
+// =====================
+
+db.Salle = require("./Salle.model")(sequelize, DataTypes);
+db.Etagere = require("./Etagere.model")(sequelize, DataTypes);
+db.Box = require("./Box.model")(sequelize, DataTypes);
+
+// =====================
+// 🔹 NOUVEAUX MODÈLES DOC
+// =====================
+db.TypeDocumentPieces = require("./DocumentTypePiece.model")(
+  sequelize,
+  DataTypes,
+);
+db.DocumentFichier = require("./DocumentFichier.model")(sequelize, DataTypes);
+db.DocumentPieces = require("./DocumentPieces.model")(sequelize, DataTypes);
+
+// =====================
+// 🔹 NOUVEAUX MODÈLES Entitee
+// =====================
+db.EntiteeUn = require("./EntiteeUn.model")(sequelize, DataTypes);
+db.EntiteeDeux = require("./EntiteeDeux.model")(sequelize, DataTypes);
+db.EntiteeTrois = require("./EntiteeTrois.model")(sequelize, DataTypes);
+
 // 🔹 Appel des associations
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {

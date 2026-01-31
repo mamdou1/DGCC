@@ -1,4 +1,10 @@
-const { Pieces, Division } = require("../models");
+const {
+  Pieces,
+  Division,
+  EntiteeUn,
+  EntiteeDeux,
+  EntiteeTrois,
+} = require("../models");
 const HistoriqueService = require("../services/historique.service");
 
 exports.createPieces = async (req, res) => {
@@ -6,7 +12,14 @@ exports.createPieces = async (req, res) => {
     if (req.user.role !== "ADMIN")
       return res.status(403).json({ message: "Accès refusé" });
 
-    const { code_pieces, libelle, division_id } = req.body;
+    const {
+      code_pieces,
+      libelle,
+      division_id,
+      entitee_un_id,
+      entitee_deux_id,
+      entitee_trois_id,
+    } = req.body;
     console.log("📥 BODY REÇU :", req.body);
     if (!libelle || !code_pieces)
       return res.status(400).json({ message: "Tous les champs sont requis" });
@@ -24,6 +37,9 @@ exports.createPieces = async (req, res) => {
       code_pieces,
       libelle: libelle.toUpperCase(),
       division_id,
+      entitee_un_id,
+      entitee_deux_id,
+      entitee_trois_id,
     });
 
     res.status(201).json({ pieces });
@@ -42,6 +58,21 @@ exports.getPieces = async (req, res) => {
         {
           model: Division,
           as: "division",
+          attributes: ["id", "libelle"],
+        },
+        {
+          model: EntiteeUn,
+          as: "entitee_un",
+          attributes: ["id", "libelle"],
+        },
+        {
+          model: EntiteeDeux,
+          as: "entitee_deux",
+          attributes: ["id", "libelle"],
+        },
+        {
+          model: EntiteeTrois,
+          as: "entitee_trois",
           attributes: ["id", "libelle"],
         },
       ],
@@ -67,6 +98,9 @@ exports.updatePieces = async (req, res) => {
       code_pieces: payload.code_pieces ?? pieces.code_pieces, // ✅ cohérent
       libelle: payload.libelle ? payload.libelle.toUpperCase() : pieces.libelle,
       division_id: payload.division_id ?? pieces.division_id, // ✅ mise à jour division
+      entitee_un_id: payload.entitee_un_id ?? pieces.entitee_un_id,
+      entitee_deux_id: payload.entitee_deux_id ?? pieces.entitee_deux_id,
+      entitee_trois_id: payload.entitee_trois_id ?? pieces.entitee_trois_id,
     });
 
     res.status(200).json(pieces);

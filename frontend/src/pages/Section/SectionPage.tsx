@@ -189,6 +189,7 @@ export default function SectionPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-widest">
+              <th className="px-6 py-4">Code section</th>
               <th className="px-6 py-4">Unité / Section</th>
               <th className="px-6 py-4">Division Parente</th>
               <th className="px-6 py-4 text-center">Actions</th>
@@ -204,6 +205,9 @@ export default function SectionPage() {
                 }}
                 className="hover:bg-orange-50/30 transition-all group cursor-pointer"
               >
+                <td className="px-6 py-4 font-mono text-sm font-bold text-blue-700">
+                  {d.code_section || "---"}
+                </td>
                 <td className="px-6 py-4 font-bold text-slate-700">
                   {d.libelle}
                 </td>

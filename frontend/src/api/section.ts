@@ -1,17 +1,3 @@
-// import axios from "axios";
-// import { Section, Fonction } from "../interfaces";
-
-// const API_URL = "/api/sections";
-
-// export const getSectionsByDivision = (divisionId: number) =>
-//   axios.get<Section[]>(`${API_URL}/by-division/${divisionId}`);
-
-// export const createSection = (data: Partial<Section>) =>
-//   axios.post(API_URL, data);
-
-// export const getFunctionsBySection = (id: number) =>
-//   axios.get<Fonction[]>(`${API_URL}/${id}/fonctions`);
-
 import api from "./axios";
 import type { Section, Fonction } from "../interfaces";
 

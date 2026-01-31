@@ -3,9 +3,13 @@ module.exports = (sequelize, DataTypes) => {
   const Service = sequelize.define(
     "Service",
     {
+      code_service: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       libelle: { type: DataTypes.STRING, allowNull: false },
     },
-    { tableName: "Services", underscored: true }
+    { tableName: "Services", underscored: true },
   );
 
   Service.associate = (models) => {

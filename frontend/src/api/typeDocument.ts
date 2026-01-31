@@ -1,9 +1,15 @@
 import api from "./axios";
-import type { TypeDocument, CreateTypeDocumentPayload } from "../interfaces";
+import type {
+  TypeDocument,
+  CreateTypeDocumentPayload,
+  AddPiecesToTypeDocumentPayload,
+} from "../interfaces";
 
-export const getTypeDocuments = async (): Promise<TypeDocument[]> => {
+export const getTypeDocuments = async (): Promise<{
+  typeDocument: TypeDocument[];
+}> => {
   const response = await api.get("/types-documents");
-  return response.data.types || response.data;
+  return response.data;
 };
 
 export const getTypeDocumentById = async (
@@ -31,4 +37,15 @@ export const updateTypeDocument = async (
 
 export const deleteTypeDocument = async (id: string): Promise<void> => {
   await api.delete(`/types-documents/${id}`);
+};
+
+export const addPiecesToTypeDocument = async (
+  document_typeId: string,
+  payload: AddPiecesToTypeDocumentPayload,
+): Promise<{ message: string }> => {
+  const response = await api.post(
+    `/types-documents/${document_typeId}/pieces`,
+    payload,
+  );
+  return response.data;
 };

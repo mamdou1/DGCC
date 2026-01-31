@@ -25,6 +25,25 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "type_document_id",
       as: "documents",
     });
+
+    TypeDocument.belongsToMany(models.Pieces, {
+      through: models.TypeDocumentPieces,
+      foreignKey: "document_type_id",
+      otherKey: "piece_id",
+      as: "pieces",
+    });
+    TypeDocument.belongsTo(models.EntiteeUn, {
+      foreignKey: "entitee_un_id",
+      as: "entitee_un",
+    });
+    TypeDocument.belongsTo(models.EntiteeDeux, {
+      foreignKey: "entitee_deux_id",
+      as: "entitee_deux",
+    });
+    TypeDocument.belongsTo(models.EntiteeTrois, {
+      foreignKey: "entitee_trois_id",
+      as: "entitee_trois",
+    });
   };
 
   return TypeDocument;

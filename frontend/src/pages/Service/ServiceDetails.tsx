@@ -140,7 +140,7 @@ export default function ServiceDetails({
           <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
             {service.libelle}
             <span className="text-slate-600 text-sm font-normal">
-              #SER-{service.id.toString().padStart(4, "0")}
+              {service.code_service}
             </span>
           </h2>
         </div>

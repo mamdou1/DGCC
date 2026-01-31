@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { Type, Pieces, CreateTypePayload } from "../../interfaces";
+import { Type, CreateTypePayload } from "../../interfaces";
 import { LayoutGrid, Type as TypeIcon, Hash, Save } from "lucide-react";
 
 type Props = {
@@ -11,7 +11,6 @@ type Props = {
   onSubmit: (data: CreateTypePayload) => Promise<void>;
   initial?: Partial<Type>;
   title?: string;
-  pieces: Pieces[];
 };
 
 export default function TypeForm({
@@ -20,7 +19,6 @@ export default function TypeForm({
   onSubmit,
   initial = {},
   title = "Créer un type de dossier",
-  pieces,
 }: Props) {
   const [codeType, setCodeType] = useState(initial.codeType || "");
   const [nom, setNom] = useState(initial.nom || "");

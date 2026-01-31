@@ -1,0 +1,37 @@
+import api from "./axios";
+
+// ------------------- BOX -------------------
+export const createBox = async (payload: any) => {
+  const { data } = await api.post("/box", payload);
+  return data;
+};
+
+export const getBoxes = async () => {
+  const { data } = await api.get("/box");
+  return data;
+};
+
+export const getBoxById = async (id: string) => {
+  const { data } = await api.get(`/box/${id}`);
+  return data;
+};
+
+export const deleteBox = async (id: string) => {
+  const { data } = await api.delete(`/box/${id}`);
+  return data;
+};
+
+export const getDocumentsByBox = async (boxId: string) => {
+  const { data } = await api.get(`/box/${boxId}/documents`);
+  return data;
+};
+
+export const addDocumentToBox = async (boxId: string, documentId: string) => {
+  const { data } = await api.post(`/box/${boxId}/documents/${documentId}`);
+  return data;
+};
+
+export const retireDocumentFromBox = async (documentId: string) => {
+  const { data } = await api.delete(`/box/documents/${documentId}`);
+  return data;
+};

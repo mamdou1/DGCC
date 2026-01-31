@@ -6,13 +6,9 @@ import {
   Phone,
   Briefcase,
   Hash,
-  Layers,
   Calendar,
   X,
   Shield,
-  LayoutList,
-  ToyBrick,
-  ListCheck,
   Building2,
 } from "lucide-react";
 import { User } from "../../interfaces";
@@ -52,6 +48,13 @@ export default function UserDetails({ visible, onHide, user }: Props) {
     </div>
   );
 
+  const fonction = user.fonction_details;
+  const libelleEntitee =
+    fonction?.entitee_trois?.libelle ||
+    fonction?.entitee_deux?.libelle ||
+    fonction?.entitee_un?.libelle ||
+    "Aucune affectation";
+
   return (
     <Dialog
       header={
@@ -82,8 +85,8 @@ export default function UserDetails({ visible, onHide, user }: Props) {
           <div className="relative">
             <img
               src={
-                user.photoProfil
-                  ? `http://localhost:5000/uploads/profiles/${user.photoProfil}`
+                user.photo_profil
+                  ? `http://localhost:5000/uploads/profiles/${user.photo_profil}`
                   : person
               }
               alt={user.nom}
@@ -103,13 +106,7 @@ export default function UserDetails({ visible, onHide, user }: Props) {
 
         {/* Grille d'informations */}
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 ">
-          <InfoRow
-            icon={Building2}
-            label="Profil"
-            value={
-              typeof user.droit === "string" ? user.droit : user.droit?.libelle
-            }
-          />
+          <InfoRow icon={Building2} label="Structure" value={libelleEntitee} />
           {/* <InfoRow
             icon={LayoutList}
             label="Service"

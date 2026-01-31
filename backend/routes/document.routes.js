@@ -37,18 +37,48 @@ router.delete(
 );
 
 const upload = require("../middlewares/ulpoadDocument.middleware");
+
+router.patch(
+  "/:documentId/pieces/:pieceId/disponible",
+  verifyToken,
+  authorizePermission("document", "update"),
+  ctrl.updateDocumentPieceDisponibilite,
+);
+
 router.post(
-  "/:documentId/files",
+  "/:documentId/document-type/:documentTypeId/piece/:pieceId/files",
   verifyToken,
   authorizePermission("document", "create"),
   upload.array("files", 10),
   ctrl.uploadDocumentFiles,
 );
+
 router.get(
-  "/:documentId/files",
+  "/:documentId/piece/:pieceId/files",
   verifyToken,
   authorizePermission("document", "read"),
   ctrl.getDocumentFiles,
 );
+
+router.get(
+  "/documents/:documentId/pieces",
+  verifyToken,
+  authorizePermission("document", "read"),
+  ctrl.getDocumentPieces,
+);
+
+// router.post(
+//   "/:documentId/files",
+//   verifyToken,
+//   authorizePermission("document", "create"),
+//   upload.array("files", 10),
+//   ctrl.uploadDocumentFiles,
+// );
+// router.get(
+//   "/:documentId/files",
+//   verifyToken,
+//   authorizePermission("document", "read"),
+//   ctrl.getDocumentFiles,
+// );
 
 module.exports = router;

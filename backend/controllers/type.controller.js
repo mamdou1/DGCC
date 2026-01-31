@@ -112,7 +112,7 @@ exports.getType = async (req, res) => {
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
       // On s'assure que "Pieces" existe avant de mapper
-      Pieces: (t.Pieces || []).map((p) => ({
+      pieces: (t.pieces || []).map((p) => ({
         id: p.id,
         libelle: p.libelle,
         code_pieces: p.code_pieces,

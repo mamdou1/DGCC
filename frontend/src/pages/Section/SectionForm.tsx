@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { Save, GitMerge, Layers, Info } from "lucide-react";
+import { Save, GitMerge, Layers, Info, Hash } from "lucide-react";
 
 // Importez vos nouveaux services et interfaces
 import { getAllDivision } from "../../api/division";
@@ -26,6 +26,7 @@ export default function SectionForm({
   initial = {},
   division = [], // Valeur par défaut pour éviter les erreurs .map
 }: Props) {
+  const [code_section, setCode_section] = useState("");
   const [libelle, setLibelle] = useState("");
   const [division_id, setDivision_id] = useState<number | null>(null);
   //const [divisions, setDivisions] = useState<Division[]>([]); // Typage explicite
@@ -33,6 +34,7 @@ export default function SectionForm({
 
   useEffect(() => {
     if (visible) {
+      setCode_section(initial.code_section || "");
       setLibelle(initial.libelle || "");
       // Gestion intelligente de l'ID initial
       setDivision_id(initial.division_id || division[0]?.id || 0);
@@ -40,10 +42,11 @@ export default function SectionForm({
   }, [visible, division]);
 
   const handleSubmit = async () => {
-    if (!libelle || !division_id) return;
+    if (!code_section || !libelle || !division_id) return;
     setLoading(true);
     try {
       await onSubmit({
+        code_section,
         libelle,
         division_id,
       });
@@ -82,6 +85,18 @@ export default function SectionForm({
             placeholder="Choisir une division"
             className="w-full bg-slate-50 border-slate-200 rounded-xl"
             filter
+          />
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+            <Hash size={16} className="text-blue-500" /> Code de la Section
+          </label>
+          <InputText
+            value={code_section}
+            onChange={(e) => setCode_section(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+            placeholder="Ex: SEC-001"
           />
         </div>
 

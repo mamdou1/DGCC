@@ -18,21 +18,20 @@ import {
   Camera,
 } from "lucide-react";
 import type {
-  Service,
-  Division,
-  Section,
+  EntiteeTrois,
+  EntiteeDeux,
+  EntiteeUn,
   Fonction,
   Droit,
   User,
   Role,
 } from "../../interfaces";
-import { getAllServices } from "../../api/service";
-import { getDivisionsByService } from "../../api/division";
-import { getSectionsByDivision } from "../../api/section";
-import { getFunctionsByService } from "../../api/service";
-import { getFunctionsBySection } from "../../api/section";
-
-import { getFunctionsByDivision } from "../../api/division";
+import { getAllEntiteeUn } from "../../api/entiteeUn";
+import { getEntiteeDeuxByEntiteeUn } from "../../api/entiteeDeux";
+import { getEntiteeTroisByEntiteeDeux } from "../../api/entiteeTrois";
+import { getFunctionsByEntiteeUn } from "../../api/entiteeUn";
+import { getFunctionsByEntiteeDeux } from "../../api/entiteeDeux";
+import { getFunctionsByEntiteeTrois } from "../../api/entiteeTrois";
 
 type Props = {
   visible: boolean;
@@ -71,24 +70,26 @@ export default function UserForm({
   );
 
   // États d'affectation
-  const [serviceId, setServiceId] = useState<number | undefined>();
-  const [divisionId, setDivisionId] = useState<number | undefined>();
-  const [sectionId, setSectionId] = useState<number | undefined>();
+  const [entitee_un_id, setEntitee_un_id] = useState<number | undefined>();
+  const [entitee_deux_id, setEntitee_deux_id] = useState<number | undefined>();
+  const [entitee_trois_id, setEntitee_trois_id] = useState<
+    number | undefined
+  >();
   const [fonctionId, setFonctionId] = useState<number | undefined>();
 
   // États des listes et UI
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [services, setServices] = useState<Service[]>([]);
-  const [divisions, setDivisions] = useState<Division[]>([]);
-  const [sections, setSections] = useState<Section[]>([]);
+  const [allEntiteeUn, setAllEntiteeUn] = useState<EntiteeUn[]>([]);
+  const [allEntiteeDeux, setAllEntiteeDeux] = useState<EntiteeDeux[]>([]);
+  const [allEntiteeTrois, setAllEntiteeTrois] = useState<EntiteeTrois[]>([]);
   const [fonctions, setFonctions] = useState<Fonction[]>([]);
   const toast = useRef<Toast>(null);
 
   // --- Initialisation au montage/ouverture ---
   useEffect(() => {
     const fetchInitialData = async () => {
-      const srvs = await getAllServices();
-      setServices(Array.isArray(srvs) ? srvs : []);
+      const srvs = await getAllEntiteeUn();
+      setAllEntiteeUn(Array.isArray(srvs) ? srvs : []);
     };
     fetchInitialData();
   }, []);
@@ -121,44 +122,73 @@ export default function UserForm({
   }, [visible, droits]);
 
   // --- Handlers de changement (Logique de cascade) ---
-  const handleServiceChange = async (id: number) => {
-    setServiceId(id);
-    setDivisionId(undefined);
-    setSectionId(undefined);
+  const handleEntiteeUnChange = async (id: number) => {
+    setEntitee_un_id(id);
+    setEntitee_deux_id(undefined);
+    setEntitee_trois_id(undefined);
     setFonctionId(undefined);
 
     const [divs, funcs] = await Promise.all([
-      getDivisionsByService(id),
-      getFunctionsByService(id),
+      getEntiteeDeuxByEntiteeUn(id),
+      getFunctionsByEntiteeUn(id),
     ]);
-    setDivisions(Array.isArray(divs) ? divs : []);
+    setAllEntiteeDeux(Array.isArray(divs) ? divs : []);
     setFonctions(Array.isArray(funcs) ? funcs : []);
-    setSections([]);
+    setAllEntiteeTrois([]);
   };
 
-  const handleDivisionChange = async (id: number) => {
-    setDivisionId(id);
-    setSectionId(undefined);
+  const handleEntiteeDeuxChange = async (id: number) => {
+    setEntitee_deux_id(id);
+    setEntitee_trois_id(undefined);
     setFonctionId(undefined);
 
     const [secs, funcs] = await Promise.all([
-      getSectionsByDivision(id),
-      getFunctionsByDivision(id),
+      getEntiteeTroisByEntiteeDeux(id),
+      getFunctionsByEntiteeDeux(id),
     ]);
-    setSections(Array.isArray(secs) ? secs : []);
+    setAllEntiteeTrois(Array.isArray(secs) ? secs : []);
     setFonctions(Array.isArray(funcs) ? funcs : []);
   };
 
-  const handleSectionChange = async (id: number) => {
-    setSectionId(id);
+  const handleEntiteeTroisChange = async (id: number) => {
+    setEntitee_trois_id(id);
     setFonctionId(undefined);
-    const funcs = await getFunctionsBySection(id);
+    const funcs = await getFunctionsByEntiteeTrois(id);
     setFonctions(funcs);
   };
 
+  const titreUn = allEntiteeUn[0]?.titre || "Entité 1";
+  const titreDeux = allEntiteeDeux[0]?.titre || "Entité 2";
+  const titreTrois = allEntiteeTrois[0]?.titre || "Entité 3";
+
   // --- Soumission ---
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   const payload: Partial<User> = {
+  //     nom,
+  //     prenom,
+  //     email,
+  //     telephone,
+  //     num_matricule: numMatricule,
+  //     role,
+  //     droit,
+
+  //     fonction: fonctionId,
+  //     // @ts-ignore (Si vous gérez les IDs d'affectation dans votre interface User)
+
+  //     entitee_un_id: entitee_un_id,
+  //     entitee_deux_id: entitee_deux_id,
+  //     entitee_trois_id: entitee_trois_id,
+  //   };
+
+  //   await onSubmit(payload, photoFile || undefined);
+  //   ////onHide();
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // On ne garde que ce qui est défini dans l'interface User
     const payload: Partial<User> = {
       nom,
       prenom,
@@ -166,17 +196,27 @@ export default function UserForm({
       telephone,
       num_matricule: numMatricule,
       role,
-      droit,
-
-      fonction: fonctionId,
-      // @ts-ignore (Si vous gérez les IDs d'affectation dans votre interface User)
-      service_id: serviceId,
-      division_id: divisionId,
-      section_id: sectionId,
+      droit: typeof droit === "object" ? (droit as any).id : droit,
+      fonction: fonctionId, // C'est cet ID qui lie l'utilisateur aux entités via la table Fonction
     };
 
-    await onSubmit(payload, photoFile || undefined);
-    ////onHide();
+    // --- LOGS DE DEBUG ---
+    console.log("🚀 Tentative de création d'agent...");
+    console.table(payload);
+    console.log("📸 Photo :", photoFile ? photoFile.name : "Aucune");
+
+    try {
+      // On envoie le payload propre au onSubmit
+      await onSubmit(payload, photoFile || undefined);
+      console.log("✅ Agent créé avec succès !");
+    } catch (error: any) {
+      console.error("❌ ÉCHEC de la création :");
+      if (error.response) {
+        console.log("Détails du serveur :", error.response.data);
+      } else {
+        console.log("Message d'erreur :", error.message);
+      }
+    }
   };
 
   const labelClass =
@@ -311,15 +351,15 @@ export default function UserForm({
 
           <div>
             <label className={labelClass}>
-              <Building2 size={14} className="text-blue-500" /> Service
+              <Building2 size={14} className="text-blue-500" /> {titreUn}
             </label>
             <Dropdown
-              value={serviceId}
-              options={services}
+              value={entitee_un_id}
+              options={allEntiteeUn}
               optionLabel="libelle"
               optionValue="id"
-              onChange={(e) => handleServiceChange(Number(e.value))}
-              placeholder="Sélectionner Service"
+              onChange={(e) => handleEntiteeUnChange(Number(e.value))}
+              placeholder={`Sélectionner ${titreUn}`}
               className="w-full rounded-xl"
               filter
             />
@@ -327,34 +367,34 @@ export default function UserForm({
 
           <div>
             <label className={labelClass}>
-              <Layers size={14} className="text-emerald-500" /> Division
+              <Layers size={14} className="text-emerald-500" /> {titreDeux}
             </label>
             <Dropdown
-              value={divisionId}
-              options={divisions}
+              value={entitee_deux_id}
+              options={allEntiteeDeux}
               optionLabel="libelle"
               optionValue="id"
-              onChange={(e) => handleDivisionChange(Number(e.value))}
-              placeholder="Sélectionner Division"
+              onChange={(e) => handleEntiteeDeuxChange(Number(e.value))}
+              placeholder={`Sélectionner ${titreDeux}`}
               className="w-full rounded-xl"
-              disabled={!serviceId}
+              disabled={!entitee_un_id}
               filter
             />
           </div>
 
           <div>
             <label className={labelClass}>
-              <GitMerge size={14} className="text-orange-500" /> Section
+              <GitMerge size={14} className="text-orange-500" /> {titreTrois}
             </label>
             <Dropdown
-              value={sectionId}
-              options={sections}
+              value={entitee_trois_id}
+              options={allEntiteeTrois}
               optionLabel="libelle"
               optionValue="id"
-              onChange={(e) => handleSectionChange(Number(e.value))}
-              placeholder="Sélectionner Section"
+              onChange={(e) => handleEntiteeTroisChange(Number(e.value))}
+              placeholder={`Sélectionner ${titreTrois}`}
               className="w-full rounded-xl"
-              disabled={!divisionId}
+              disabled={!entitee_deux_id}
               filter
             />
           </div>
@@ -372,7 +412,7 @@ export default function UserForm({
               onChange={(e) => setFonctionId(Number(e.value))}
               placeholder="Attribuer une fonction"
               className="w-full rounded-xl border-blue-500 border-2"
-              disabled={!serviceId}
+              disabled={!entitee_un_id}
               filter
             />
           </div>

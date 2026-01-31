@@ -75,9 +75,7 @@ exports.updateSection = async (req, res) => {
 
     if (!sec) return res.status(404).json({ message: "Section non trouvé" });
 
-    await sec.update({
-      libelle: payload.libelle ?? sec.libelle,
-    });
+    await sec.update(payload);
 
     const updated = await Section.findByPk(id, {
       include: [{ model: Division }],

@@ -67,6 +67,16 @@ app.use("/api/meta-fields", require("./routes/metafield.routes"));
 app.use("/api/documents", require("./routes/document.routes"));
 app.use("/api/uploads", require("./routes/upload.routes"));
 
+// Archivage
+app.use("/api/salle", require("./routes/salle.routes"));
+app.use("/api/etagere", require("./routes/etagere.routes"));
+app.use("/api/box", require("./routes/box.routes"));
+
+//Entitee
+app.use("/api/entiteeUn", require("./routes/entiteeUn.routes"));
+app.use("/api/entiteeDeux", require("./routes/entiteeDeux.routes"));
+app.use("/api/entiteeTrois", require("./routes/entiteeTrois.routes"));
+
 // 404
 app.use((req, res) => {
   res.status(404).json({ message: "Route non trouvée" });

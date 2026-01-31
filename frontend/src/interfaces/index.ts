@@ -121,6 +121,9 @@ export interface Pieces {
   LiquidationPieces?: {
     disponible: boolean;
   };
+  DocumentPieces?: {
+    disponible: boolean;
+  };
 
   createdAt?: string;
   updatedAt?: string;
@@ -174,7 +177,7 @@ export interface User {
   fonction?: number;
   fonction_details?: Fonction;
 
-  photoProfil?: string;
+  photo_profil?: string;
 }
 
 export interface InscriptionPayload {
@@ -243,6 +246,7 @@ export interface ServiceBeneficiaire {
 
 export interface Service {
   id: number;
+  code_service: string;
   libelle: string;
 
   createdAt?: string;
@@ -251,6 +255,7 @@ export interface Service {
 
 export interface Division {
   id: number;
+  code_division: string;
   libelle: string;
   service_id: number;
   service: Service;
@@ -261,6 +266,7 @@ export interface Division {
 
 export interface Section {
   id: number;
+  code_section: string;
   libelle: string;
   division_id: number;
   division: Division;
@@ -275,6 +281,12 @@ export interface Fonction {
   service_id?: number;
   division_id?: number;
   section_id?: number;
+  entitee_un_id?: number;
+  entitee_deux_id?: number;
+  entitee_trois_id?: number;
+  entitee_un: EntiteeUn;
+  entitee_deux: EntiteeDeux;
+  entitee_trois: EntiteeTrois;
 
   createdAt?: string; // si tu utilises timestamps dans Mongoose
   updatedAt?: string;
@@ -310,9 +322,13 @@ export interface TypeDocument {
   id: number;
   code: string;
   nom: string;
-  division_id: number;
-  division?: Division;
+  division_id?: number; // Ajoutez le '?' pour le rendre optionnel
+  division?: {
+    id: number;
+    libelle: string;
+  } | null;
   metaFields?: MetaField[];
+  pieces: TypeDocumentPiece[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -362,6 +378,7 @@ export interface Document {
   type_document_id: number;
   typeDocument?: TypeDocument;
   values?: DocumentValue[];
+  pieces?: Pieces[];
   createdAt?: string;
 }
 
@@ -372,4 +389,104 @@ export interface CreateDocumentPayload {
 
 export interface UploadResponse {
   success: boolean;
+}
+
+export interface Salle {
+  id?: string;
+  code_salle: string;
+  libelle: string;
+  etagere: Etagere;
+  etagere_id: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Etagere {
+  id?: string;
+  code_etagere: string;
+  libelle: string;
+  box: Box;
+  box_id: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Box {
+  id?: string;
+  code_box: string;
+  libelle: string;
+  document: Document;
+  document_id: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+//------------------------------------------------
+
+export interface TypeDocumentPiece {
+  id?: string;
+  piece: Pieces;
+  disponible: boolean;
+  // pdfPath?: string;
+}
+
+export interface CreateTypeDocumentPayload {
+  codeType: string;
+  nom: string;
+}
+
+export interface AddPieceToTypeDocument {
+  piece: string; // id de la pièce
+  disponible?: boolean;
+}
+
+export interface AddPiecesToTypeDocumentPayload {
+  pieces: AddPieceToTypeDocument[];
+}
+
+export interface PieceFichier {
+  id: string;
+  document_type_piece_id: TypeDocumentPiece | string;
+  fichier: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DocumentPiece {
+  piece: Pieces;
+  disponible: boolean;
+}
+
+export interface EntiteeUn {
+  id: number;
+  titre: string;
+  code: string;
+  libelle: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EntiteeDeux {
+  id: number;
+  titre: string;
+  code: string;
+  libelle: string;
+  entitee_un_id: number;
+  entitee_un: EntiteeUn;
+
+  createdAt?: string; // si tu utilises timestamps dans Mongoose
+  updatedAt?: string;
+}
+
+export interface EntiteeTrois {
+  id: number;
+  titre: string;
+  code: string;
+  libelle: string;
+  entitee_deux_id: number;
+  entitee_deux: EntiteeDeux;
+
+  createdAt?: string; // si tu utilises timestamps dans Mongoose
+  updatedAt?: string;
 }

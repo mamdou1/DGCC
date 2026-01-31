@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { Save, Layers, Building2, Info } from "lucide-react";
+import { Save, Layers, Building2, Info, Hash } from "lucide-react";
 import { Division, Service } from "../../interfaces";
 type Props = {
   visible: boolean;
@@ -23,6 +23,7 @@ export default function DivisionForm({
   service,
 }: Props) {
   const [libelle, setLibelle] = useState("");
+  const [code_division, setCode_division] = useState("");
   const [service_id, setService_id] = useState<number>(
     initial.service_id || service[0]?.id || 0,
   );
@@ -32,6 +33,7 @@ export default function DivisionForm({
   useEffect(() => {
     if (visible) {
       setLibelle(initial.libelle || "");
+      setCode_division(initial.code_division || "");
       setService_id(initial.service_id || service[0]?.id || 0);
     }
   }, [visible, service]);
@@ -39,7 +41,7 @@ export default function DivisionForm({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await onSubmit({ libelle, service_id });
+      await onSubmit({ code_division, libelle, service_id });
       //onHide();
     } finally {
       setLoading(false);
@@ -72,6 +74,18 @@ export default function DivisionForm({
             optionValue="id"
             placeholder="Choisir un service"
             filter
+          />
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+            <Hash size={16} className="text-blue-500" /> Libellé de la Division
+          </label>
+          <InputText
+            value={code_division}
+            onChange={(e) => setCode_division(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+            placeholder="Ex: DIVC-001"
           />
         </div>
 

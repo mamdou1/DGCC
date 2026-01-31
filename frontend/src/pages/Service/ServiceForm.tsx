@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { Save, Briefcase, Info } from "lucide-react";
+import { Save, Briefcase, Info, Hash } from "lucide-react";
 import { Service } from "../../interfaces";
 
 type Props = {
@@ -20,11 +20,13 @@ export default function ServiceForm({
   initial = {},
   title = "Nouveau Service",
 }: Props) {
+  const [code_service, setCode_service] = useState("");
   const [libelle, setLibelle] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (visible) {
+      setCode_service(initial.code_service || "");
       setLibelle(initial.libelle || "");
     }
   }, [visible]);
@@ -32,7 +34,7 @@ export default function ServiceForm({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await onSubmit({ libelle });
+      await onSubmit({ code_service, libelle });
       setLibelle("");
       ////onHide();
     } finally {
@@ -55,6 +57,18 @@ export default function ServiceForm({
     >
       <div className="pt-4 space-y-5">
         <div>
+          <div>
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+              <Hash size={16} className="text-blue-500" /> Code du Service
+            </label>
+            <InputText
+              value={code_service}
+              onChange={(e) => setCode_service(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+              placeholder="Ex: DIVC-001"
+            />
+          </div>
+
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
             <Info size={16} className="text-indigo-500" /> Nom du service{" "}
             <span className="text-red-500">*</span>

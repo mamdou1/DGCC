@@ -103,7 +103,7 @@ export default function DivisionDetails({
           <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
             {division.libelle}
             <span className="text-slate-600 text-sm font-normal">
-              #DIV-{division.id.toString().padStart(3, "0")}
+              {division.code_division}
             </span>
           </h2>
         </div>

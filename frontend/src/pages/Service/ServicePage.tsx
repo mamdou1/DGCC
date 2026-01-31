@@ -186,7 +186,7 @@ export default function ServicePage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-widest">
-              <th className="px-6 py-4">ID</th>
+              <th className="px-6 py-4">Code du Service</th>
               <th className="px-6 py-4">Libellé du Service</th>
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
@@ -203,7 +203,7 @@ export default function ServicePage() {
               >
                 <td className="px-6 py-4">
                   <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono text-xs">
-                    #{s.id}
+                    {s.code_service}
                   </span>
                 </td>
                 <td className="px-6 py-4 font-bold text-slate-700">

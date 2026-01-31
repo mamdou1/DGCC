@@ -3,10 +3,14 @@ module.exports = (sequelize, DataTypes) => {
   const Division = sequelize.define(
     "Division",
     {
+      code_division: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       libelle: { type: DataTypes.STRING, allowNull: false },
       service_id: { type: DataTypes.INTEGER, allowNull: false },
     },
-    { tableName: "Divisions", underscored: true },
+    { tableName: "divisions", underscored: true },
   );
 
   Division.associate = (models) => {

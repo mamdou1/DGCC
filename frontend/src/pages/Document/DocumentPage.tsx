@@ -29,10 +29,13 @@ import Pagination from "../../components/layout/Pagination";
 import api from "../../api/axios";
 import DocumentPiece from "./DocumentPieces";
 import UploadPreview from "./UploadPreview";
+import { TypeDocument } from "../../interfaces";
+import DocumentUploadPieces from "./DocumentUploadPieces";
+import DocumentDisponiblePieces from "./DocumentDisponiblePieces";
 
 export default function DocumentPage() {
   const [docs, setDocs] = useState<any[]>([]);
-  const [types, setTypes] = useState<any[]>([]);
+  const [types, setTypes] = useState<TypeDocument[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [detailsVisible, setDetailsVisible] = useState(false);
@@ -49,6 +52,8 @@ export default function DocumentPage() {
   const [tempFile, setTempFile] = useState<File | null>(null);
   const [targetDocId, setTargetDocId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [ajoutVisible, setAjoutVisible] = useState(false);
+  const [disponibleVisible, setDisponibleVisible] = useState(false);
 
   const load = async () => {
     const [resDocs, resTypes] = await Promise.all([
@@ -56,7 +61,7 @@ export default function DocumentPage() {
       getTypeDocuments(),
     ]);
     setDocs(resDocs);
-    setTypes(resTypes);
+    setTypes(resTypes.typeDocument);
   };
 
   useEffect(() => {
@@ -276,7 +281,7 @@ export default function DocumentPage() {
                       className="flex justify-center gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <input
+                      {/* <input
                         type="file"
                         onChange={(e) => handleDirectUpload(e, d.id)}
                         className="hidden"
@@ -298,6 +303,30 @@ export default function DocumentPage() {
                         className="p-2.5 text-emerald-400 hover:text-emerald-700 hover:bg-emerald-100 rounded-xl transition-all"
                       >
                         <Eye size={20} />
+                      </button> */}
+
+                      <button
+                        onClick={(e) => {
+                          setSelected(d);
+
+                          setDisponibleVisible(true);
+                          e.stopPropagation();
+                        }}
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-lg transition-all"
+                        title="Contrôle de la disponiblitédes pièces"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          setSelected(d);
+                          setAjoutVisible(true);
+                          e.stopPropagation();
+                        }}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
+                        title="Chargement des fichiers"
+                      >
+                        <CloudDownload size={18} />
                       </button>
 
                       <button
@@ -363,6 +392,16 @@ export default function DocumentPage() {
         }}
         file={tempFile}
         onConfirm={confirmUpload}
+      />
+      <DocumentUploadPieces
+        visible={ajoutVisible}
+        onHide={() => setAjoutVisible(false)}
+        document={selected}
+      />
+      <DocumentDisponiblePieces
+        visible={disponibleVisible}
+        onHide={() => setDisponibleVisible(false)}
+        document={selected}
       />
     </Layout>
   );

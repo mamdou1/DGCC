@@ -53,7 +53,7 @@ export default function TypePage() {
               id: x.id,
               codeType: x.codeType, // ✅ déjà bon
               nom: x.nom,
-              pieces: x.Pieces || [], // ✅ mapping clé correcte
+              pieces: x.pieces || [], // ✅ mapping clé correcte
               createdAt: x.createdAt,
               updatedAt: x.updatedAt,
             }))
@@ -317,7 +317,6 @@ export default function TypePage() {
         onSubmit={onCreate}
         initial={selected ?? undefined}
         title={"Ajouter Type de dossier"}
-        pieces={pieces}
       />
       <TypeDetails
         visible={detailsVisible}
