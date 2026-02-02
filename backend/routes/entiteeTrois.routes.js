@@ -9,14 +9,14 @@ const { verifyToken } = require("../middlewares/auth.middleware");
 router.post(
   "/",
   verifyToken,
-  authorizePermission("section", "create"),
+  authorizePermission("entiteeTrois", "create"),
   entiteeTroisController.createEntiteeTrois,
 );
 
 router.get(
   "/",
   verifyToken,
-  authorizePermission("section", "read"),
+  authorizePermission("entiteeTrois", "read"),
   entiteeTroisController.getAllEntiteeTrois,
 );
 
@@ -24,7 +24,7 @@ router.get(
 router.get(
   "/titre",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeTrois", "read"),
   entiteeTroisController.getEntiteeTroisTitre,
 );
 // router.post(
@@ -36,7 +36,7 @@ router.get(
 router.put(
   "/titre",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeTrois", "update"),
   entiteeTroisController.updateEntiteeTroisTitre,
 );
 
@@ -44,25 +44,25 @@ router.put(
 router.get(
   "/by-entiteeTrois/:entiteeDeuxId",
   verifyToken,
-  authorizePermission("section", "read"),
+  authorizePermission("entiteeTrois", "read"),
   entiteeTroisController.getEntiteeTroisByEntiteeDeux,
 );
 router.get(
   "/:id/fonctions",
   verifyToken,
-  authorizePermission("section", "read"),
+  authorizePermission("entiteeTrois", "read"),
   entiteeTroisController.getFunctionsByEntiteeTrois,
 );
 router.put(
   "/:id",
   verifyToken,
-  authorizePermission("section", "update"),
+  authorizePermission("entiteeTrois", "update"),
   entiteeTroisController.updateEntiteeTrois,
 );
 router.delete(
   "/:id",
   verifyToken,
-  authorizePermission("section", "delete"),
+  authorizePermission("entiteeTrois", "delete"),
   entiteeTroisController.deleteEntiteeTrois,
 );
 

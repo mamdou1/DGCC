@@ -16,8 +16,12 @@ import {
   Briefcase,
   PlusCircle,
   Building2,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import EntiteeDeuxAjoutFonction from "./EntiteeDeuxAjoutFonction";
+import { deleteFonctionById } from "../../../api/fonction";
+import { confirmDialog } from "primereact/confirmdialog";
 
 export default function EntiteeDeuxDetails({
   visible,
@@ -27,6 +31,7 @@ export default function EntiteeDeuxDetails({
   toast,
 }: any) {
   const [fonctions, setFonctions] = useState<Fonction[]>([]);
+  const [editing, setEditing] = useState<Partial<Fonction> | null>(null);
   const [selected, setSelected] = useState<EntiteeDeux | null>(null);
   const [ajoutFonctionVisible, setAjoutFonctionVisible] = useState(false);
   const [entiteeTrois, setEntiteeTrois] = useState<EntiteeTrois[]>([]);
@@ -62,6 +67,32 @@ export default function EntiteeDeuxDetails({
   const entiteeTroisLibelle = entiteeTrois.find(
     (s: EntiteeTrois) => s.entitee_deux_id === entiteeDeux?.id,
   )?.libelle;
+
+  const handleDelete = (id: number) => {
+    confirmDialog({
+      message: "Voulez-vous vraiment supprimer cette fonction ?",
+      header: "Confirmation de suppression",
+      icon: "pi pi-exclamation-triangle",
+      acceptClassName: "p-button-danger",
+      accept: async () => {
+        try {
+          await deleteFonctionById(id);
+          toast.current?.show({
+            severity: "success",
+            summary: "Supprimé",
+            detail: "Fonction supprimée avec succès",
+          });
+          fetchFonctions(); // Rafraîchir la liste
+        } catch (err) {
+          toast.current?.show({
+            severity: "error",
+            summary: "Erreur",
+            detail: "Impossible de supprimer la fonction",
+          });
+        }
+      },
+    });
+  };
 
   if (!entiteeDeux) return null;
 
@@ -156,6 +187,9 @@ export default function EntiteeDeuxDetails({
                     <th className="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider text-right">
                       Date Création
                     </th>
+                    <th className="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -186,6 +220,29 @@ export default function EntiteeDeuxDetails({
                           {f.createdAt
                             ? new Date(f.createdAt).toLocaleDateString()
                             : "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              setEditing(f); // f est l'objet fonction de votre map
+                              setAjoutFonctionVisible(true);
+                              e.stopPropagation();
+                            }}
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleDelete(f.id);
+                              e.stopPropagation();
+                            }}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          >
+                            <Trash2 size={18} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -223,8 +280,12 @@ export default function EntiteeDeuxDetails({
 
       <EntiteeDeuxAjoutFonction
         visible={ajoutFonctionVisible}
-        onHide={() => setAjoutFonctionVisible(false)}
-        entiteeDeux={selected}
+        onHide={() => {
+          setAjoutFonctionVisible(false);
+          setEditing(null); // Très important : vider l'édition à la fermeture
+        }}
+        entiteeDeux={entiteeDeux}
+        editing={editing} // Passer l'état editing
         onSuccess={() => {
           setAjoutFonctionVisible(false);
           fetchFonctions();

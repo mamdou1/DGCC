@@ -9,13 +9,13 @@ const { verifyToken } = require("../middlewares/auth.middleware");
 router.post(
   "/",
   verifyToken,
-  authorizePermission("service", "create"),
+  authorizePermission("entiteeUn", "create"),
   entiteeUnController.createEntiteeUn,
 );
 router.get(
   "/",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeUn", "read"),
   entiteeUnController.getAllEntiteeUn,
 );
 
@@ -23,7 +23,7 @@ router.get(
 router.get(
   "/titre",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeUn", "read"),
   entiteeUnController.getEntiteeUnTitre,
 );
 // router.post(
@@ -35,7 +35,7 @@ router.get(
 router.put(
   "/titre",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeUn", "update"),
   entiteeUnController.updateEntiteeUnTitre,
 );
 
@@ -43,19 +43,19 @@ router.put(
 router.get(
   "/:id/fonctions",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeUn", "read"),
   entiteeUnController.getFunctionsByEntiteeUn,
 );
 router.put(
   "/:id",
   verifyToken,
-  authorizePermission("service", "update"),
+  authorizePermission("entiteeUn", "update"),
   entiteeUnController.updateEntiteeUn,
 );
 router.delete(
   "/:id",
   verifyToken,
-  authorizePermission("service", "delete"),
+  authorizePermission("entiteeUn", "delete"),
   entiteeUnController.deleteEntiteeUn,
 );
 

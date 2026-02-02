@@ -9,20 +9,20 @@ const entiteeDeuxController = require("../controllers/entiteeDeux.controller");
 router.post(
   "/",
   verifyToken,
-  authorizePermission("division", "create"),
+  authorizePermission("entiteeDeux", "create"),
   entiteeDeuxController.createEntiteeDeux,
 );
 
 router.get(
   "/",
   verifyToken,
-  authorizePermission("division", "read"),
+  authorizePermission("entiteeDeux", "read"),
   entiteeDeuxController.getAllEntiteeDeux,
 );
 router.get(
   "/by-entiteeUn/:entiteeUnId",
   verifyToken,
-  authorizePermission("division", "read"),
+  authorizePermission("entiteeDeux", "read"),
   entiteeDeuxController.getEntiteeDeuxByEntiteeUn,
 );
 
@@ -30,7 +30,7 @@ router.get(
 router.get(
   "/titre",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeDeux", "read"),
   entiteeDeuxController.getEntiteeDeuxTitre,
 );
 // router.post(
@@ -42,7 +42,7 @@ router.get(
 router.put(
   "/titre",
   verifyToken,
-  authorizePermission("service", "read"),
+  authorizePermission("entiteeDeux", "update"),
   entiteeDeuxController.updateEntiteeDeuxTitre,
 );
 
@@ -50,15 +50,20 @@ router.put(
 router.get(
   "/:id/fonctions",
   verifyToken,
-  authorizePermission("division", "read"),
+  authorizePermission("entiteeDeux", "read"),
   entiteeDeuxController.getFunctionsByEntiteeDeux,
 );
 router.put(
   "/:id",
   verifyToken,
-  authorizePermission("division", "update"),
+  authorizePermission("entiteeDeux", "update"),
   entiteeDeuxController.updateEntiteeDeux,
 );
-router.delete("/:id", verifyToken, entiteeDeuxController.deleteEntiteeDeux);
+router.delete(
+  "/:id",
+  verifyToken,
+  authorizePermission("entiteeDeux", "delete"),
+  entiteeDeuxController.deleteEntiteeDeux,
+);
 
 module.exports = router;

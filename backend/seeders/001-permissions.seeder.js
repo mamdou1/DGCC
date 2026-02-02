@@ -97,6 +97,36 @@ module.exports = async () => {
     { resource: "documentType", action: "delete" },
 
     { resource: "historique", action: "read" },
+
+    { resource: "entiteeUn", action: "create" },
+    { resource: "entiteeUn", action: "read" },
+    { resource: "entiteeUn", action: "update" },
+    { resource: "entiteeUn", action: "delete" },
+
+    { resource: "entiteeDeux", action: "create" },
+    { resource: "entiteeDeux", action: "read" },
+    { resource: "entiteeDeux", action: "update" },
+    { resource: "entiteeDeux", action: "delete" },
+
+    { resource: "entiteeTrois", action: "create" },
+    { resource: "entiteeTrois", action: "read" },
+    { resource: "entiteeTrois", action: "update" },
+    { resource: "entiteeTrois", action: "delete" },
+
+    { resource: "salle", action: "create" },
+    { resource: "salle", action: "read" },
+    { resource: "salle", action: "update" },
+    { resource: "salle", action: "delete" },
+
+    { resource: "etagere", action: "create" },
+    { resource: "etagere", action: "read" },
+    { resource: "etagere", action: "update" },
+    { resource: "etagere", action: "delete" },
+
+    { resource: "box", action: "create" },
+    { resource: "box", action: "read" },
+    { resource: "box", action: "update" },
+    { resource: "box", action: "delete" },
   ];
 
   console.log("⏳ Seeding permissions...");

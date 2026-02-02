@@ -24,8 +24,12 @@ import {
   ChevronDown,
   ChevronRight,
   GitMerge,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import EntiteeUnAjoutFonction from "./EntiteeUnAjoutFonction";
+import { confirmDialog } from "primereact/confirmdialog";
+import { deleteFonctionById } from "../../../api/fonction";
 
 export default function EntiteeUnDetails({
   visible,
@@ -34,6 +38,7 @@ export default function EntiteeUnDetails({
   toast,
 }: any) {
   const [fonctions, setFonctions] = useState<Fonction[]>([]);
+  const [editing, setEditing] = useState<Partial<Fonction> | null>(null);
   const [entiteeDeux, setEntiteeDeux] = useState<EntiteeDeux[]>([]);
   const [entiteeTroisMap, setEntiteeTroisMap] = useState<
     Record<number, EntiteeTrois[]>
@@ -118,6 +123,32 @@ export default function EntiteeUnDetails({
     }
   };
 
+  const handleDelete = (id: number) => {
+    confirmDialog({
+      message: "Voulez-vous vraiment supprimer cette fonction ?",
+      header: "Confirmation de suppression",
+      icon: "pi pi-exclamation-triangle",
+      acceptClassName: "p-button-danger",
+      accept: async () => {
+        try {
+          await deleteFonctionById(id);
+          toast.current?.show({
+            severity: "success",
+            summary: "Supprimé",
+            detail: "Fonction supprimée avec succès",
+          });
+          fetchData(); // Rafraîchir la liste
+        } catch (err) {
+          toast.current?.show({
+            severity: "error",
+            summary: "Erreur",
+            detail: "Impossible de supprimer la fonction",
+          });
+        }
+      },
+    });
+  };
+
   if (!entiteeUn) return null;
 
   return (
@@ -197,6 +228,9 @@ export default function EntiteeUnDetails({
                     <th className="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider text-right">
                       Création
                     </th>
+                    <th className="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider text-right">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -227,6 +261,29 @@ export default function EntiteeUnDetails({
                           {f.createdAt
                             ? new Date(f.createdAt).toLocaleDateString()
                             : "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              setEditing(f); // f est l'objet fonction de votre map
+                              setAjoutFonctionVisible(true);
+                              e.stopPropagation();
+                            }}
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleDelete(f.id);
+                              e.stopPropagation();
+                            }}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          >
+                            <Trash2 size={18} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -361,10 +418,15 @@ export default function EntiteeUnDetails({
 
       <EntiteeUnAjoutFonction
         visible={ajoutFonctionVisible}
-        onHide={() => setAjoutFonctionVisible(false)}
-        entiteeUn={selected}
+        onHide={() => {
+          setAjoutFonctionVisible(false);
+          setEditing(null); // Très important : vider l'édition à la fermeture
+        }}
+        entiteeUn={entiteeUn}
+        editing={editing} // Passer l'état editing
         onSuccess={() => {
           setAjoutFonctionVisible(false);
+          setEditing(null);
           fetchData(); // Rafraîchir tout
           toast?.current?.show({
             severity: "success",

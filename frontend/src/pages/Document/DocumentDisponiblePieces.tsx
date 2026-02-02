@@ -56,29 +56,6 @@ export default function DocumentDisponiblePieces({
     }
   }, [document]);
 
-  // useEffect(() => {
-  //   // CORRECTION ICI : Utiliser document.typeDocument au lieu de type_document_id
-  //   if (document?.typeDocument) {
-  //     const typeDocumentPieces = document.typeDocument.pieces || [];
-  //     const docPieces = document.pieces || [];
-
-  //     const merged = typeDocumentPieces.map((p: any) => {
-  //       // Dans le backend, la relation Many-to-Many met souvent les données pivot
-  //       // dans une propriété nommée d'après la table pivot (ex: DocumentPieces)
-  //       const dp = docPieces.find((x: any) => x.id === p.id);
-
-  //       return {
-  //         ...p,
-  //         DocumentPieces: dp?.DocumentPieces || { disponible: false },
-  //       };
-  //     });
-
-  //     setPiecesState(merged);
-  //   } else {
-  //     setPiecesState([]);
-  //   }
-  // }, [document]);
-
   /* ================== TOGGLE DISPONIBILITÉ ================== */
 
   const togglePiece = async (index: number) => {

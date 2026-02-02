@@ -5,12 +5,42 @@ const {
   authorizePermission,
 } = require("../middlewares/authorizePermission.middleware");
 
-router.post("/", verifyToken, ctrl.create);
-router.get("/", verifyToken, ctrl.findAll);
-router.get("/:id", verifyToken, ctrl.findById);
-router.put("/:id", verifyToken, ctrl.update);
-router.delete("/:id", verifyToken, ctrl.delete);
+router.post(
+  "/",
+  verifyToken,
+  authorizePermission("salle", "create"),
+  ctrl.create,
+);
+router.get(
+  "/",
+  verifyToken,
+  authorizePermission("salle", "read"),
+  ctrl.findAll,
+);
+router.get(
+  "/:id",
+  verifyToken,
+  authorizePermission("salle", "read"),
+  ctrl.findById,
+);
+router.put(
+  "/:id",
+  verifyToken,
+  authorizePermission("salle", "update"),
+  ctrl.update,
+);
+router.delete(
+  "/:id",
+  verifyToken,
+  authorizePermission("salle", "delete"),
+  ctrl.delete,
+);
 
-router.get("/:id/etagere", verifyToken, ctrl.getAllEtagereBySalle);
+router.get(
+  "/:id/etagere",
+  verifyToken,
+  authorizePermission("salle", "read"),
+  ctrl.getAllEtagereBySalle,
+);
 
 module.exports = router;

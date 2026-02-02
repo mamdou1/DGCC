@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
+// import { Toast } from "primereact/toast";
 import {
   UserPlus,
   Save,
@@ -42,7 +42,7 @@ type Props = {
   droits: Droit[];
 };
 
-const roleOptions: Role[] = ["ADMIN", "MEMBRE", "MEMBRE_AUTHORIZE"];
+// const roleOptions: Role[] = ["ADMIN", "MEMBRE", "MEMBRE_AUTHORIZE"];
 
 export default function UserForm({
   visible,
@@ -83,7 +83,7 @@ export default function UserForm({
   const [allEntiteeDeux, setAllEntiteeDeux] = useState<EntiteeDeux[]>([]);
   const [allEntiteeTrois, setAllEntiteeTrois] = useState<EntiteeTrois[]>([]);
   const [fonctions, setFonctions] = useState<Fonction[]>([]);
-  const toast = useRef<Toast>(null);
+  // const toast = useRef<Toast>(null);
 
   // --- Initialisation au montage/ouverture ---
   useEffect(() => {
@@ -223,8 +223,8 @@ export default function UserForm({
     "flex items-center gap-2 text-sm font-bold text-slate-700 mb-2";
   const inputClass =
     "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-emerald-900 font-medium";
-  const iconStyle =
-    "text-slate-400 group-focus-within:text-emerald-500 transition-colors";
+  // const iconStyle =
+  //   "text-slate-400 group-focus-within:text-emerald-500 transition-colors";
 
   return (
     <Dialog
@@ -316,7 +316,7 @@ export default function UserForm({
                 className={inputClass}
               />
             </div>
-            <div>
+            {/* <div>
               <label className={labelClass}>
                 Rôle <span className="text-red-500">*</span>
               </label>
@@ -326,7 +326,7 @@ export default function UserForm({
                 onChange={(e) => setRole(e.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl"
               />
-            </div>
+            </div> */}
           </div>
 
           <div>
