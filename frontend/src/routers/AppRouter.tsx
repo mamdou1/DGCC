@@ -27,8 +27,11 @@ import EntiteeUnPage from "../pages/Organigrame/EntiteeUn/EntiteeUnPage";
 import EntiteeDeuxPage from "../pages/Organigrame/EntiteeDeux/EntiteeDeuxPage";
 import EntiteeTroisPage from "../pages/Organigrame/EntiteeTrois/EntiteeTroisPage";
 import BoxPage from "../pages/Box/BoxPage";
-import EtagerePage from "../pages/Etagere/EtagerePage";
+import RayonPage from "../pages/Rayon/RayonPage";
 import SallePage from "../pages/Salle/SallePage";
+import TravePage from "../pages/Trave/TravePage";
+import SitePage from "../pages/Site/SitePage";
+import DocumentTypeEntitee from "../pages/DomentType/DocumentTypeEntitee";
 
 // 🔥FIX ICI🔥
 const PrivateRoute: React.FC<{ children: ReactElement }> = ({ children }) => {
@@ -204,7 +207,7 @@ export default function AppRouter() {
         path="/dossierType"
         element={
           <PrivateRoute>
-            <DocumentTypePage />
+            <DocumentTypeEntitee />
           </PrivateRoute>
         }
       />
@@ -249,10 +252,10 @@ export default function AppRouter() {
         }
       />
       <Route
-        path="/etagere"
+        path="/rayon"
         element={
           <PrivateRoute>
-            <EtagerePage />
+            <RayonPage />
           </PrivateRoute>
         }
       />
@@ -261,6 +264,22 @@ export default function AppRouter() {
         element={
           <PrivateRoute>
             <SallePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/trave"
+        element={
+          <PrivateRoute>
+            <TravePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/site"
+        element={
+          <PrivateRoute>
+            <SitePage />
           </PrivateRoute>
         }
       />

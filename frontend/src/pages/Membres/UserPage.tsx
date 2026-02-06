@@ -3,7 +3,6 @@ import Layout from "../../components/layout/Layoutt";
 import UserForm from "./UsersForm";
 import type { User, Role } from "../../interfaces";
 import UserDetails from "./UserDetails";
-import UserPermission from "./UserPermission";
 import { getUsers, createUser, updateUser, deleteUser } from "../../api/users";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
@@ -24,10 +23,17 @@ import {
   ShieldCheck,
   XCircle,
   ArrowUpDown,
+  FolderLock,
 } from "lucide-react";
 import { getDroits } from "../../api/droit";
 //import { getAllServices } from "../../api/service";
-import { Droit, Fonction } from "../../interfaces";
+import { Droit, Fonction, AgentEntiteeAccess } from "../../interfaces";
+import UserAcces from "./UserAcces";
+import {
+  grantAccess,
+  updateAccess,
+  revokeAccess,
+} from "../../api/agentEntiteeAccess";
 
 export default function UserPage() {
   const [allUser, setAllUser] = useState<User[]>([]);
@@ -36,6 +42,7 @@ export default function UserPage() {
   const [loading, setLoading] = useState(false);
   const [detailsUser, setDetailsUser] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [accesUser, setAccesUser] = useState(false);
   const [editing, setEditing] = useState<Partial<User> | null>(null);
   const toast = useRef<Toast>(null);
   const { user } = useAuth();
@@ -46,6 +53,7 @@ export default function UserPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const [droit, setDroit] = useState<Droit[]>([]);
+  const [selectedDroit, setSelectedDroit] = useState<string | null>(null);
   const [fonction, setFonction] = useState<Fonction[]>([]);
 
   const affichage = async () => {
@@ -133,12 +141,25 @@ export default function UserPage() {
     });
   };
 
-  const roleOption = [
-    { label: "Tous les rôles", value: "" },
-    { label: "Administrateur", value: "ADMIN" },
-    { label: "Membre", value: "MEMBRE" },
-    { label: "Membre Autorisé", value: "MEMBRE_AUTHORIZE" },
-  ];
+  const handleGrantAccess = async (payload: any[]) => {
+    try {
+      for (const p of payload) {
+        await grantAccess(p);
+      }
+
+      toast.current?.show({
+        severity: "success",
+        summary: "Succès",
+        detail: "Accès mis à jour",
+      });
+    } catch (e) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Erreur",
+        detail: "Impossible d'appliquer les accès",
+      });
+    }
+  };
 
   const filteredUsers = allUser.filter((u) => {
     const matchesSearch = [
@@ -150,9 +171,23 @@ export default function UserPage() {
       .join(" ")
       .toLowerCase()
       .includes(query.toLowerCase());
-    const matchesRole = roleFilter === "" || u.role === roleFilter;
-    return matchesSearch && matchesRole;
+    // Vérifie si l'ID du droit de l'utilisateur correspond au filtre (si un filtre est choisi)
+    const userDroitId = typeof u.droit === "object" ? u.droit.id : u.droit;
+    const matchesDroit = !selectedDroit || userDroitId === selectedDroit;
+
+    return matchesSearch && matchesDroit;
   });
+
+  const profilOption = [
+    {
+      label: "Tout les profils",
+      value: null,
+    },
+    ...droit.map((x) => ({
+      label: x.libelle,
+      value: x.id,
+    })),
+  ];
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
     const aVal = String(a[champDeTrie] || "").toLowerCase();
@@ -223,19 +258,21 @@ export default function UserPage() {
 
         <div className="w-64">
           <Dropdown
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.value)}
-            options={roleOption}
-            placeholder="Filtrer par rôle"
+            value={selectedDroit}
+            onChange={(e) => setSelectedDroit(e.value)}
+            options={profilOption}
+            placeholder="Filtrer par Profil"
             className="w-full bg-slate-50 border-slate-200 rounded-xl"
+            showClear // Permet d'effacer le filtre facilement
           />
         </div>
 
-        {(query || roleFilter) && (
+        {(query || selectedDroit) && (
           <button
             onClick={() => {
               setQuery("");
-              setRoleFilter("");
+              setSelectedDroit(null);
+              setCurrentPage(1);
             }}
             className="flex items-center gap-2 text-red-500 font-semibold hover:bg-red-50 px-4 py-2 rounded-xl transition-all"
           >
@@ -277,6 +314,9 @@ export default function UserPage() {
                 <div className="flex items-center gap-2">
                   Nom <ArrowUpDown size={14} />
                 </div>
+              </th>
+              <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Profil
               </th>
               <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
                 Fonction
@@ -327,6 +367,13 @@ export default function UserPage() {
                 </td>
                 <td className="px-6 py-4 font-bold text-slate-700">{u.nom}</td>
                 <td className="px-6 py-4">
+                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg font-bold text-xs border border-emerald-100 flex items-center gap-1 w-fit">
+                    {typeof u.droit === "object"
+                      ? u.droit?.libelle
+                      : "Non definie"}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
                   <span className="text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-lg text-sm italic">
                     {u.fonction_details?.libelle || "Non défini"}
                   </span>
@@ -337,6 +384,15 @@ export default function UserPage() {
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedUser(u);
+                        setAccesUser(true);
+                      }}
+                    >
+                      <FolderLock size={18} />
+                    </button>
+                    <button
                       onClick={() => {
                         setSelectedUser(u);
                         setDetailsUser(true);
@@ -346,16 +402,6 @@ export default function UserPage() {
                     >
                       <Eye size={18} />
                     </button>
-                    {/* <button
-                      onClick={() => {
-                        setSelectedAgentId(u.id as any);
-                        setPermissionModal(true);
-                      }}
-                      className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
-                      title="Permissions"
-                    >
-                      <ShieldCheck size={18} />
-                    </button> */}
                     <button
                       onClick={(e) => {
                         setEditing(u);
@@ -429,6 +475,24 @@ export default function UserPage() {
           setSelectedUser(null);
         }}
         user={selectedUser}
+        // AJOUT DES PROPS MANQUANTES :
+        onRefresh={affichage} // Utilise votre fonction de chargement existante
+        onEditAccess={(access) => {
+          // Logique pour ouvrir le formulaire d'accès en mode édition si nécessaire
+          console.log("Éditer l'accès:", access);
+          setDetailsUser(false);
+          setAccesUser(true);
+        }}
+      />
+
+      <UserAcces
+        visible={accesUser}
+        onHide={() => setAccesUser(false)}
+        onSubmit={handleGrantAccess}
+        // CORRECTION DU TYPE : Conversion explicite en number
+        agentId={Number(selectedUser?.id)}
+        initial={selectedUser}
+        title="Gestion des accès"
       />
 
       {/* <UserPermission

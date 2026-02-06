@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ctrl = require("../controllers/etagere.controller");
+const ctrl = require("../controllers/rayon.controller");
 const { verifyToken } = require("../middlewares/auth.middleware");
 const {
   authorizePermission,
@@ -7,40 +7,40 @@ const {
 
 router.post(
   "/",
-  authorizePermission("etagere", "create"),
+  authorizePermission("rayon", "create"),
   verifyToken,
   ctrl.create,
 );
 router.get(
   "/",
   verifyToken,
-  authorizePermission("etagere", "read"),
-  ctrl.findAll,
+  authorizePermission("rayon", "read"),
+  ctrl.getRayons,
 );
 router.get(
   "/:id",
   verifyToken,
-  authorizePermission("etagere", "read"),
-  ctrl.findById,
+  authorizePermission("rayon", "read"),
+  ctrl.getRayonById,
 );
 router.put(
   "/:id",
   verifyToken,
-  authorizePermission("etagere", "update"),
+  authorizePermission("rayon", "update"),
   ctrl.update,
 );
 router.delete(
   "/:id",
   verifyToken,
-  authorizePermission("etagere", "delete"),
+  authorizePermission("rayon", "delete"),
   ctrl.delete,
 );
 
 router.get(
-  "/:id/box",
+  "/:id/trave",
   verifyToken,
-  authorizePermission("etagere", "read"),
-  ctrl.getAllBoxByEtagere,
+  authorizePermission("rayon", "read"),
+  ctrl.getAllTraveByRayon,
 );
 
 module.exports = router;

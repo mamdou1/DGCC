@@ -118,17 +118,6 @@ export interface Pieces {
   libelle: string;
   division_id: number;
   division: Division;
-
-  entitee_un_id?: number[];
-  entitee_deux_id?: number[];
-  entitee_trois_id?: number[];
-
-  entites_un?: EntiteeUn[];
-  entites_deux?: EntiteeDeux[];
-  entites_trois?: EntiteeTrois[];
-
-  entitee_cible_id: number;
-
   LiquidationPieces?: {
     disponible: boolean;
   };
@@ -187,6 +176,8 @@ export interface User {
 
   fonction?: number;
   fonction_details?: Fonction;
+
+  agent_access?: AgentEntiteeAccess[];
 
   photo_profil?: string;
 }
@@ -370,14 +361,14 @@ export interface TypeDocument {
 
   // IDs (pour les formulaires)
   division_id?: number | null;
-  entitee_un_id?: number[];
-  entitee_deux_id?: number[];
-  entitee_trois_id?: number[];
+  entitee_un_id?: number;
+  entitee_deux_id?: number;
+  entitee_trois_id?: number;
 
   // Objets joints (pour l'affichage) - on les rend optionnels car ils viennent du "include"
-  entites_un?: EntiteeUn[];
-  entites_deux?: EntiteeDeux[];
-  entites_trois?: EntiteeTrois[];
+  entitee_un?: EntiteeUn;
+  entitee_deux?: EntiteeDeux;
+  entitee_trois?: EntiteeTrois;
 
   // Champs calculés par le backend (getAll)
   structure_libelle?: string;
@@ -450,23 +441,59 @@ export interface UploadResponse {
   success: boolean;
 }
 
-export interface Salle {
+export interface Site {
   id?: string;
-  code_salle: string;
-  libelle: string;
-  etagere: Etagere;
-  etagere_id: number;
+  nom: string;
+  adresse: string;
+
   createdAt?: string;
   updatedAt?: string;
 }
 
-export interface Etagere {
+export interface Salle {
   id?: string;
-  code_etagere: string;
+  code_salle: string;
   libelle: string;
-  salle_id: string; // Foreign Key vers Salle
-  salle?: Salle;
-  boxes?: Box[];
+
+  mb_rayons?: number;
+  mb_traves_par_rayon?: number;
+  nb_box?: number;
+  sigle_rayon: string;
+  sigle_trave: string;
+  sigle_box: string;
+
+  site: Site;
+  site_id: number;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Rayon {
+  id?: string;
+  code: string;
+  salle: Salle;
+  salle_id: number;
+
+  mb_traves_par_rayon?: number;
+  nb_box?: number;
+  sigle_trave: string;
+  sigle_box: string;
+
+  // trave: Trave[];
+  // trave_id: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Trave {
+  id?: string;
+  code: string;
+  rayon: Rayon;
+  rayon_id: number;
+
+  // box_id: string; // Foreign Key vers Salle
+  // box?: Box[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -477,11 +504,15 @@ export interface Box {
   libelle: string;
   capacite_max: string;
   current_count: string;
-  etagere_id: string; // Foreign Key vers Salle
-  etagere?: Etagere;
+
+  trave_id: string; // Foreign Key vers Salle
+  trave?: Trave;
+
   type_document_id: string;
+
   document: Document;
   document_id: number;
+
   createdAt?: string;
   updatedAt?: string;
 }
@@ -554,4 +585,18 @@ export interface EntiteeTrois {
 
   createdAt?: string; // si tu utilises timestamps dans Mongoose
   updatedAt?: string;
+}
+
+export interface AgentEntiteeAccess {
+  id: number;
+  agent_id: number;
+  entitee_type: "UN" | "DEUX" | "TROIS";
+  entitee_id: number;
+  created_at?: string;
+  updated_at?: string;
+
+  // AJOUTE CES LIGNES : Ce sont les objets inclus par Sequelize
+  entitee_un?: EntiteeUn;
+  entitee_deux?: EntiteeDeux;
+  entitee_trois?: EntiteeTrois;
 }

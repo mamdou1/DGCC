@@ -10,6 +10,7 @@ const {
   Pieces,
   sequelize,
 } = require("../models");
+const buildAccessWhere = require("../utils/buildAccessWhere.utils");
 
 /*
 

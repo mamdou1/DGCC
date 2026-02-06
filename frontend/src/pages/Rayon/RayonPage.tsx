@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import Layout from "../../components/layout/Layoutt";
-import EtagereDetails from "./EtagereDetails";
-import EtagereForm from "./EtagereForm";
-import type { Etagere } from "../../interfaces";
+import RayonDetails from "./RayonDetails";
+import RayonForm from "./RayonForm";
+import type { Rayon } from "../../interfaces";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import Pagination from "../../components/layout/Pagination";
 import {
-  getEtageres,
-  createEtagere,
-  updateEtagere,
-  deleteEtagere,
-} from "../../api/etagere";
+  getRayons,
+  createRayon,
+  updateRayon,
+  deleteRayon,
+} from "../../api/rayon";
 import {
   Layers,
   Plus,
@@ -27,11 +27,11 @@ import {
   WavesLadder,
 } from "lucide-react";
 
-export default function EtagerePage() {
-  const [allEtageres, setAllEtageres] = useState<Etagere[]>([]);
-  const [selected, setSelected] = useState<Etagere | null>(null);
+export default function RayonPage() {
+  const [allRayon, setAllRayon] = useState<Rayon[]>([]);
+  const [selected, setSelected] = useState<Rayon | null>(null);
   const [formVisible, setFormVisible] = useState(false);
-  const [editing, setEditing] = useState<Partial<Etagere> | null>(null);
+  const [editing, setEditing] = useState<Partial<Rayon> | null>(null);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const toast = useRef<Toast>(null);
@@ -39,16 +39,16 @@ export default function EtagerePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const fetchEtageres = async () => {
+  const fetchRayons = async () => {
     setLoading(true);
     try {
-      const data = await getEtageres();
-      setAllEtageres(data);
+      const data = await getRayons();
+      setAllRayon(data);
     } catch (err) {
       toast.current?.show({
         severity: "error",
         summary: "Erreur",
-        detail: "Impossible de charger les étagères",
+        detail: "Impossible de charger les Rayon",
       });
     } finally {
       setLoading(false);
@@ -56,28 +56,28 @@ export default function EtagerePage() {
   };
 
   useEffect(() => {
-    fetchEtageres();
+    fetchRayons();
   }, []);
 
   const handleAction = async (payload: any) => {
     try {
       if (editing?.id) {
-        const updated = await updateEtagere(editing.id, payload);
-        setAllEtageres((prev) =>
+        const updated = await updateRayon(editing.id, payload);
+        setAllRayon((prev) =>
           prev.map((e) => (e.id === updated.id ? updated : e)),
         );
         toast.current?.show({
           severity: "success",
           summary: "Succès",
-          detail: "Étagère mise à jour",
+          detail: "Rayon mise à jour",
         });
       } else {
-        const saved = await createEtagere(payload);
-        setAllEtageres((prev) => [saved, ...prev]);
+        const saved = await createRayon(payload);
+        setAllRayon((prev) => [saved, ...prev]);
         toast.current?.show({
           severity: "success",
           summary: "Succès",
-          detail: "Étagère créée",
+          detail: "Rayon créée",
         });
       }
       setFormVisible(false);
@@ -98,12 +98,12 @@ export default function EtagerePage() {
       acceptClassName: "p-button-danger",
       accept: async () => {
         try {
-          await deleteEtagere(id);
-          setAllEtageres((prev) => prev.filter((e) => e.id !== id));
+          await deleteRayon(id);
+          setAllRayon((prev) => prev.filter((e) => e.id !== id));
           toast.current?.show({
             severity: "success",
             summary: "Supprimé",
-            detail: "Étagère supprimée",
+            detail: "Rayon supprimée",
           });
         } catch (err) {
           toast.current?.show({
@@ -116,8 +116,8 @@ export default function EtagerePage() {
     });
   };
 
-  const filtered = allEtageres.filter((e) =>
-    `${e.code_etagere} ${e.libelle} ${e.salle?.libelle || ""}`
+  const filtered = allRayon.filter((e) =>
+    `${e.code} ${e.salle?.libelle || ""}`
       .toLowerCase()
       .includes(query.toLowerCase()),
   );
@@ -139,7 +139,7 @@ export default function EtagerePage() {
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-              Étagères
+              Rayon
             </h1>
             <p className="text-slate-500 font-medium font-sans">
               Gestion des emplacements de stockage
@@ -166,7 +166,7 @@ export default function EtagerePage() {
           />
           <InputText
             className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl outline-none"
-            placeholder="Rechercher par code, libellé ou salle..."
+            placeholder="Rechercher par code ou salle..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -179,8 +179,7 @@ export default function EtagerePage() {
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-widest">
               <th className="px-6 py-4">Code</th>
-              <th className="px-6 py-4">Libellé Étagère</th>
-              <th className="px-6 py-4">Salle / Emplacement</th>
+              <th className="px-6 py-4">Rayon / Emplacement</th>
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -196,11 +195,8 @@ export default function EtagerePage() {
               >
                 <td className="px-6 py-4">
                   <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg font-bold text-xs border border-emerald-100 flex items-center gap-1 w-fit">
-                    <Hash size={12} /> {e.code_etagere}
+                    <Hash size={12} /> {e.code}
                   </span>
-                </td>
-                <td className="px-6 py-4 font-bold text-slate-700">
-                  {e.libelle}
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2 text-sm text-slate-600">
@@ -263,17 +259,17 @@ export default function EtagerePage() {
         />
       </div>
 
-      <EtagereForm
+      <RayonForm
         visible={formVisible}
         onHide={() => setFormVisible(false)}
         onSubmit={handleAction}
         initial={editing || {}}
       />
 
-      <EtagereDetails
+      <RayonDetails
         visible={detailsVisible}
         onHide={() => setDetailsVisible(false)}
-        etagere={selected}
+        rayon={selected}
       />
     </Layout>
   );

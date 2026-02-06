@@ -4,8 +4,8 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { BoxIcon, Hash, Type, BarChart3, MapPin, Save } from "lucide-react";
-import { getEtageres } from "../../api/etagere";
-import { Etagere } from "../../interfaces";
+import { getTraves } from "../../api/trave";
+import { Trave } from "../../interfaces";
 import { Dropdown } from "primereact/dropdown";
 
 export default function BoxForm({ visible, onHide, onSubmit, initial }: any) {
@@ -13,10 +13,10 @@ export default function BoxForm({ visible, onHide, onSubmit, initial }: any) {
     code_box: "",
     libelle: "",
     capacite_max: 10,
-    etagere_id: "",
+    trave_id: "",
   });
-  const [etagere, setEtagere] = useState<Etagere[]>([]);
-  const [loadingEtagere, setLoadingEtagere] = useState(false);
+  const [trave, setTrave] = useState<Trave[]>([]);
+  const [loadingTrave, setLoadingTrave] = useState(false);
 
   useEffect(() => {
     if (initial?.id) {
@@ -24,13 +24,13 @@ export default function BoxForm({ visible, onHide, onSubmit, initial }: any) {
         code_box: initial.code_box || "",
         libelle: initial.libelle || "",
         capacite_max: initial.capacite_max || 0,
-        etagere_id: initial.etagere_id || "",
+        trave_id: initial.trave_id || "",
       });
     } else {
       setFormData({
         code_box: "",
         libelle: "",
-        etagere_id: "",
+        trave_id: "",
         capacite_max: 0,
       });
     }
@@ -39,10 +39,10 @@ export default function BoxForm({ visible, onHide, onSubmit, initial }: any) {
   // Chargement de la liste des salles pour le menu déroulant
   useEffect(() => {
     if (visible) {
-      setLoadingEtagere(true);
-      getEtageres()
-        .then((data) => setEtagere(data.salle || data)) // S'adapte selon le format de ton API
-        .finally(() => setLoadingEtagere(false));
+      setLoadingTrave(true);
+      getTraves()
+        .then((data) => setTrave(data.salle || data)) // S'adapte selon le format de ton API
+        .finally(() => setLoadingTrave(false));
     }
   }, [visible]);
 
@@ -120,13 +120,13 @@ export default function BoxForm({ visible, onHide, onSubmit, initial }: any) {
             <MapPin size={14} /> Salle de destination
           </label>
           <Dropdown
-            value={formData.etagere_id}
-            options={etagere}
-            optionLabel="libelle"
+            value={formData.trave_id}
+            options={trave}
+            optionLabel="code"
             optionValue="id"
-            placeholder={loadingEtagere ? "Chargement..." : "Choisir une salle"}
+            placeholder={loadingTrave ? "Chargement..." : "Choisir une Trave"}
             className="w-full bg-emerald-50 border-emerald-200 rounded-xl text-left"
-            onChange={(e) => setFormData({ ...formData, etagere_id: e.value })}
+            onChange={(e) => setFormData({ ...formData, trave_id: e.value })}
             filter
             required
           />

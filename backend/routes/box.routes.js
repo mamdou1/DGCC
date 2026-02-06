@@ -24,7 +24,12 @@ router.put(
   authorizePermission("box", "update"),
   ctrl.update,
 );
-router.delete("/:id", verifyToken, ctrl.delete);
+router.delete(
+  "/:id",
+  verifyToken,
+  authorizePermission("box", "delete"),
+  ctrl.delete,
+);
 
 router.get(
   "/:id/document",

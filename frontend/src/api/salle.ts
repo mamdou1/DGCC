@@ -26,7 +26,7 @@ export const deleteSalle = async (id: string) => {
   return data;
 };
 
-export const getEtageresBySalle = async (salleId: string) => {
-  const { data } = await api.get(`/salle/${salleId}/etagere`);
+export const getRayonsBySalle = async (salleId: string) => {
+  const { data } = await api.get(`/salle/${salleId}/rayon`);
   return data;
 };

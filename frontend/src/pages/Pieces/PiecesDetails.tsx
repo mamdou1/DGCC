@@ -1,16 +1,6 @@
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import {
-  FileText,
-  Calendar,
-  Info,
-  CheckCircle2,
-  Hash,
-  Split,
-  Layers,
-  Building2,
-  GitMerge,
-} from "lucide-react";
+import { FileText, Info, Hash, Split } from "lucide-react";
 
 export default function PiecesDetails({ visible, onHide, pieces }: any) {
   if (!pieces) return null;
@@ -71,25 +61,10 @@ export default function PiecesDetails({ visible, onHide, pieces }: any) {
               </div>
             )}
           </div>
-          {/* <span className="mt-2 text-xs font-mono font-bold bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full border border-emerald-300">
-            {pieces.code_pieces}
-          </span> */}
         </div>
 
         {/* Info Grid */}
         <div className="space-y-4 px-2">
-          {/* <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-slate-400">
-              <CheckCircle2 size={16} className="text-emerald-500" />
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Statut
-              </span>
-            </div>
-            <span className="text-emerald-700 text-sm font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
-              Actif
-            </span>
-          </div> */}
-
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-slate-400">
               <FileText size={16} className="text-emerald-500" />
@@ -112,58 +87,6 @@ export default function PiecesDetails({ visible, onHide, pieces }: any) {
             <span className="mt-2 text-xs font-mono font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full border border-emerald-300">
               {pieces.code_pieces}
             </span>
-          </div>
-
-          <div className="flex flex-wrap gap-2 mt-2">
-            {/* Affichage des Entités Niveau 1 */}
-            {pieces.entites_un?.map((e: any) => (
-              <div
-                key={e.id}
-                className="bg-emerald-100 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-2 border border-white/10 shadow-inner"
-              >
-                <Building2 size={12} className="text-emerald-600" />
-                <span className="text-emerald-600 text-[11px] font-bold uppercase tracking-tight">
-                  {e.libelle}
-                </span>
-              </div>
-            ))}
-
-            {/* Affichage des Entités Niveau 2 */}
-            {pieces.entites_deux?.map((e: any) => (
-              <div
-                key={e.id}
-                className="bg-blue-100 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-2 border border-white/10 shadow-inner"
-              >
-                <Layers size={12} className="text-blue-600" />
-                <span className="text-ble-600 text-[11px] font-bold uppercase tracking-tight">
-                  {e.libelle}
-                </span>
-              </div>
-            ))}
-
-            {/* Affichage des Entités Niveau 3 */}
-            {pieces.entites_trois?.map((e: any) => (
-              <div
-                key={e.id}
-                className="bg-orange-100 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-2 border border-white/10 shadow-inner"
-              >
-                <GitMerge size={12} className="text-orange-600" />
-                <span className="text-orange-600 text-[11px] font-bold uppercase tracking-tight">
-                  {e.libelle}
-                </span>
-              </div>
-            ))}
-
-            {/* Cas transversal */}
-            {!pieces.entites_un?.length &&
-              !pieces.entites_deux?.length &&
-              !pieces.entites_trois?.length && (
-                <div className="bg-white/5 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/5">
-                  <span className="text-white/60 text-[11px] font-bold uppercase tracking-widest italic">
-                    Document Transversal
-                  </span>
-                </div>
-              )}
           </div>
 
           <div className="pt-4 border-t border-slate-100">

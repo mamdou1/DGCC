@@ -176,7 +176,7 @@ export default function TypeAjoutPieces({
               </div>
 
               {/* DROPDOWN DE FILTRAGE */}
-              <Dropdown
+              {/* <Dropdown
                 value={selectedDivision}
                 options={divisions}
                 onChange={(e) => setSelectedDivision(e.value)}
@@ -185,7 +185,7 @@ export default function TypeAjoutPieces({
                 placeholder="Filtrer par division"
                 className="w-full border border-blus-200 bg-blue-50/30 rounded-lg text-sm shadow-sm hover:shadow-md hover:shadow-blue-200 shadow-blue-200"
                 showClear={!!selectedDivision}
-              />
+              /> */}
             </div>
 
             <div className="flex-1 border-2 border-slate-200 rounded-2xl overflow-y-auto bg-white shadow-inner">

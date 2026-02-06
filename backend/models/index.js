@@ -54,8 +54,10 @@ db.DocumentFile = require("./DocumentFIle.model")(sequelize, DataTypes);
 // 🔹 NOUVEAUX MODÈLES Archive
 // =====================
 
+db.Site = require("./Sites.model")(sequelize, DataTypes);
 db.Salle = require("./Salle.model")(sequelize, DataTypes);
-db.Etagere = require("./Etagere.model")(sequelize, DataTypes);
+db.Rayon = require("./Rayon.model")(sequelize, DataTypes);
+db.Trave = require("./Trave.model")(sequelize, DataTypes);
 db.Box = require("./Box.model")(sequelize, DataTypes);
 
 // =====================
@@ -100,6 +102,14 @@ db.PiecesEntiteDeux = require("./PiecesEntiteeDeux.model")(
   DataTypes,
 );
 db.PiecesEntiteTrois = require("./PiecesEntiteeTrois.model")(
+  sequelize,
+  DataTypes,
+);
+
+// =====================
+// 🔹 NOUVEAUX MODÈLES pour l'acces
+// =====================
+db.AgentEntiteeAccess = require("./AgentEntiteeAccess.model")(
   sequelize,
   DataTypes,
 );

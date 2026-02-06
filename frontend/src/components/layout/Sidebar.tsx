@@ -27,6 +27,9 @@ import {
   Archive,
   Warehouse,
   WavesLadder,
+  LibraryBig,
+  MapPinned,
+  FileStack,
 } from "lucide-react";
 
 import logo from "../../assets/logoArchi.png";
@@ -38,6 +41,8 @@ import { useAuth } from "../../context/AuthContext";
 import { getEntiteeUnTitre } from "../../api/entiteeUn";
 import { getEntiteeDeuxTitre } from "../../api/entiteeDeux";
 import { getEntiteeTroisTitre } from "../../api/entiteeTrois";
+import { getTypeDocuments } from "../../api/typeDocument";
+import { TypeDocument } from "../../interfaces";
 
 export const SidebarContext = createContext<SidebarContextType>({
   expended: true,
@@ -54,6 +59,21 @@ export default function Sidebar({ children }: SidebarProps) {
     const saved = localStorage.getItem("sidebar-tree");
     return saved ? JSON.parse(saved) : {};
   });
+
+  const [docTypes, setDocTypes] = useState<TypeDocument[]>([]);
+
+  useEffect(() => {
+    const fetchDocTypes = async () => {
+      try {
+        const res = await getTypeDocuments();
+        // On récupère le tableau typeDocument de la réponse
+        setDocTypes(res.typeDocument || []);
+      } catch (error) {
+        console.error("Erreur types documents sidebar", error);
+      }
+    };
+    fetchDocTypes();
+  }, []);
 
   // 1. État pour stocker les titres dynamiques
   const [dynamicTitles, setDynamicTitles] = useState({
@@ -218,85 +238,34 @@ export default function Sidebar({ children }: SidebarProps) {
                     />
                   )}
                   {can("document", "read") && (
-                    <SidebarLink
-                      icon={FileText}
-                      text="Document"
-                      to="/document"
-                      active={location.pathname.startsWith("/document")}
-                    />
+                    <SidebarTree label="Documents" icon={FileText}>
+                      {docTypes.map((t) => (
+                        <SidebarLink
+                          key={t.id}
+                          icon={FileStack}
+                          text={t.nom}
+                          to={`/document?typeId=${t.id}`}
+                          active={
+                            location.pathname === "/document" &&
+                            new URLSearchParams(location.search).get(
+                              "typeId",
+                            ) === String(t.id)
+                          }
+                        />
+                      ))}
+                    </SidebarTree>
                   )}
                 </SidebarTree>
               )}
 
               {/* ================= PARAMETRAGE ================= */}
-              {(can("exercice", "read") ||
-                can("programme", "read") ||
-                can("chapitre", "read") ||
-                can("nature", "read") ||
-                can("fournisseur", "read") ||
-                can("serviceBeneficiaire", "read")) && (
+              {(can("box", "read") ||
+                can("trave", "read") ||
+                can("rayon", "read") ||
+                can("salle", "read") ||
+                can("site", "read")) && (
                 <SidebarTree label="Archivage" icon={Layers}>
-                  {/* {can("exercice", "read") && (
-                    <SidebarLink
-                      icon={Boxes}
-                      text="Exercices"
-                      to="/exercices"
-                      active={location.pathname.startsWith("/exercices")}
-                    />
-                  )}
-                  {can("programme", "read") && (
-                    <SidebarLink
-                      icon={Layers}
-                      text="Programmes"
-                      to="/programmes"
-                      active={location.pathname.startsWith("/programmes")}
-                    />
-                  )}
-                  {can("chapitre", "read") && (
-                    <SidebarLink
-                      icon={ListChecks}
-                      text="Chapitres"
-                      to="/chapitres"
-                      active={location.pathname.startsWith("/chapitres")}
-                    />
-                  )}
-                  {can("nature", "read") && (
-                    <SidebarLink
-                      icon={FileText}
-                      text="Natures"
-                      to="/natures"
-                      active={location.pathname.startsWith("/natures")}
-                    />
-                  )}
-                  {can("fournisseur", "read") && (
-                    <SidebarLink
-                      icon={HandCoins}
-                      text="Fournisseur"
-                      to="/fournisseur"
-                      active={location.pathname.startsWith("/fournisseur")}
-                    />
-                  )}
-                  {can("serviceBeneficiaire", "read") && (
-                    <SidebarLink
-                      icon={PanelTopOpenIcon}
-                      text="Services Bénéficiaire"
-                      to="/serviceBeneficiaire"
-                      active={location.pathname.startsWith(
-                        "/serviceBeneficiaire",
-                      )}
-                    />
-                  )}
-                  {can("sourceDeFinancement", "read") && (
-                    <SidebarLink
-                      icon={BanknoteArrowUp}
-                      text="Source de financement"
-                      to="/sourceDeFinancement"
-                      active={location.pathname.startsWith(
-                        "/sourceDeFinancement",
-                      )}
-                    />
-                  )} */}
-                  {can("pieces", "read") && (
+                  {can("box", "read") && (
                     <SidebarLink
                       icon={Archive}
                       text="Box"
@@ -304,20 +273,37 @@ export default function Sidebar({ children }: SidebarProps) {
                       active={location.pathname.startsWith("/box")}
                     />
                   )}
-                  {can("documentType", "read") && (
+                  {can("trave", "read") && (
                     <SidebarLink
-                      icon={WavesLadder}
-                      text="Etagère"
-                      to="/etagere"
-                      active={location.pathname.startsWith("/etagere")}
+                      icon={LibraryBig}
+                      text="Travé"
+                      to="/trave"
+                      active={location.pathname.startsWith("/trave")}
                     />
                   )}
-                  {can("document", "read") && (
+                  {can("rayon", "read") && (
+                    <SidebarLink
+                      icon={WavesLadder}
+                      text="Rayon"
+                      to="/rayon"
+                      active={location.pathname.startsWith("/rayon")}
+                    />
+                  )}
+                  {can("salle", "read") && (
                     <SidebarLink
                       icon={Warehouse}
                       text="Salle"
                       to="/salle"
                       active={location.pathname.startsWith("/salle")}
+                    />
+                  )}
+
+                  {can("site", "read") && (
+                    <SidebarLink
+                      icon={MapPinned}
+                      text="Site"
+                      to="/site"
+                      active={location.pathname.startsWith("/site")}
                     />
                   )}
                 </SidebarTree>

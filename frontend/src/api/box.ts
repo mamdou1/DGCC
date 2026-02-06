@@ -32,11 +32,14 @@ export const getDocumentsByBox = async (boxId: string) => {
 };
 
 export const addDocumentToBox = async (boxId: string, documentId: string) => {
-  const { data } = await api.post(`/box/${boxId}/documents/${documentId}`);
+  const { data } = await api.post(`/box/${boxId}/add/${documentId}`);
   return data;
 };
 
-export const retireDocumentFromBox = async (documentId: string) => {
-  const { data } = await api.delete(`/box/documents/${documentId}`);
+export const retireDocumentFromBox = async (
+  boxId: string,
+  documentId: string,
+) => {
+  const { data } = await api.post(`/box/${boxId}/remove/${documentId}`);
   return data;
 };

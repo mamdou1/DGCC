@@ -39,79 +39,72 @@
 //   const [allEntiteeDeux, setAllEntiteeDeux] = useState<EntiteeDeux[]>([]);
 //   const [allEntiteeTrois, setAllEntiteeTrois] = useState<EntiteeTrois[]>([]);
 
-//   useEffect(() => {
-//     const fetchInitialData = async () => {
-//       const srvs = await getAllEntiteeUn();
-//       setAllEntiteeUn(Array.isArray(srvs) ? srvs : []);
-//     };
-//     fetchInitialData();
-//   }, []);
+// useEffect(() => {
+//   const fetchInitialData = async () => {
+//     const srvs = await getAllEntiteeUn();
+//     setAllEntiteeUn(Array.isArray(srvs) ? srvs : []);
+//   };
+//   fetchInitialData();
+// }, []);
 
-//   useEffect(() => {
-//     const loadEditData = async () => {
-//       if (visible && initial?.id) {
-//         setCode(initial.code || "");
-//         setNom(initial.nom || "");
+// useEffect(() => {
+//   const loadEditData = async () => {
+//     if (visible && initial?.id) {
+//       setCode(initial.code || "");
+//       setNom(initial.nom || "");
 
-//         // 1. Initialiser les IDs
-//         setEntitee_un_id(initial.entitee_un?.id);
-//         setEntitee_deux_id(initial.entitee_deux?.id);
-//         setEntitee_trois_id(initial.entitee_trois?.id);
+//       // 1. Initialiser les IDs
+//       setEntitee_un_id(initial.entitee_un?.id);
+//       setEntitee_deux_id(initial.entitee_deux?.id);
+//       setEntitee_trois_id(initial.entitee_trois?.id);
 
-//         // 2. Charger les listes en cascade pour l'affichage
-//         if (initial.entitee_un?.id) {
-//           const divs = await getEntiteeDeuxByEntiteeUn(initial.entitee_un.id);
-//           setAllEntiteeDeux(Array.isArray(divs) ? divs : []);
-//         }
-//         if (initial.entitee_deux?.id) {
-//           const secs = await getEntiteeTroisByEntiteeDeux(
-//             initial.entitee_deux.id,
-//           );
-//           setAllEntiteeTrois(Array.isArray(secs) ? secs : []);
-//         }
-//       } else if (visible) {
-//         // Reset pour création
-//         setCode("");
-//         setNom("");
-//         setEntitee_un_id(undefined);
-//         setEntitee_deux_id(undefined);
-//         setEntitee_trois_id(undefined);
-//         setAllEntiteeDeux([]);
-//         setAllEntiteeTrois([]);
+//       // 2. Charger les listes en cascade pour l'affichage
+//       if (initial.entitee_un?.id) {
+//         const divs = await getEntiteeDeuxByEntiteeUn(initial.entitee_un.id);
+//         setAllEntiteeDeux(Array.isArray(divs) ? divs : []);
 //       }
-//     };
-//     loadEditData();
-//   }, [visible, initial]);
+//       if (initial.entitee_deux?.id) {
+//         const secs = await getEntiteeTroisByEntiteeDeux(
+//           initial.entitee_deux.id,
+//         );
+//         setAllEntiteeTrois(Array.isArray(secs) ? secs : []);
+//       }
+//     } else if (visible) {
+//       // Reset pour création
+//       setCode("");
+//       setNom("");
+//       setEntitee_un_id(undefined);
+//       setEntitee_deux_id(undefined);
+//       setEntitee_trois_id(undefined);
+//       setAllEntiteeDeux([]);
+//       setAllEntiteeTrois([]);
+//     }
+//   };
+//   loadEditData();
+// }, [visible, initial]);
 
 //   // --- Handlers de changement (Logique de cascade) ---
-//   const handleEntiteeUnChange = async (id: number) => {
-//     setEntitee_un_id(id);
-//     setEntitee_deux_id(undefined);
-//     setEntitee_trois_id(undefined);
+// const handleEntiteeUnChange = async (id: number) => {
+//   setEntitee_un_id(id);
+//   setEntitee_deux_id(undefined);
+//   setEntitee_trois_id(undefined);
 
-//     const divs = await getEntiteeDeuxByEntiteeUn(id);
-//     setAllEntiteeDeux(Array.isArray(divs) ? divs : []);
-//     setAllEntiteeTrois([]);
-//   };
+//   const divs = await getEntiteeDeuxByEntiteeUn(id);
+//   setAllEntiteeDeux(Array.isArray(divs) ? divs : []);
+//   setAllEntiteeTrois([]);
+// };
 
-//   const handleEntiteeDeuxChange = async (id: number) => {
-//     setEntitee_deux_id(id);
-//     setEntitee_trois_id(undefined);
+// const handleEntiteeDeuxChange = async (id: number) => {
+//   setEntitee_deux_id(id);
+//   setEntitee_trois_id(undefined);
 
-//     const secs = await getEntiteeTroisByEntiteeDeux(id);
-//     setAllEntiteeTrois(Array.isArray(secs) ? secs : []);
-//   };
+//   const secs = await getEntiteeTroisByEntiteeDeux(id);
+//   setAllEntiteeTrois(Array.isArray(secs) ? secs : []);
+// };
 
 //   const handleEntiteeTroisChange = (id: number) => {
 //     setEntitee_trois_id(id);
 //   };
-
-//   // const handleEntiteeTroisChange = async (id: number) => {
-//   //   setEntitee_trois_id(id);
-//   //   setFonctionId(undefined);
-//   //   const funcs = await getFunctionsByEntiteeTrois(id);
-//   //   setFonctions(funcs);
-//   // };
 
 //   const titreUn = allEntiteeUn[0]?.titre || "Entité 1";
 //   const titreDeux = allEntiteeDeux[0]?.titre || "Entité 2";
@@ -272,232 +265,107 @@
 //     </Dialog>
 //   );
 // }
+
 import React, { useEffect, useState } from "react";
-import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { MultiSelect } from "primereact/multiselect";
-import {
-  Save,
-  Building2,
-  Layers,
-  GitMerge,
-  Hash,
-  FileText,
-  X,
-} from "lucide-react";
-
-import { getAllEntiteeUn } from "../../api/entiteeUn";
-import { getAllEntiteeDeux } from "../../api/entiteeDeux";
-import { getAllEntiteeTrois } from "../../api/entiteeTrois";
-import { EntiteeDeux, EntiteeTrois, EntiteeUn } from "../../interfaces";
+import { FileText, Save, Hash, Info, X } from "lucide-react";
 
 export default function DocumentTypeForm({
-  visible,
   onHide,
   onSubmit,
   initial = {},
-  title = "Configuration du Type Document",
+  currentStructureLabel = "",
+  isFiltered = false,
 }: any) {
-  const [formData, setFormData] = useState({
-    code: "",
-    nom: "",
-    entites_un_id: [] as number[],
-    entites_deux_id: [] as number[],
-    entites_trois_id: [] as number[],
-  });
-
-  const [options, setOptions] = useState({
-    n1: [] as EntiteeUn[],
-    n2: [] as EntiteeDeux[],
-    n3: [] as EntiteeTrois[],
-  });
-
+  const [code, setCode] = useState("");
+  const [nom, setNom] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Chargement des options
+  // Initialisation des champs (le visible n'est plus requis ici car le TabView monte le composant)
   useEffect(() => {
-    if (visible) {
-      const loadData = async () => {
-        try {
-          const [r1, r2, r3] = await Promise.all([
-            getAllEntiteeUn(),
-            getAllEntiteeDeux(),
-            getAllEntiteeTrois(),
-          ]);
-          setOptions({
-            n1: Array.isArray(r1) ? r1 : [],
-            n2: Array.isArray(r2) ? r2 : [],
-            n3: Array.isArray(r3) ? r3 : [],
-          });
-        } catch (err) {
-          console.error("Erreur options:", err);
-        }
-      };
-      loadData();
-    }
-  }, [visible]);
-
-  // Initialisation du formulaire (Edit vs Create)
-  useEffect(() => {
-    if (visible && initial?.id) {
-      setFormData({
-        code: initial.code || "",
-        nom: initial.nom || "",
-        entites_un_id: initial.entites_un?.map((e: any) => e.id) || [],
-        entites_deux_id: initial.entites_deux?.map((e: any) => e.id) || [],
-        entites_trois_id: initial.entites_trois?.map((e: any) => e.id) || [],
-      });
-    } else {
-      setFormData({
-        code: "",
-        nom: "",
-        entites_un_id: [],
-        entites_deux_id: [],
-        entites_trois_id: [],
-      });
-    }
-  }, [visible, initial]);
+    setCode(initial?.code || "");
+    setNom(initial?.nom || "");
+  }, [initial]);
 
   const handleSubmit = async () => {
-    if (!formData.nom || !formData.code) return;
+    if (!nom || !code) return;
     setLoading(true);
     try {
-      await onSubmit(formData);
-      onHide();
+      await onSubmit({ code, nom });
+      // On peut appeler onHide() ici si on veut fermer la modale après succès
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Styles réutilisables
-  const labelStyle =
-    "text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-2";
-  const inputWrapper = "flex flex-col gap-1";
-
   return (
-    <Dialog
-      header={
-        <div className="text-xl font-black text-slate-800 px-2">{title}</div>
-      }
-      visible={visible}
-      style={{ width: "700px" }}
-      onHide={onHide}
-      className="rounded-[2rem] overflow-hidden"
-      footer={
-        <div className="flex justify-end gap-3 p-6 bg-slate-50/80">
-          <Button
-            label="Annuler"
-            onClick={onHide}
-            className="p-button-text text-slate-400 font-bold"
-          />
-          <Button
-            label={loading ? "Enregistrement..." : "Sauvegarder"}
-            icon={!loading && <Save size={18} className="mr-2" />}
-            onClick={handleSubmit}
-            loading={loading}
-            className="bg-emerald-600 text-emerald-50 border-none px-8 py-3 rounded-xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all"
-          />
-        </div>
-      }
-    >
-      <div className="flex flex-col gap-6 pt-4 px-2">
-        {/* Section Identité */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className={inputWrapper}>
-            <label className={labelStyle}>
-              <Hash size={14} className="text-emerald-500" /> Code
-            </label>
-            <InputText
-              value={formData.code}
-              onChange={(e) =>
-                setFormData({ ...formData, code: e.target.value.toUpperCase() })
-              }
-              placeholder="Ex: DOC-01"
-              className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20"
-            />
-          </div>
-          <div className={inputWrapper}>
-            <label className={labelStyle}>
-              <FileText size={14} className="text-emerald-500" /> Nom du type
-            </label>
-            <InputText
-              value={formData.nom}
-              onChange={(e) =>
-                setFormData({ ...formData, nom: e.target.value })
-              }
-              placeholder="Ex: Facture d'achat"
-              className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20"
-            />
+    <div className="space-y-6">
+      {/* 1. Alerte Affectation Automatique */}
+      {!initial?.id && isFiltered && (
+        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-100 rounded-2xl transition-all animate-in fade-in slide-in-from-top-2">
+          <Info size={18} className="text-amber-600 mt-0.5" />
+          <div className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-bold block uppercase mb-1">
+              Affectation automatique
+            </span>
+            Ce type de document sera automatiquement lié à : <br />
+            <span className="font-black underline italic">
+              {currentStructureLabel}
+            </span>
           </div>
         </div>
+      )}
 
-        <hr className="border-slate-100" />
+      {/* 2. Champs de saisie */}
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <Hash size={14} className="text-emerald-500" /> Code Référence
+          </label>
+          <InputText
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono"
+            placeholder="ex: FACT-SC"
+            autoFocus
+          />
+        </div>
 
-        {/* Section Affectations Multiples */}
-        <div className="space-y-5 bg-slate-100/40 p-5 rounded-2xl border border-slate-100">
-          <h3 className="text-xs font-black uppercase text-emerald-600 tracking-tighter mb-4">
-            Périmètres d'application
-          </h3>
-
-          <div className={inputWrapper}>
-            <label className={labelStyle}>
-              <Building2 size={14} /> Ministères (Niveau 1)
-            </label>
-            <MultiSelect
-              value={formData.entites_un_id}
-              options={options.n1}
-              optionLabel="libelle"
-              optionValue="id"
-              onChange={(e) =>
-                setFormData({ ...formData, entites_un_id: e.value })
-              }
-              placeholder="Sélectionner les ministères"
-              display="chip"
-              filter
-              className="w-full border border-emerald-200 rounded-xl hover:border-emerald-400"
-            />
-          </div>
-
-          <div className={inputWrapper}>
-            <label className={labelStyle}>
-              <Layers size={14} /> Directions (Niveau 2)
-            </label>
-            <MultiSelect
-              value={formData.entites_deux_id}
-              options={options.n2}
-              optionLabel="libelle"
-              optionValue="id"
-              onChange={(e) =>
-                setFormData({ ...formData, entites_deux_id: e.value })
-              }
-              placeholder="Sélectionner les directions"
-              display="chip"
-              filter
-              className="w-full border border-emerald-200 rounded-xl hover:border-emerald-400"
-            />
-          </div>
-
-          <div className={inputWrapper}>
-            <label className={labelStyle}>
-              <GitMerge size={14} /> Services (Niveau 3)
-            </label>
-            <MultiSelect
-              value={formData.entites_trois_id}
-              options={options.n3}
-              optionLabel="libelle"
-              optionValue="id"
-              onChange={(e) =>
-                setFormData({ ...formData, entites_trois_id: e.value })
-              }
-              placeholder="Sélectionner les services"
-              display="chip"
-              filter
-              className="w-full border border-emerald-200 rounded-xl hover:border-emerald-400"
-            />
-          </div>
+        <div className="space-y-2">
+          <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <FileText size={14} className="text-emerald-500" /> Libellé du
+            document
+          </label>
+          <InputText
+            value={nom}
+            onChange={(e) => setNom(e.target.value)}
+            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 transition-all"
+            placeholder="ex: Facture de service"
+          />
         </div>
       </div>
-    </Dialog>
+
+      {/* 3. Footer intégré (Boutons d'action) */}
+      <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-4">
+        <Button
+          label="Annuler"
+          icon={<X size={16} className="mr-2" />}
+          onClick={onHide}
+          className="p-button-text text-slate-500 font-bold hover:bg-slate-100 px-4 py-2 rounded-xl transition-all"
+          disabled={loading}
+        />
+        <Button
+          label={loading ? "Enregistrement..." : "Enregistrer le type"}
+          icon={!loading && <Save size={18} className="mr-2" />}
+          onClick={handleSubmit}
+          loading={loading}
+          disabled={!nom || !code}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-emerald-200 transition-all font-bold"
+        />
+      </div>
+    </div>
   );
 }

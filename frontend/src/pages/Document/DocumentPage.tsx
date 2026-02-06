@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Layout from "../../components/layout/Layoutt";
 import DocumentForm from "./DocumentForm";
 import DocumentDetails from "./DocumentDetails";
@@ -54,6 +55,16 @@ export default function DocumentPage() {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [ajoutVisible, setAjoutVisible] = useState(false);
   const [disponibleVisible, setDisponibleVisible] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const typeIdFormUrl = params.get("typeId");
+
+    if (typeIdFormUrl) {
+      setDocumentType_id(Number(typeIdFormUrl));
+    }
+  }, [location.search]);
 
   const load = async () => {
     const [resDocs, resTypes] = await Promise.all([

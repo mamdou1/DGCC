@@ -4,6 +4,7 @@ import DocumentTypeForm from "./DocumentTypeForm";
 import DocumentTypeDetails from "./DocumentTypeDetails";
 import DocumentTypeMetaForm from "./DocumentTypeMetaForm";
 import { confirmDialog } from "primereact/confirmdialog";
+import DocumentTypeAffectationForm from "./DocumentTypeAffectationForm";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -18,6 +19,8 @@ import {
   Search,
   Layers,
   FilePlus,
+  SplinePointer,
+  XCircle,
 } from "lucide-react";
 import {
   getTypeDocuments,
@@ -35,6 +38,11 @@ import { createMetaField, updateMetaField } from "../../api/metaField";
 import Pagination from "../../components/layout/Pagination";
 import TypeDocumentAjoutPieces from "./TypeDocumentAjoutPieces";
 import { getPieces } from "../../api/pieces";
+import { Dropdown } from "primereact/dropdown";
+import { getAllEntiteeUn } from "../../api/entiteeUn";
+import { getAllEntiteeDeux } from "../../api/entiteeDeux";
+import { getAllEntiteeTrois } from "../../api/entiteeTrois";
+import DocumentTypeAffectAndForm from "./DocumentTypeAffectAndForm";
 
 export default function DocumentTypePage() {
   const [types, setTypes] = useState<TypeDocument[]>([]);
@@ -42,6 +50,7 @@ export default function DocumentTypePage() {
   const [selected, setSelected] = useState<any>(null);
   const [editing, setEditing] = useState<any>(null);
   const [formVisible, setFormVisible] = useState(false);
+  const [affectationFormVisible, setAffectationFormVisible] = useState(false);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [metaVisible, setMetaVisible] = useState(false);
   const [query, setQuery] = useState("");
@@ -49,19 +58,56 @@ export default function DocumentTypePage() {
   const itemsPerPage = 8;
   const toast = useRef<Toast>(null);
   const [formPiecesVisible, setFormPiecesVisible] = useState(false);
+  const [selectedTypeDoc, setSelectedTypeDoc] = useState<string | null>(null);
+  const [optionsEntites, setOptionsEntites] = useState<
+    { label: string; value: any }[]
+  >([]);
+
+  const [rawE1, setRawE1] = useState<any[]>([]);
+  const [rawE2, setRawE2] = useState<any[]>([]);
+  const [rawE3, setRawE3] = useState<any[]>([]);
 
   const load = async () => {
     try {
-      const [resTy, resP] = await Promise.all([
+      const [resTy, resP, resE1, resE2, resE3] = await Promise.all([
         getTypeDocuments(),
         getPieces(),
+        getAllEntiteeUn(),
+        getAllEntiteeDeux(),
+        getAllEntiteeTrois(),
       ]);
 
-      // Adaptation au formatage du backend
-      // On vérifie si resTy contient la clé typeDocument (formatée) ou est un tableau direct
       const typesData = resTy.typeDocument || resTy;
       setTypes(Array.isArray(typesData) ? typesData : []);
       setPieces(Array.isArray(resP) ? resP : []);
+
+      // --- CORRECTION ICI ---
+      // On extrait le tableau de chaque objet de réponse
+      const dataE1 = Array.isArray(resE1) ? resE1 : resE1.entiteeUn || [];
+      const dataE2 = Array.isArray(resE2) ? resE2 : resE2.entiteeDeux || [];
+      const dataE3 = Array.isArray(resE3) ? resE3 : resE3.entiteeTrois || [];
+
+      setRawE1(dataE1);
+      setRawE2(dataE2);
+      setRawE3(dataE3);
+
+      const allOptions = [
+        { label: "Tous les profils", value: null },
+        ...dataE1.map((x: any) => ({
+          label: `🏢 ${x.libelle}`, // E1 (Direction)
+          value: String(x.id), // On garde l'ID pur ici ou on préfixe
+        })),
+        ...dataE2.map((x: any) => ({
+          label: `📂 ${x.libelle}`, // E2 (Service)
+          value: `E2-${x.id}`, // CLÉ UNIQUE
+        })),
+        ...dataE3.map((x: any) => ({
+          label: `📄 ${x.libelle}`, // E3 (Bureau/Section)
+          value: `E3-${x.id}`, // CLÉ UNIQUE
+        })),
+      ];
+      setOptionsEntites(allOptions);
+      // ----------------------
     } catch (err) {
       toast.current?.show({
         severity: "error",
@@ -70,7 +116,6 @@ export default function DocumentTypePage() {
       });
     }
   };
-
   useEffect(() => {
     load();
   }, []);
@@ -87,20 +132,76 @@ export default function DocumentTypePage() {
     setFormVisible(true);
   };
 
-  const handleSubmit = async (payload: any) => {
+  // const handleSubmit = async (payload: any) => {
+  //   try {
+  //     if (editing?.id) {
+  //       await updateTypeDocument(editing.id, payload);
+  //       toast.current?.show({ severity: "success", summary: "Mis à jour" });
+  //     } else {
+  //       await createTypeDocument(payload);
+  //       toast.current?.show({ severity: "success", summary: "Créé" });
+  //     }
+  //     // RECHARGE COMPLÈTE pour récupérer les libellés et jointures
+  //     await load();
+  //     setFormVisible(false); // Fermer le formulaire
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const handleSubmit = async (formData: { code: string; nom: string }) => {
     try {
       if (editing?.id) {
-        await updateTypeDocument(editing.id, payload);
+        await updateTypeDocument(editing.id, formData);
         toast.current?.show({ severity: "success", summary: "Mis à jour" });
       } else {
+        // Construction du payload enrichi
+        let payload: any = { ...formData };
+
+        // Si un filtre est actif, on FORCE l'affectation au nouveau document
+        if (selectedTypeDoc) {
+          const cleanId = Number(
+            selectedTypeDoc.replace("E2-", "").replace("E3-", ""),
+          );
+
+          const n1 = rawE1.find(
+            (x) => x.id === cleanId && !selectedTypeDoc.includes("E"),
+          );
+          const n2 = rawE2.find(
+            (x) => x.id === cleanId && selectedTypeDoc.includes("E2"),
+          );
+          const n3 = rawE3.find(
+            (x) => x.id === cleanId && selectedTypeDoc.includes("E3"),
+          );
+
+          if (n1) {
+            payload.entitee_un_id = n1.id;
+          } else if (n2) {
+            payload.entitee_un_id = n2.entitee_un_id;
+            payload.entitee_deux_id = n2.id;
+          } else if (n3) {
+            const parentN2 = rawE2.find((x) => x.id === n3.entitee_deux_id);
+            payload.entitee_un_id = parentN2?.entitee_un_id;
+            payload.entitee_deux_id = n3.entitee_deux_id;
+            payload.entitee_trois_id = n3.id;
+          }
+        }
+
+        // APPEL API avec le payload complet (code, nom + les IDs d'entités)
         await createTypeDocument(payload);
-        toast.current?.show({ severity: "success", summary: "Créé" });
+        toast.current?.show({
+          severity: "success",
+          summary: "Créé avec succès",
+          detail: payload.entitee_un_id
+            ? "Affectation automatique réussie"
+            : "Document générique créé",
+        });
       }
-      // RECHARGE COMPLÈTE pour récupérer les libellés et jointures
+
       await load();
-      setFormVisible(false); // Fermer le formulaire
+      setFormVisible(false);
     } catch (error) {
-      console.error(error);
+      toast.current?.show({ severity: "error", summary: "Erreur" });
     }
   };
 
@@ -170,9 +271,89 @@ export default function DocumentTypePage() {
     }
   };
 
-  const filtered = types.filter((t) =>
-    `${t.code} ${t.nom}`.toLowerCase().includes(query.toLowerCase()),
-  );
+  const handleAffectationSubmit = async (payload: any) => {
+    try {
+      if (selected?.id) {
+        await updateTypeDocument(selected.id, payload);
+        toast.current?.show({
+          severity: "success",
+          summary: "Affectation mise à jour",
+        });
+        await load();
+        setAffectationFormVisible(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleMultipleAffectation = async (typeIds: string[]) => {
+    try {
+      if (!selectedTypeDoc) return;
+
+      let structureData: any = {
+        entitee_un_id: null,
+        entitee_deux_id: null,
+        entitee_trois_id: null,
+      };
+
+      // On sépare le préfixe de l'ID (ex: "E2-5" -> prefix="E2", id="5")
+      const [prefix, rawId] = selectedTypeDoc.split("-");
+      const targetId = Number(rawId);
+
+      if (prefix === "E1") {
+        const n1 = rawE1.find((x) => x.id === targetId);
+        if (n1) structureData.entitee_un_id = n1.id;
+      } else if (prefix === "E2") {
+        const n2 = rawE2.find((x) => x.id === targetId);
+        if (n2) {
+          structureData.entitee_un_id = n2.entitee_un_id;
+          structureData.entitee_deux_id = n2.id;
+        }
+      } else if (prefix === "E3") {
+        const n3 = rawE3.find((x) => x.id === targetId);
+        if (n3) {
+          const parentN2 = rawE2.find((x) => x.id === n3.entitee_deux_id);
+          structureData.entitee_un_id = parentN2?.entitee_un_id;
+          structureData.entitee_deux_id = n3.entitee_deux_id;
+          structureData.entitee_trois_id = n3.id;
+        }
+      }
+
+      // Appel API avec le payload enfin complet
+      await Promise.all(
+        typeIds.map((id) => updateTypeDocument(id, structureData)),
+      );
+
+      toast.current?.show({
+        severity: "success",
+        summary: "Affectation réussie",
+      });
+      await load();
+    } catch (error) {
+      console.error("Erreur affectation:", error);
+    }
+  };
+
+  const filtered = types.filter((t) => {
+    const searchText = query.toLowerCase();
+    const matchesSearch =
+      t.code.toLowerCase().includes(searchText) ||
+      t.nom.toLowerCase().includes(searchText);
+
+    if (!selectedTypeDoc) return matchesSearch;
+
+    // On compare selon le format choisi (ex: "E2-5" ou juste "5")
+    const e1Id = String(t.entitee_un_id || (t.entitee_un as any)?.id);
+    const e2Id = `E2-${t.entitee_deux_id || (t.entitee_deux as any)?.id}`;
+    const e3Id = `E3-${t.entitee_trois_id || (t.entitee_trois as any)?.id}`;
+
+    const matchesTypeDoc =
+      selectedTypeDoc === e1Id ||
+      selectedTypeDoc === e2Id ||
+      selectedTypeDoc === e3Id;
+
+    return matchesSearch && matchesTypeDoc;
+  });
 
   const paginated = filtered.slice(
     (currentPage - 1) * itemsPerPage,
@@ -199,26 +380,60 @@ export default function DocumentTypePage() {
         </div>
         <div className="flex gap-3">
           <Button
-            label="Nouveau Type"
+            label="Ajouter Type"
             icon={<Plus size={20} className="mr-2" />}
-            onClick={onCreate}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-4 rounded-2xl shadow-lg shadow-emerald-100 transition-all hover:-translate-y-1 active:scale-95 font-bold"
+            onClick={() => {
+              setEditing(null);
+              setFormVisible(true);
+            }}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-4 rounded-2xl shadow-lg transition-all font-bold"
           />
         </div>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="mb-8 relative max-w-xl group">
-        <Search
-          className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
-          size={20}
-        />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Rechercher par code ou nom de document..."
-          className="w-full pl-14 pr-6 py-4 bg-white border-2 border-slate-100 rounded-[1.5rem] shadow-sm outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all text-slate-700 font-semibold"
-        />
+      {/* Filter Bar */}
+      <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-wrap items-center gap-4">
+        <div className="flex-1 min-w-[300px] relative group">
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+            size={18}
+          />
+          <InputText
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 transition-all"
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Rechercher par code ou nom de document..."
+            value={query}
+          />
+        </div>
+
+        <div className="w-64">
+          <Dropdown
+            value={selectedTypeDoc}
+            onChange={(e) => {
+              setSelectedTypeDoc(e.value);
+              setCurrentPage(1); // Très important : revenir à la page 1 quand on filtre
+            }}
+            options={optionsEntites} // Utilise le state chargé
+            placeholder="Filtrer par type de structure"
+            className="w-full bg-slate-50 border-slate-200 rounded-xl"
+            showClear
+            filter
+          />
+        </div>
+
+        {(query || selectedTypeDoc) && (
+          <button
+            onClick={() => {
+              setQuery("");
+              setSelectedTypeDoc(null);
+              setCurrentPage(1);
+            }}
+            className="flex items-center gap-2 text-red-500 font-semibold hover:bg-red-50 px-4 py-2 rounded-xl transition-all"
+          >
+            <XCircle size={18} />
+            Réinitialiser
+          </button>
+        )}
       </div>
 
       {/* TABLE CONTAINER */}
@@ -264,31 +479,13 @@ export default function DocumentTypePage() {
                   </div>
                 </td>
                 <td className="p-6 text-slate-600 font-medium">
-                  <div className="flex flex-wrap gap-1 max-w-[300px]">
-                    {/* On affiche les entités de tous les niveaux sous forme de badges */}
-                    {[
-                      ...(t.entites_un || []),
-                      ...(t.entites_deux || []),
-                      ...(t.entites_trois || []),
-                    ].length > 0 ? (
-                      [
-                        ...(t.entites_un || []),
-                        ...(t.entites_deux || []),
-                        ...(t.entites_trois || []),
-                      ].map((ent: any) => (
-                        <span
-                          key={ent.id}
-                          className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-bold border border-emerald-200"
-                        >
-                          {ent.libelle}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-slate-400 italic text-xs">
-                        Transversal (Tous)
-                      </span>
-                    )}
-                  </div>
+                  {t.entitee_trois?.libelle
+                    ? t.entitee_trois.libelle
+                    : t.entitee_deux?.libelle
+                      ? t.entitee_deux.libelle
+                      : t.entitee_un?.libelle
+                        ? t.entitee_un.libelle
+                        : "Non assigné"}
                 </td>
                 <td className="p-6">
                   {/* Changement : Badge Emerald */}
@@ -312,12 +509,12 @@ export default function DocumentTypePage() {
                     <button
                       onClick={(e) => {
                         setSelected(t);
-                        setDetailsVisible(true);
+                        setAffectationFormVisible(true);
                         e.stopPropagation();
                       }}
                       className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
                     >
-                      <Eye size={20} />
+                      <SplinePointer size={20} />
                     </button>
                     <button
                       onClick={(e) => {
@@ -385,12 +582,48 @@ export default function DocumentTypePage() {
         pieces={pieces}
       />
 
-      <DocumentTypeForm
+      {/* <DocumentTypeForm
         visible={formVisible}
         onHide={() => setFormVisible(false)}
         onSubmit={handleSubmit} // Cette fonction gère déjà la logique API
         initial={editing} // Contient les objets complets entitee_un, etc.
         title={editing ? "Modifier le Type" : "Nouveau Type"}
+      /> */}
+
+      {/* Formulaire de création/édition SIMPLE (Code et Nom uniquement) */}
+      {/* <DocumentTypeForm
+        visible={formVisible}
+        onHide={() => setFormVisible(false)}
+        onSubmit={handleSubmit}
+        initial={editing}
+        title={editing ? "Modifier l'identité" : "Nouveau Type"}
+        // AJOUTE CES DEUX PROPS POUR L'AFFICHAGE :
+        isFiltered={!!selectedTypeDoc}
+        currentStructureLabel={
+          optionsEntites.find((o) => o.value === selectedTypeDoc)?.label || ""
+        }
+      /> */}
+
+      {/* NOUVEAU Formulaire d'affectation (Ouvert par SplinePointer) */}
+      <DocumentTypeAffectationForm
+        visible={affectationFormVisible}
+        onHide={() => setAffectationFormVisible(false)}
+        onSubmit={handleAffectationSubmit}
+        initial={selected}
+        title={`Affectation : ${selected?.nom}`}
+      />
+
+      <DocumentTypeAffectAndForm
+        visible={formVisible}
+        onHide={() => setFormVisible(false)}
+        onSubmitSingle={handleSubmit} // Ta fonction existante
+        onSubmitMultiple={handleMultipleAffectation} // Celle qu'on a créée avant
+        types={types}
+        initial={editing}
+        isFiltered={!!selectedTypeDoc}
+        structureLabel={
+          optionsEntites.find((o) => o.value === selectedTypeDoc)?.label || ""
+        }
       />
     </Layout>
   );

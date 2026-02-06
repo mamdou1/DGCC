@@ -37,10 +37,10 @@ router.delete(
 );
 
 router.get(
-  "/:id/etagere",
+  "/:id/rayon",
   verifyToken,
   authorizePermission("salle", "read"),
-  ctrl.getAllEtagereBySalle,
+  ctrl.getAllRayonBySalle,
 );
 
 module.exports = router;

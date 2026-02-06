@@ -1,4 +1,4 @@
-const { Box, Document } = require("../models");
+const { Box, Document, Trave } = require("../models");
 
 // --- Méthodes de gestion de Box ---
 
@@ -19,7 +19,14 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   try {
-    const data = await Box.findAll();
+    const data = await Box.findAll({
+      include: [
+        {
+          model: Trave,
+          as: "trave", // Vérifie que cet alias correspond à celui dans Rayon.associate
+        },
+      ],
+    });
     res.json(data);
   } catch (error) {
     res.status(500).json({
@@ -129,6 +136,86 @@ exports.addDocumentToBox = async (req, res) => {
     });
   }
 };
+
+// exports.addDocumentToBox = async (req, res) => {
+//   try {
+//     const { boxId, documentId } = req.params;
+//     console.log(
+//       "➡️ Requête reçue pour ajouter document",
+//       documentId,
+//       "dans box",
+//       boxId,
+//     );
+
+//     const box = await Box.findByPk(boxId);
+//     console.log("📦 Box trouvé :", box ? box.toJSON() : "❌ introuvable");
+
+//     const doc = await Document.findByPk(documentId);
+//     console.log("📄 Document trouvé :", doc ? doc.toJSON() : "❌ introuvable");
+
+//     if (!box || !doc) {
+//       console.warn("⚠️ Box ou Document introuvable");
+//       return res.status(404).json({ message: "Box ou Document introuvable" });
+//     }
+
+//     // Vérification Capacité
+//     if (box.current_count >= box.capacite_max) {
+//       console.warn(
+//         "⚠️ Capacité maximale atteinte :",
+//         box.current_count,
+//         "/",
+//         box.capacite_max,
+//       );
+//       return res
+//         .status(400)
+//         .json({ message: "Capacité maximale atteinte pour ce box" });
+//     }
+
+//     // Vérification Type
+//     console.log(
+//       "🔍 Vérification type : box.type_document_id =",
+//       box.type_document_id,
+//       "doc.type_document_id =",
+//       doc.type_document_id,
+//     );
+//     if (box.type_document_id && box.type_document_id !== doc.type_document_id) {
+//       console.warn("⚠️ Type de document incompatible");
+//       return res
+//         .status(400)
+//         .json({ message: "Le type de document ne correspond pas à ce box" });
+//     }
+
+//     // Mise à jour
+//     if (!box.type_document_id) {
+//       console.log(
+//         "ℹ️ Affectation du type_document_id du box :",
+//         doc.type_document_id,
+//       );
+//       box.type_document_id = doc.type_document_id;
+//     }
+//     box.current_count += 1;
+//     doc.box_id = box.id;
+
+//     console.log(
+//       "💾 Sauvegarde des modifications : box.current_count =",
+//       box.current_count,
+//       "doc.box_id =",
+//       doc.box_id,
+//     );
+
+//     await box.save();
+//     await doc.save();
+
+//     console.log("✅ Document ajouté avec succès");
+//     res.json({ success: true, current_count: box.current_count });
+//   } catch (error) {
+//     console.error("❌ Erreur addDocumentToBox:", error);
+//     res.status(500).json({
+//       message: "Erreur lors de l'ajout du document",
+//       error: error.message,
+//     });
+//   }
+// };
 
 exports.retireDocumentToBox = async (req, res) => {
   try {

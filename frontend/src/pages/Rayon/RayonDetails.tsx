@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getBoxesByEtagere } from "../../api/etagere";
-import { Etagere, Box } from "../../interfaces";
+import { getTraveByRayon } from "../../api/rayon";
+import { Rayon, Box } from "../../interfaces";
 import {
   BoxIcon,
   MapPin,
@@ -11,31 +11,31 @@ import {
 } from "lucide-react";
 import { Dialog } from "primereact/dialog";
 
-interface EtagereDetailsProps {
+interface RayonDetailsProps {
   visible: boolean;
   onHide: () => void;
-  etagere: Etagere | null;
+  rayon: Rayon | null;
 }
 
-const EtagereDetails = ({ visible, onHide, etagere }: EtagereDetailsProps) => {
+const RayonDetails = ({ visible, onHide, rayon }: RayonDetailsProps) => {
   const [boxes, setBoxes] = useState<Box[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (visible && etagere?.id) {
+    if (visible && rayon?.id) {
       setLoading(true);
-      getBoxesByEtagere(etagere.id)
+      getTraveByRayon(rayon.id)
         .then(setBoxes)
         .finally(() => setLoading(false));
     }
-  }, [visible, etagere]);
+  }, [visible, rayon]);
 
   return (
     <Dialog
       header={
         <div className="flex items-center gap-3 text-slate-800">
           <Info className="text-blue-500" size={24} />
-          <span className="font-bold">Détails de l'Étagère</span>
+          <span className="font-bold">Détails du rayon</span>
         </div>
       }
       visible={visible}
@@ -44,18 +44,18 @@ const EtagereDetails = ({ visible, onHide, etagere }: EtagereDetailsProps) => {
       breakpoints={{ "960px": "75vw", "641px": "90vw" }}
       modal
     >
-      {etagere ? (
+      {rayon ? (
         <div className="space-y-6 pt-2">
           {/* Header Info Card */}
           <div className="bg-gradient-to-br from-green-600 to-emerald-700 text-white p-6 rounded-2xl shadow-md">
-            <h1 className="text-2xl font-black mb-2">{etagere.libelle}</h1>
+            <h1 className="text-2xl font-black mb-2">{rayon.code}</h1>
             <div className="flex flex-wrap gap-4 text-sm opacity-90">
               <div className="flex items-center gap-1">
-                <Hash size={16} /> <span>Code: {etagere.code_etagere}</span>
+                <Hash size={16} /> <span>Code: {rayon.code}</span>
               </div>
               <div className="flex items-center gap-1">
                 <MapPin size={16} />{" "}
-                <span>Salle: {etagere.salle?.libelle || "Non définie"}</span>
+                <span>Salle: {rayon.salle?.libelle || "Non définie"}</span>
               </div>
             </div>
           </div>
@@ -134,4 +134,4 @@ const EtagereDetails = ({ visible, onHide, etagere }: EtagereDetailsProps) => {
   );
 };
 
-export default EtagereDetails;
+export default RayonDetails;
