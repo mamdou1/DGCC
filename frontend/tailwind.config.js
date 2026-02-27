@@ -4,8 +4,6 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/primereact/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
-    extend: {},
-  },
+  theme: { extend: { colors: { dgcc: "#b34700" } } },
   plugins: [],
 };

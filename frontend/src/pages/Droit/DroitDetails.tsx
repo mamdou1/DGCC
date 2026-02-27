@@ -85,7 +85,7 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
   return (
     <Dialog
       header={
-        <div className="flex items-center gap-2 text-emerald-900">
+        <div className="flex items-center gap-2 text-orange-900">
           <ShieldCheck size={20} />
           <span>Détails de l'autorisation</span>
         </div>
@@ -105,11 +105,11 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
     >
       <div className="space-y-6 pt-2">
         {/* Header Libellé */}
-        <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-center justify-between">
-          <span className="text-emerald-700 font-semibold italic text-sm uppercase">
+        <div className="bg-orange-50 border border-orange-100 p-4 rounded-2xl flex items-center justify-between">
+          <span className="text-orange-700 font-semibold italic text-sm uppercase">
             Libellé
           </span>
-          <span className="text-2xl font-black text-emerald-900">
+          <span className="text-2xl font-black text-orange-900">
             {droit.libelle}
           </span>
         </div>
@@ -130,7 +130,7 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
                   flex items-center cursor-pointer select-none px-5 py-3 border-b-2 font-bold text-sm transition-all duration-300 rounded-t-xl
                   ${
                     context.active
-                      ? "border-emerald-600 text-emerald-600 bg-emerald-50/50"
+                      ? "border-orange-600 text-orange-600 bg-orange-50/50"
                       : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                   }
                 `,
@@ -154,7 +154,7 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
                   flex items-center cursor-pointer select-none px-5 py-3 border-b-2 font-bold text-sm transition-all duration-300 rounded-t-xl
                   ${
                     context.active
-                      ? "border-emerald-600 text-emerald-600 bg-emerald-50/50"
+                      ? "border-orange-600 text-orange-600 bg-orange-50/50"
                       : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                   }
                 `,

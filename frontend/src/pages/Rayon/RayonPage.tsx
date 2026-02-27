@@ -132,7 +132,7 @@ export default function RayonPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -161,7 +161,7 @@ export default function RayonPage() {
       {/* Header Section (inchangé) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
+          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
             <WavesLadder size={28} />
           </div>
           <div>
@@ -176,7 +176,7 @@ export default function RayonPage() {
         <Button
           label="Nouvelle étagère"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -188,7 +188,7 @@ export default function RayonPage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
         <div className="relative group max-w-md">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
             size={20}
           />
           <InputText
@@ -214,14 +214,14 @@ export default function RayonPage() {
             {paginated.map((e) => (
               <tr
                 key={e.id}
-                className="cursor-pointer hover:bg-emerald-50/30 transition-all group"
+                className="cursor-pointer hover:bg-orange-50/30 transition-all group"
                 onClick={() => {
                   setSelected(e);
                   setDetailsVisible(true);
                 }}
               >
                 <td className="px-6 py-4">
-                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg font-bold text-xs border border-emerald-100 flex items-center gap-1 w-fit">
+                  <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg font-bold text-xs border border-orange-100 flex items-center gap-1 w-fit">
                     <Hash size={12} /> {e.code}
                   </span>
                 </td>
@@ -247,7 +247,7 @@ export default function RayonPage() {
                         setEditing(e);
                         setFormVisible(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                     >
                       <Pencil size={18} />
                     </button>

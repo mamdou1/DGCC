@@ -21,6 +21,11 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
+  Building2,
+  Briefcase,
+  Split,
+  TableOfContents,
+  GitMerge,
 } from "lucide-react";
 
 // ✅ IMPORTER LES NOUVEAUX HOOKS
@@ -54,9 +59,12 @@ export default function DocumentTypeEntitee() {
   const {
     types = [],
     pieces = [],
-    entiteeUn = [],
-    entiteeDeux = [],
-    entiteeTrois = [],
+    // ✅ NOUVELLES ENTITÉS
+    directions = [],
+    sousDirections = [],
+    divisions = [],
+    sections = [],
+    services = [],
     optionsEntites = [],
     isLoading,
     error,
@@ -72,7 +80,7 @@ export default function DocumentTypeEntitee() {
   const updateMetaMutation = useUpdateMetaField();
   const multipleAffectationMutation = useMultipleAffectation();
 
-  // États UI (inchangés)
+  // États UI
   const [selected, setSelected] = useState<any>(null);
   const [editing, setEditing] = useState<any>(null);
   const [formVisible, setFormVisible] = useState(false);
@@ -90,9 +98,13 @@ export default function DocumentTypeEntitee() {
     null,
   );
 
-  // ✅ PLUS BESOIN DE LA FONCTION load() NI DE useEffect !
+  const [selectedAccordionEntity, setSelectedAccordionEntity] = useState<{
+    label: string;
+    value: string;
+    type: "direction" | "service" | "sousDirection" | "division" | "section";
+  } | null>(null);
 
-  // Fonctions utilitaires (inchangées)
+  // ✅ Fonction pour vérifier si l'utilisateur est admin
   const isUserAdmin = (user: User | null): boolean => {
     if (!user) return false;
     const droitLibelle =
@@ -107,6 +119,7 @@ export default function DocumentTypeEntitee() {
     );
   };
 
+  // ✅ Fonction pour vérifier l'accès à une entité
   const hasAccessToEntity = (typeDoc: TypeDocument): boolean => {
     if (isUserAdmin(user)) return true;
 
@@ -114,8 +127,14 @@ export default function DocumentTypeEntitee() {
       un: new Set<number>(),
       deux: new Set<number>(),
       trois: new Set<number>(),
+      direction: new Set<number>(),
+      service: new Set<number>(),
+      sousDirection: new Set<number>(),
+      division: new Set<number>(),
+      section: new Set<number>(),
     };
 
+    // Entités de la fonction
     if (user?.fonction_details?.entitee_un?.id) {
       userEntityIds.un.add(user.fonction_details.entitee_un.id);
     }
@@ -126,14 +145,72 @@ export default function DocumentTypeEntitee() {
       userEntityIds.trois.add(user.fonction_details.entitee_trois.id);
     }
 
+    // NOUVELLES ENTITÉS
+    if (user?.fonction_details?.direction?.id) {
+      userEntityIds.direction.add(user.fonction_details.direction.id);
+    }
+    if (user?.fonction_details?.service?.id) {
+      userEntityIds.service.add(user.fonction_details.service.id);
+    }
+    if (user?.fonction_details?.sousDirection?.id) {
+      userEntityIds.sousDirection.add(user.fonction_details.sousDirection.id);
+    }
+    if (user?.fonction_details?.division?.id) {
+      userEntityIds.division.add(user.fonction_details.division.id);
+    }
+    if (user?.fonction_details?.section?.id) {
+      userEntityIds.section.add(user.fonction_details.section.id);
+    }
+
+    // Entités des agent_access
     user?.agent_access?.forEach((access) => {
       if (access.entitee_un?.id) userEntityIds.un.add(access.entitee_un.id);
       if (access.entitee_deux?.id)
         userEntityIds.deux.add(access.entitee_deux.id);
       if (access.entitee_trois?.id)
         userEntityIds.trois.add(access.entitee_trois.id);
+
+      // NOUVELLES ENTITÉS
+      if (access.direction?.id)
+        userEntityIds.direction.add(access.direction.id);
+      if (access.service?.id) userEntityIds.service.add(access.service.id);
+      if (access.sousDirection?.id)
+        userEntityIds.sousDirection.add(access.sousDirection.id);
+      if (access.division?.id) userEntityIds.division.add(access.division.id);
+      if (access.section?.id) userEntityIds.section.add(access.section.id);
     });
 
+    // Vérification par niveau
+    if (typeDoc.section_id) {
+      return userEntityIds.section.has(typeDoc.section_id);
+    }
+    if (typeDoc.division_id && !typeDoc.section_id) {
+      return userEntityIds.division.has(typeDoc.division_id);
+    }
+    if (
+      typeDoc.sous_direction_id &&
+      !typeDoc.division_id &&
+      !typeDoc.section_id
+    ) {
+      return userEntityIds.sousDirection.has(typeDoc.sous_direction_id);
+    }
+    if (
+      typeDoc.service_id &&
+      !typeDoc.sous_direction_id &&
+      !typeDoc.division_id &&
+      !typeDoc.section_id
+    ) {
+      return userEntityIds.service.has(typeDoc.service_id);
+    }
+    if (
+      typeDoc.direction_id &&
+      !typeDoc.service_id &&
+      !typeDoc.sous_direction_id &&
+      !typeDoc.division_id &&
+      !typeDoc.section_id
+    ) {
+      return userEntityIds.direction.has(typeDoc.direction_id);
+    }
     if (typeDoc.entitee_trois_id) {
       return userEntityIds.trois.has(typeDoc.entitee_trois_id);
     }
@@ -150,80 +227,90 @@ export default function DocumentTypeEntitee() {
     return false;
   };
 
-  const hasAccessToStructure = (structureName: string): boolean => {
-    const isAdmin = isUserAdmin(user);
-    if (isAdmin) return true;
-    if (structureName === "Type de documents non assignés") return false;
-
-    const userEntityIds = {
-      un: new Set<number>(),
-      deux: new Set<number>(),
-      trois: new Set<number>(),
-    };
-
-    if (user?.fonction_details?.entitee_un?.id) {
-      userEntityIds.un.add(user.fonction_details.entitee_un.id);
-    }
-
-    user?.agent_access?.forEach((access) => {
-      if (access.entitee_un?.id) userEntityIds.un.add(access.entitee_un.id);
-      if (access.entitee_deux?.id)
-        userEntityIds.deux.add(access.entitee_deux.id);
-      if (access.entitee_trois?.id)
-        userEntityIds.trois.add(access.entitee_trois.id);
-    });
-
-    const foundInOptions = optionsEntites.find((opt) =>
-      opt.label?.includes(structureName),
-    );
-
-    if (foundInOptions) {
-      const value = foundInOptions.value;
-      if (!value?.toString().includes("-")) {
-        return userEntityIds.un.has(Number(value));
-      } else {
-        const [prefix, id] = value.split("-");
-        const numId = Number(id);
-        if (prefix === "E2") return userEntityIds.deux.has(numId);
-        if (prefix === "E3") return userEntityIds.trois.has(numId);
-      }
-    }
-    return false;
-  };
-
+  // ✅ Fonction pour grouper les types par entité
   const getGroupedData = () => {
+    // Si les types ne sont pas encore chargés, retourner un objet vide
+    if (!types || types.length === 0) {
+      return {};
+    }
+
     const accessibleTypes = types.filter((t) => hasAccessToEntity(t));
+
+    console.log(
+      "🔍 Types accessibles:",
+      accessibleTypes.map((t) => ({
+        id: t.id,
+        nom: t.nom,
+        direction: t.direction?.libelle || t.direction_id,
+        service: t.service?.libelle || t.service_id,
+        // ... etc
+      })),
+    );
 
     const filtered = accessibleTypes.filter((t) => {
       const search = query.toLowerCase();
       const matchesSearch =
-        t.code.toLowerCase().includes(search) ||
-        t.nom.toLowerCase().includes(search);
+        (t.code?.toLowerCase() || "").includes(search) ||
+        (t.nom?.toLowerCase() || "").includes(search);
 
       if (!selectedTypeDoc) return matchesSearch;
 
-      const e1Id = String(t.entitee_un_id || (t.entitee_un as any)?.id);
-      const e2Id = `E2-${t.entitee_deux_id || (t.entitee_deux as any)?.id}`;
-      const e3Id = `E3-${t.entitee_trois_id || (t.entitee_trois as any)?.id}`;
-
       return (
         matchesSearch &&
-        (selectedTypeDoc === e1Id ||
-          selectedTypeDoc === e2Id ||
-          selectedTypeDoc === e3Id)
+        (selectedTypeDoc === `DIR-${t.direction_id}` ||
+          selectedTypeDoc === `SERV-${t.service_id}` ||
+          selectedTypeDoc === `SD-${t.sous_direction_id}` ||
+          selectedTypeDoc === `DIV-${t.division_id}` ||
+          selectedTypeDoc === `SEC-${t.section_id}` ||
+          selectedTypeDoc === `E1-${t.entitee_un_id}` ||
+          selectedTypeDoc === `E2-${t.entitee_deux_id}` ||
+          selectedTypeDoc === `E3-${t.entitee_trois_id}`)
       );
     });
 
     const groups: Record<string, TypeDocument[]> = {};
 
     filtered.forEach((t) => {
-      const structureLabel =
-        t.entitee_trois?.libelle ||
-        t.entitee_deux?.libelle ||
-        t.entitee_un?.libelle ||
-        "Type de documents non assignés";
+      // Construire le libellé en fonction de l'entité attachée
+      let structureLabel = "📄 Documents non assignés";
 
-      if (!hasAccessToStructure(structureLabel)) return;
+      // Chercher dans les directions
+      if (t.direction_id) {
+        const direction = directions.find((d) => d.id === t.direction_id);
+        if (direction) {
+          structureLabel = `🏢 Direction : ${direction.libelle}`;
+        }
+      }
+      // Chercher dans les services
+      else if (t.service_id) {
+        const service = services.find((s) => s.id === t.service_id);
+        if (service) {
+          structureLabel = `🛠️ Service : ${service.libelle}`;
+        }
+      }
+      // Chercher dans les sous-directions
+      else if (t.sous_direction_id) {
+        const sousDirection = sousDirections.find(
+          (sd) => sd.id === t.sous_direction_id,
+        );
+        if (sousDirection) {
+          structureLabel = `📁 Sous-direction : ${sousDirection.libelle}`;
+        }
+      }
+      // Chercher dans les divisions
+      else if (t.division_id) {
+        const division = divisions.find((d) => d.id === t.division_id);
+        if (division) {
+          structureLabel = `📂 Division : ${division.libelle}`;
+        }
+      }
+      // Chercher dans les sections
+      else if (t.section_id) {
+        const section = sections.find((s) => s.id === t.section_id);
+        if (section) {
+          structureLabel = `📌 Section : ${section.libelle}`;
+        }
+      }
 
       if (!groups[structureLabel]) groups[structureLabel] = [];
       groups[structureLabel].push(t);
@@ -231,6 +318,42 @@ export default function DocumentTypeEntitee() {
 
     return groups;
   };
+
+  // ✅ Fonction pour obtenir le libellé d'un groupe
+  const getGroupLabel = (groupKey: string, group: TypeDocument[]): string => {
+    if (groupKey === "non_assignes") return "📄 Documents non assignés";
+
+    const first = group[0];
+
+    if (groupKey.startsWith("section_")) {
+      return `📁 Section : ${first.section?.libelle || "Inconnue"}`;
+    }
+    if (groupKey.startsWith("division_")) {
+      return `📂 Division : ${first.division?.libelle || "Inconnue"}`;
+    }
+    if (groupKey.startsWith("sousDirection_")) {
+      return `📁 Sous-direction : ${first.sousDirection?.libelle || "Inconnue"}`;
+    }
+    if (groupKey.startsWith("service_")) {
+      return `🛠️ Service : ${first.service?.libelle || "Inconnu"}`;
+    }
+    if (groupKey.startsWith("direction_")) {
+      return `🏢 Direction : ${first.direction?.libelle || "Inconnue"}`;
+    }
+    if (groupKey.startsWith("entiteeTrois_")) {
+      return `📌 ${first.entitee_trois?.titre || "Entité"} : ${first.entitee_trois?.libelle || "Inconnue"}`;
+    }
+    if (groupKey.startsWith("entiteeDeux_")) {
+      return `📌 ${first.entitee_deux?.titre || "Entité"} : ${first.entitee_deux?.libelle || "Inconnue"}`;
+    }
+    if (groupKey.startsWith("entiteeUn_")) {
+      return `📌 ${first.entitee_un?.titre || "Entité"} : ${first.entitee_un?.libelle || "Inconnue"}`;
+    }
+
+    return groupKey;
+  };
+
+  const groupedTypes = getGroupedData();
 
   const filteredOptions = useMemo(() => {
     const isAdmin = isUserAdmin(user);
@@ -249,15 +372,38 @@ export default function DocumentTypeEntitee() {
       accessibleEntityIds.add(`E3-${user.fonction_details.entitee_trois.id}`);
     }
 
+    // NOUVELLES ENTITÉS
+    if (user?.fonction_details?.direction?.id) {
+      accessibleEntityIds.add(`DIR-${user.fonction_details.direction.id}`);
+    }
+    if (user?.fonction_details?.service?.id) {
+      accessibleEntityIds.add(`SERV-${user.fonction_details.service.id}`);
+    }
+    if (user?.fonction_details?.sousDirection?.id) {
+      accessibleEntityIds.add(`SD-${user.fonction_details.sousDirection.id}`);
+    }
+    if (user?.fonction_details?.division?.id) {
+      accessibleEntityIds.add(`DIV-${user.fonction_details.division.id}`);
+    }
+    if (user?.fonction_details?.section?.id) {
+      accessibleEntityIds.add(`SEC-${user.fonction_details.section.id}`);
+    }
+
     user?.agent_access?.forEach((access) => {
-      if (access.entitee_un?.id) {
-        accessibleEntityIds.add(String(access.entitee_un.id));
+      if (access.direction?.id) {
+        accessibleEntityIds.add(`DIR-${access.direction.id}`);
       }
-      if (access.entitee_deux?.id) {
-        accessibleEntityIds.add(`E2-${access.entitee_deux.id}`);
+      if (access.service?.id) {
+        accessibleEntityIds.add(`SERV-${access.service.id}`);
       }
-      if (access.entitee_trois?.id) {
-        accessibleEntityIds.add(`E3-${access.entitee_trois.id}`);
+      if (access.sousDirection?.id) {
+        accessibleEntityIds.add(`SD-${access.sousDirection.id}`);
+      }
+      if (access.division?.id) {
+        accessibleEntityIds.add(`DIV-${access.division.id}`);
+      }
+      if (access.section?.id) {
+        accessibleEntityIds.add(`SEC-${access.section.id}`);
       }
     });
 
@@ -266,9 +412,58 @@ export default function DocumentTypeEntitee() {
     );
   }, [optionsEntites, user]);
 
-  const groupedTypes = getGroupedData();
+  // ✅ Handlers
+  const handleStructureClick = (groupKey: string) => {
+    setExpandedStructure(expandedStructure === groupKey ? null : groupKey);
 
-  // ✅ ÉTAPE 3: Remplacer handleSubmit
+    // Trouver la première entité du groupe pour récupérer ses infos
+    const groupDocs = groupedTypes[groupKey];
+    if (groupDocs && groupDocs.length > 0) {
+      const firstDoc = groupDocs[0];
+
+      // Déterminer le type d'entité et sa valeur
+      if (firstDoc.direction_id) {
+        setSelectedAccordionEntity({
+          label: groupKey,
+          value: `DIR-${firstDoc.direction_id}`,
+          type: "direction",
+        });
+        setSelectedTypeDoc(`DIR-${firstDoc.direction_id}`);
+      } else if (firstDoc.service_id) {
+        setSelectedAccordionEntity({
+          label: groupKey,
+          value: `SERV-${firstDoc.service_id}`,
+          type: "service",
+        });
+        setSelectedTypeDoc(`SERV-${firstDoc.service_id}`);
+      } else if (firstDoc.sous_direction_id) {
+        setSelectedAccordionEntity({
+          label: groupKey,
+          value: `SD-${firstDoc.sous_direction_id}`,
+          type: "sousDirection",
+        });
+        setSelectedTypeDoc(`SD-${firstDoc.sous_direction_id}`);
+      } else if (firstDoc.division_id) {
+        setSelectedAccordionEntity({
+          label: groupKey,
+          value: `DIV-${firstDoc.division_id}`,
+          type: "division",
+        });
+        setSelectedTypeDoc(`DIV-${firstDoc.division_id}`);
+      } else if (firstDoc.section_id) {
+        setSelectedAccordionEntity({
+          label: groupKey,
+          value: `SEC-${firstDoc.section_id}`,
+          type: "section",
+        });
+        setSelectedTypeDoc(`SEC-${firstDoc.section_id}`);
+      } else {
+        setSelectedAccordionEntity(null);
+        setSelectedTypeDoc(null);
+      }
+    }
+  };
+
   const handleSubmit = async (formData: { code: string; nom: string }) => {
     try {
       if (editing?.id) {
@@ -281,32 +476,29 @@ export default function DocumentTypeEntitee() {
         let payload: any = { ...formData };
 
         if (selectedTypeDoc) {
-          const cleanId = Number(
-            selectedTypeDoc.replace("E2-", "").replace("E3-", ""),
-          );
-
-          const n1 = entiteeUn.find(
-            (x) => x.id === cleanId && !selectedTypeDoc.includes("E"),
-          );
-          const n2 = entiteeDeux.find(
-            (x) => x.id === cleanId && selectedTypeDoc.includes("E2"),
-          );
-          const n3 = entiteeTrois.find(
-            (x) => x.id === cleanId && selectedTypeDoc.includes("E3"),
-          );
-
-          if (n1) {
-            payload.entitee_un_id = n1.id;
-          } else if (n2) {
-            payload.entitee_un_id = n2.entitee_un_id;
-            payload.entitee_deux_id = n2.id;
-          } else if (n3) {
-            const parentN2 = entiteeDeux.find(
-              (x) => x.id === n3.entitee_deux_id,
+          // Traiter selon le préfixe
+          if (selectedTypeDoc.startsWith("DIR-")) {
+            payload.direction_id = Number(selectedTypeDoc.replace("DIR-", ""));
+          } else if (selectedTypeDoc.startsWith("SERV-")) {
+            payload.service_id = Number(selectedTypeDoc.replace("SERV-", ""));
+          } else if (selectedTypeDoc.startsWith("SD-")) {
+            payload.sous_direction_id = Number(
+              selectedTypeDoc.replace("SD-", ""),
             );
-            payload.entitee_un_id = parentN2?.entitee_un_id;
-            payload.entitee_deux_id = n3.entitee_deux_id;
-            payload.entitee_trois_id = n3.id;
+          } else if (selectedTypeDoc.startsWith("DIV-")) {
+            payload.division_id = Number(selectedTypeDoc.replace("DIV-", ""));
+          } else if (selectedTypeDoc.startsWith("SEC-")) {
+            payload.section_id = Number(selectedTypeDoc.replace("SEC-", ""));
+          } else if (selectedTypeDoc.startsWith("E1-")) {
+            payload.entitee_un_id = Number(selectedTypeDoc.replace("E1-", ""));
+          } else if (selectedTypeDoc.startsWith("E2-")) {
+            payload.entitee_deux_id = Number(
+              selectedTypeDoc.replace("E2-", ""),
+            );
+          } else if (selectedTypeDoc.startsWith("E3-")) {
+            payload.entitee_trois_id = Number(
+              selectedTypeDoc.replace("E3-", ""),
+            );
           }
         }
 
@@ -314,20 +506,15 @@ export default function DocumentTypeEntitee() {
         toast.current?.show({
           severity: "success",
           summary: "Créé avec succès",
-          detail: payload.entitee_un_id
-            ? "Affectation automatique réussie"
-            : "Document générique créé",
         });
       }
 
-      // ✅ PLUS BESOIN DE load() ! TanStack Query recharge automatiquement
       setFormVisible(false);
     } catch (error) {
       toast.current?.show({ severity: "error", summary: "Erreur" });
     }
   };
 
-  // ✅ ÉTAPE 4: Remplacer handleDelete
   const handleDelete = (id: string) => {
     confirmDialog({
       message:
@@ -342,13 +529,11 @@ export default function DocumentTypeEntitee() {
       style: { width: "450px" },
       accept: async () => {
         await deleteMutation.mutateAsync(id);
-        // ✅ PLUS BESOIN de setTypes manuel !
         toast.current?.show({ severity: "success", summary: "Supprimé" });
       },
     });
   };
 
-  // ✅ ÉTAPE 5: Remplacer handleMetaSubmit
   const handleMetaSubmit = async (fieldsPayload: any[]) => {
     if (!selected?.id) return;
     try {
@@ -366,13 +551,11 @@ export default function DocumentTypeEntitee() {
         severity: "success",
         summary: "Métadonnées à jour",
       });
-      // ✅ RECHARGE AUTOMATIQUE !
     } catch (error) {
       toast.current?.show({ severity: "error", summary: "Erreur" });
     }
   };
 
-  // ✅ ÉTAPE 6: Remplacer onAddPieces
   const onAddPieces = async (
     typeId: string,
     payload: AddPiecesToTypeDocumentPayload,
@@ -386,7 +569,6 @@ export default function DocumentTypeEntitee() {
     }
   };
 
-  // ✅ ÉTAPE 7: Remplacer handleAffectationSubmit
   const handleAffectationSubmit = async (payload: any) => {
     try {
       if (selected?.id) {
@@ -405,37 +587,38 @@ export default function DocumentTypeEntitee() {
     }
   };
 
-  // ✅ ÉTAPE 8: Remplacer handleMultipleAffectation
   const handleMultipleAffectation = async (typeIds: string[]) => {
     try {
       if (!selectedTypeDoc) return;
 
-      let structureData: any = {
-        entitee_un_id: null,
-        entitee_deux_id: null,
-        entitee_trois_id: null,
-      };
+      let structureData: any = {};
 
-      const [prefix, rawId] = selectedTypeDoc.split("-");
-      const targetId = Number(rawId);
-
-      if (prefix === "E1") {
-        const n1 = entiteeUn.find((x) => x.id === targetId);
-        if (n1) structureData.entitee_un_id = n1.id;
-      } else if (prefix === "E2") {
-        const n2 = entiteeDeux.find((x) => x.id === targetId);
-        if (n2) {
-          structureData.entitee_un_id = n2.entitee_un_id;
-          structureData.entitee_deux_id = n2.id;
-        }
-      } else if (prefix === "E3") {
-        const n3 = entiteeTrois.find((x) => x.id === targetId);
-        if (n3) {
-          const parentN2 = entiteeDeux.find((x) => x.id === n3.entitee_deux_id);
-          structureData.entitee_un_id = parentN2?.entitee_un_id;
-          structureData.entitee_deux_id = n3.entitee_deux_id;
-          structureData.entitee_trois_id = n3.id;
-        }
+      if (selectedTypeDoc.startsWith("DIR-")) {
+        structureData.direction_id = Number(
+          selectedTypeDoc.replace("DIR-", ""),
+        );
+      } else if (selectedTypeDoc.startsWith("SERV-")) {
+        structureData.service_id = Number(selectedTypeDoc.replace("SERV-", ""));
+      } else if (selectedTypeDoc.startsWith("SD-")) {
+        structureData.sous_direction_id = Number(
+          selectedTypeDoc.replace("SD-", ""),
+        );
+      } else if (selectedTypeDoc.startsWith("DIV-")) {
+        structureData.division_id = Number(selectedTypeDoc.replace("DIV-", ""));
+      } else if (selectedTypeDoc.startsWith("SEC-")) {
+        structureData.section_id = Number(selectedTypeDoc.replace("SEC-", ""));
+      } else if (selectedTypeDoc.startsWith("E1-")) {
+        structureData.entitee_un_id = Number(
+          selectedTypeDoc.replace("E1-", ""),
+        );
+      } else if (selectedTypeDoc.startsWith("E2-")) {
+        structureData.entitee_deux_id = Number(
+          selectedTypeDoc.replace("E2-", ""),
+        );
+      } else if (selectedTypeDoc.startsWith("E3-")) {
+        structureData.entitee_trois_id = Number(
+          selectedTypeDoc.replace("E3-", ""),
+        );
       }
 
       await multipleAffectationMutation.mutateAsync({ typeIds, structureData });
@@ -449,37 +632,12 @@ export default function DocumentTypeEntitee() {
     }
   };
 
-  const handleStructureClick = (structureName: string) => {
-    setExpandedStructure(
-      expandedStructure === structureName ? null : structureName,
-    );
-
-    if (structureName !== "Type de documents non assignés") {
-      const foundOption = filteredOptions.find(
-        (opt) =>
-          opt.label?.includes(structureName) ||
-          opt.label?.includes(`🏢 ${structureName}`) ||
-          opt.label?.includes(`📂 ${structureName}`) ||
-          opt.label?.includes(`📄 ${structureName}`),
-      );
-
-      // ✅ Vérifier que foundOption existe ET que value n'est pas null
-      if (foundOption && foundOption.value !== null) {
-        setSelectedAccordionStructure({
-          label: foundOption.label,
-          value: foundOption.value, // ✅ Maintenant value est string
-        });
-        setSelectedTypeDoc(foundOption.value);
-      }
-    }
-  };
-
-  // ✅ ÉTAPE 9: Gérer les états de chargement/erreur
+  // ✅ États de chargement/erreur
   if (isLoading) {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -505,11 +663,11 @@ export default function DocumentTypeEntitee() {
     <Layout>
       <Toast ref={toast} />
 
-      {/* Header (inchangé) */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <div>
           <h1 className="text-3xl font-black text-slate-800 flex items-center gap-3">
-            <div className="p-3 bg-emerald-600 text-white rounded-2xl shadow-lg">
+            <div className="p-3 bg-orange-800 text-white rounded-2xl shadow-lg">
               <Layers size={24} />
             </div>
             Types par Structure
@@ -521,12 +679,13 @@ export default function DocumentTypeEntitee() {
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
+            // selectedTypeDoc est déjà conservé avec la valeur de l'entité cliquée
           }}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-md font-bold"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-md font-bold"
         />
       </div>
 
-      {/* Barre de recherche et filtre (inchangé) */}
+      {/* Barre de recherche et filtre */}
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-wrap gap-4">
         <div className="flex-1 min-w-[300px] relative">
           <Search
@@ -540,236 +699,211 @@ export default function DocumentTypeEntitee() {
             value={query}
           />
         </div>
-        <Dropdown
-          value={selectedTypeDoc}
-          onChange={(e) => setSelectedTypeDoc(e.value)}
-          options={filteredOptions}
-          placeholder="Filtrer par structure"
-          className="w-64 bg-slate-50 border-slate-200 rounded-xl"
-          showClear
-          filter
-        />
+
+        <div>
+          <Dropdown
+            value={selectedTypeDoc}
+            onChange={(e) => {
+              setSelectedTypeDoc(e.value);
+              // Mettre à jour selectedAccordionEntity quand on change via le dropdown
+              if (e.value) {
+                const option = filteredOptions.find(
+                  (opt) => opt.value === e.value,
+                );
+                if (option) {
+                  setSelectedAccordionEntity({
+                    label: option.label,
+                    value: e.value,
+                    type: e.value.split("-")[0] as any,
+                  });
+                }
+              } else {
+                setSelectedAccordionEntity(null);
+              }
+            }}
+            options={filteredOptions}
+            placeholder="Filtrer par structure"
+            className="w-64 bg-slate-50 border-slate-200 rounded-xl"
+            showClear
+            filter
+          />
+        </div>
       </div>
 
-      {/* Liste des types (inchangée) */}
+      {/* Liste des types groupés par entité */}
       <div className="space-y-4">
-        {Object.entries(groupedTypes).length > 0 ? (
-          Object.entries(groupedTypes)
-            .filter(([structureName]) => {
-              if (isUserAdmin(user)) return true;
-              return hasAccessToStructure(structureName);
-            })
-            .map(([structureName, docs]) => (
-              <div
-                key={structureName}
-                className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
-                  selectedAccordionStructure?.label?.includes(structureName)
-                    ? "border-emerald-500 ring-2 ring-emerald-200"
-                    : "border-slate-100"
-                }`}
+        {Object.entries(groupedTypes).map(([groupKey, docs]) => {
+          // groupKey est déjà le libellé complet (ex: "🏢 Direction : DIRECTION GENERAL")
+
+          // Déterminer l'icône en fonction du libellé
+          let Icon = Database; // par défaut
+          if (groupKey.includes("Direction")) Icon = Building2;
+          else if (groupKey.includes("Service")) Icon = Briefcase;
+          else if (groupKey.includes("Sous-direction")) Icon = Split;
+          else if (groupKey.includes("Division")) Icon = TableOfContents;
+          else if (groupKey.includes("Section")) Icon = GitMerge;
+
+          return (
+            <div
+              key={groupKey}
+              className="bg-white border rounded-2xl overflow-hidden shadow-sm"
+            >
+              <button
+                onClick={() => handleStructureClick(groupKey)}
+                className="w-full flex items-center justify-between p-5 transition-all hover:bg-slate-50"
               >
-                <button
-                  onClick={() => handleStructureClick(structureName)}
-                  className={`w-full flex items-center justify-between p-5 transition-all ${
-                    expandedStructure === structureName
-                      ? "bg-emerald-50/50"
-                      : "hover:bg-slate-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`p-2 rounded-lg ${
-                        expandedStructure === structureName
-                          ? "bg-emerald-500 text-white"
-                          : selectedAccordionStructure?.label.includes(
-                                structureName,
-                              )
-                            ? "bg-emerald-100 text-emerald-600"
-                            : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      <Database size={20} />
-                    </div>
-                    <div className="text-left">
-                      <div className="flex items-center gap-2">
-                        <h3
-                          className={`font-bold ${
-                            expandedStructure === structureName
-                              ? "text-emerald-800"
-                              : selectedAccordionStructure?.label.includes(
-                                    structureName,
-                                  )
-                                ? "text-emerald-700"
-                                : "text-slate-700"
-                          }`}
-                        >
-                          {structureName}
-                        </h3>
-                        {selectedAccordionStructure?.label.includes(
-                          structureName,
-                        ) && (
-                          <span className="inline-flex items-center px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full">
-                            Structure active
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-500 font-medium">
-                        {docs.length} document(s)
-                      </p>
-                    </div>
+                <div className="flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-orange-100 text-orange-600">
+                    <Icon size={20} />
                   </div>
-                  {expandedStructure === structureName ? (
-                    <ChevronDown size={20} className="text-slate-400" />
-                  ) : (
-                    <ChevronRight size={20} className="text-slate-400" />
-                  )}
-                </button>
-
-                {expandedStructure === structureName && (
-                  <div className="border-t border-slate-50 overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-slate-50/50">
-                        <tr>
-                          <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
-                            Code
-                          </th>
-                          <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
-                            Libellé
-                          </th>
-                          <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-50">
-                        {docs.map((t) => (
-                          <tr
-                            key={t.id}
-                            onClick={() => {
-                              setSelected(t);
-                              setDetailsVisible(true);
-                            }}
-                            className="cursor-pointer hover:bg-slate-100/80 transition-colors"
-                          >
-                            <td className="p-4">
-                              <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs font-bold">
-                                {t.code}
-                              </span>
-                            </td>
-                            <td className="p-4">
-                              <div className="font-semibold text-slate-800 text-sm flex items-center gap-2">
-                                <FileText
-                                  size={25}
-                                  className="text-emerald-500"
-                                />
-                                {t.nom}
-                              </div>
-                            </td>
-                            <td className="p-4">
-                              <div className="flex justify-center gap-1">
-                                <button
-                                  onClick={(e) => {
-                                    setSelected(t);
-                                    setFormPiecesVisible(true);
-                                    e.stopPropagation();
-                                  }}
-                                  className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg "
-                                >
-                                  <FilePlus size={25} />
-                                </button>
-                                {structureName ===
-                                  "Type de documents non assignés" && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelected(t);
-                                      if (selectedAccordionStructure) {
-                                        setSelectedTypeDoc(
-                                          selectedAccordionStructure.value,
-                                        );
-                                        setAffectationFormVisible(true);
-                                      } else {
-                                        setAffectationFormVisible(true);
-                                      }
-                                    }}
-                                    className={`p-2 rounded-lg ${
-                                      selectedAccordionStructure
-                                        ? "text-blue-600 bg-blue-50 hover:bg-blue-100"
-                                        : "text-blue-500 hover:bg-blue-50"
-                                    }`}
-                                    title={
-                                      selectedAccordionStructure
-                                        ? `Affecter à ${selectedAccordionStructure.label}`
-                                        : "Affecter à une structure"
-                                    }
-                                  >
-                                    <SplinePointer size={25} />
-                                  </button>
-                                )}
-
-                                <button
-                                  onClick={(e) => {
-                                    setEditing(t);
-                                    setFormVisible(true);
-                                    e.stopPropagation();
-                                  }}
-                                  className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg"
-                                >
-                                  <Pencil size={25} />
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    setSelected(t);
-                                    setMetaVisible(true);
-                                    e.stopPropagation();
-                                  }}
-                                  className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg"
-                                >
-                                  <Settings size={25} />
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDelete(String(t.id));
-                                  }}
-                                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                                >
-                                  <Trash2 size={25} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="text-left">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-slate-700">{groupKey}</h3>
+                      {/* 👇 BADGE À PLACER ICI, À CÔTÉ DU TITRE */}
+                      {selectedAccordionEntity?.label === groupKey && (
+                        <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
+                          Structure active
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      {docs.length} document(s)
+                    </p>
                   </div>
+                </div>
+                {expandedStructure === groupKey ? (
+                  <ChevronDown size={20} className="text-slate-400" />
+                ) : (
+                  <ChevronRight size={20} className="text-slate-400" />
                 )}
-              </div>
-            ))
-        ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100">
-            <div className="inline-flex p-4 bg-slate-50 rounded-full text-slate-300 mb-4">
-              <Search size={40} />
+              </button>
+
+              {expandedStructure === groupKey && (
+                <div className="border-t border-slate-50 overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-slate-50/50">
+                      <tr>
+                        <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
+                          Code
+                        </th>
+                        <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
+                          Libellé
+                        </th>
+                        <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {docs.map((t) => (
+                        <tr
+                          key={t.id}
+                          onClick={() => {
+                            setSelected(t);
+                            setDetailsVisible(true);
+                          }}
+                          className="cursor-pointer hover:bg-orange-50/30 transition-colors"
+                        >
+                          <td className="p-4">
+                            <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs font-bold">
+                              {t.code}
+                            </span>
+                          </td>
+                          <td className="p-4">
+                            <div className="font-semibold text-slate-800 text-sm flex items-center gap-2">
+                              <FileText size={25} className="text-orange-500" />
+                              {t.nom}
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            <div className="flex justify-center gap-1">
+                              <button
+                                onClick={(e) => {
+                                  setSelected(t);
+                                  setFormPiecesVisible(true);
+                                  e.stopPropagation();
+                                }}
+                                className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg"
+                                title="Ajouter des pièces"
+                              >
+                                <FilePlus size={25} />
+                              </button>
+
+                              {groupKey.includes("non assignés") && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelected(t);
+                                    setAffectationFormVisible(true);
+                                  }}
+                                  className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg"
+                                  title="Affecter à une structure"
+                                >
+                                  <SplinePointer size={25} />
+                                </button>
+                              )}
+
+                              <button
+                                onClick={(e) => {
+                                  setEditing(t);
+                                  setFormVisible(true);
+                                  e.stopPropagation();
+                                }}
+                                className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+                                title="Modifier"
+                              >
+                                <Pencil size={25} />
+                              </button>
+
+                              <button
+                                onClick={(e) => {
+                                  setSelected(t);
+                                  setMetaVisible(true);
+                                  e.stopPropagation();
+                                }}
+                                className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg"
+                                title="Métadonnées"
+                              >
+                                <Settings size={25} />
+                              </button>
+
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(String(t.id));
+                                }}
+                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                title="Supprimer"
+                              >
+                                <Trash2 size={25} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-            <p className="text-slate-400 font-medium">
-              Aucun document trouvé pour cette sélection.
-            </p>
-          </div>
-        )}
+          );
+        })}
       </div>
 
-      {/* Modals (inchangés) */}
+      {/* Modals */}
       <DocumentTypeDetails
         visible={detailsVisible}
         onHide={() => setDetailsVisible(false)}
         type={selected}
       />
+
       <DocumentTypeMetaForm
         visible={metaVisible}
         onHide={() => setMetaVisible(false)}
         onSubmit={handleMetaSubmit}
         type={selected}
       />
+
       <TypeDocumentAjoutPieces
         visible={formPiecesVisible}
         onHide={() => setFormPiecesVisible(false)}
@@ -778,6 +912,7 @@ export default function DocumentTypeEntitee() {
         title={"Pièces à fournir"}
         pieces={pieces}
       />
+
       <DocumentTypeAffectationForm
         visible={affectationFormVisible}
         onHide={() => setAffectationFormVisible(false)}
@@ -796,12 +931,8 @@ export default function DocumentTypeEntitee() {
         onSubmitMultiple={handleMultipleAffectation}
         types={types}
         initial={editing}
-        isFiltered={!!selectedAccordionStructure || !!selectedTypeDoc}
-        structureLabel={
-          selectedAccordionStructure?.label ||
-          filteredOptions.find((o) => o.value === selectedTypeDoc)?.label ||
-          ""
-        }
+        isFiltered={!!selectedTypeDoc}
+        structureLabel=""
       />
     </Layout>
   );

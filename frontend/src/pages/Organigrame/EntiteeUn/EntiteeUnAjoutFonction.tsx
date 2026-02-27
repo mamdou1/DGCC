@@ -107,7 +107,7 @@ export default function EntiteeUnAjoutFonction({
       >
         <div className="pt-4 space-y-5">
           <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-            <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">
+            <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1">
               {entiteeUn?.titre || "Entité"} sélectionné(e)
             </p>
             <p className="text-indigo-900 font-bold">
@@ -117,7 +117,7 @@ export default function EntiteeUnAjoutFonction({
 
           <div>
             <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-              <BookmarkPlus size={16} className="text-emerald-500" /> Nom de la
+              <BookmarkPlus size={16} className="text-orange-500" /> Nom de la
               fonction
             </label>
             <InputText
@@ -141,7 +141,7 @@ export default function EntiteeUnAjoutFonction({
               icon={!loading && <Save size={18} className="mr-2" />}
               onClick={handleSubmit}
               disabled={!libelle || loading}
-              className="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-emerald-700 transition-all"
+              className="bg-orange-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-orange-700 transition-all"
             />
           </div>
         </div>

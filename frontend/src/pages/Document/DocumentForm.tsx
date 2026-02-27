@@ -7,10 +7,11 @@ import { getMetaById } from "../../api/metaField";
 import { Toast } from "primereact/toast";
 import { uploadDocumentFile } from "../../api/ulpoald";
 
-// ✅ Définir le type correctement
+// ✅ Définir le type correctement pour correspondre au backend
 interface DocumentPayload {
   type_document_id: number | null;
-  values: Array<{ id: number; value: string }>;
+  values: Record<string, string>; // ✅ Changé : objet avec meta_field_id comme clé
+  piece_values?: Record<string, any>;
   id?: number;
 }
 
@@ -23,7 +24,7 @@ export default function DocumentForm({
   selectedTypeId,
   editingDoc,
 }: any) {
-  const [values, setValues] = useState<any>({});
+  const [values, setValues] = useState<Record<string, any>>({});
   const [documentType_id, setDocumentType_id] = useState<number | null>(null);
   const [metaFields, setMetaFields] = useState<any[]>([]);
   const toast = useRef<Toast>(null);
@@ -83,41 +84,49 @@ export default function DocumentForm({
     }
 
     try {
-      // ✅ Construire le payload avec le bon format
-      const valuesArray = [];
+      // ✅ Construire le payload avec le bon format (objet, pas tableau)
+      const valuesObject: Record<string, string> = {};
 
-      if (editingDoc?.values) {
-        // En mode édition, on utilise les IDs existants
-        for (const existingValue of editingDoc.values) {
-          if (values[existingValue.meta_field_id] !== undefined) {
-            valuesArray.push({
-              id: existingValue.id,
-              value: values[existingValue.meta_field_id],
-            });
-          }
+      // Parcourir tous les metaFields pour créer l'objet
+      for (const field of metaFields) {
+        const fieldValue = values[field.id];
+
+        // Ne pas inclure les fichiers dans le payload JSON
+        if (fieldValue && !(fieldValue instanceof File)) {
+          valuesObject[field.id] = fieldValue.toString();
         }
       }
 
-      // ✅ Le payload a maintenant la bonne structure
+      // ✅ Le payload a maintenant la structure attendue par le backend
       const payload: DocumentPayload = {
         type_document_id: documentType_id,
-        values: valuesArray,
+        values: valuesObject, // ← Maintenant c'est un objet { "3": "diop", "4": "Ali" }
       };
 
       // ✅ Ajouter l'id si on est en mode édition
       if (editingDoc?.id) {
-        payload.id = editingDoc.id; // ← Plus d'erreur TypeScript
+        payload.id = editingDoc.id;
       }
+
+      console.log("📦 Payload envoyé:", payload);
 
       const result = await onSubmit(payload);
       console.log("✅ Document sauvegardé:", result);
 
       // Uploader les fichiers séparément
+      const fileUploads = [];
       for (const [fieldId, value] of Object.entries(values)) {
         if (value instanceof File) {
-          const docId = editingDoc?.id || result.id;
-          await uploadDocumentFile(String(docId), fieldId, value);
+          const docId = editingDoc?.id || result?.id;
+          if (docId) {
+            fileUploads.push(uploadDocumentFile(String(docId), fieldId, value));
+          }
         }
+      }
+
+      // Attendre que tous les fichiers soient uploadés
+      if (fileUploads.length > 0) {
+        await Promise.all(fileUploads);
       }
 
       toast.current?.show({
@@ -145,8 +154,8 @@ export default function DocumentForm({
       <Toast ref={toast} />
       <Dialog
         header={
-          <div className="flex items-center gap-3 text-emerald-950">
-            <div className="p-2 bg-emerald-600 rounded-lg text-white">
+          <div className="flex items-center gap-3 text-orange-950">
+            <div className="p-2 bg-orange-600 rounded-lg text-white">
               <Plus size={18} />
             </div>
             <span className="font-black tracking-tight">
@@ -158,24 +167,24 @@ export default function DocumentForm({
         style={{ width: "500px" }}
         onHide={onHide}
         footer={
-          <div className="flex justify-end gap-3 p-4 bg-emerald-50/30">
+          <div className="flex justify-end gap-3 p-4 bg-orange-50/30">
             <Button
               label="Annuler"
               onClick={onHide}
-              className="p-button-text text-emerald-600 font-bold"
+              className="p-button-text text-orange-600 font-bold"
             />
             <Button
               label={editingDoc ? "Modifier" : "Enregistrer"}
               icon={<Save size={18} className="mr-2" />}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-200 transition-all font-bold"
+              className="bg-orange-600 hover:bg-orange-700 text-white border-none px-6 py-2.5 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
               onClick={handleSubmit}
             />
           </div>
         }
       >
         <div className="space-y-6 pt-4">
-          <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100">
-            <label className="text-[10px] font-black text-emerald-700 uppercase tracking-widest mb-3 block">
+          <div className="bg-orange-50/50 p-5 rounded-3xl border border-orange-100">
+            <label className="text-[10px] font-black text-orange-700 uppercase tracking-widest mb-3 block">
               Type de dossier
             </label>
             <Dropdown
@@ -185,7 +194,7 @@ export default function DocumentForm({
               optionLabel="nom"
               optionValue="id"
               placeholder="Sélectionner..."
-              className="w-full bg-white border-emerald-100 rounded-xl shadow-sm"
+              className="w-full bg-white border-orange-100 rounded-xl shadow-sm"
               filter
               disabled={!!editingDoc}
             />
@@ -193,14 +202,14 @@ export default function DocumentForm({
 
           {metaFields.length > 0 && (
             <div className="space-y-4 animate-in fade-in duration-500">
-              <p className="text-[10px] font-black text-emerald-800/40 uppercase tracking-widest ml-1">
+              <p className="text-[10px] font-black text-orange-800/40 uppercase tracking-widest ml-1">
                 Champs requis
               </p>
               <div className="grid grid-cols-1 gap-4">
                 {metaFields.map((f: any) => (
                   <div key={f.id} className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-emerald-900 ml-1 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>{" "}
+                    <label className="text-xs font-bold text-orange-900 ml-1 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>{" "}
                       {f.label}{" "}
                       {f.required && <span className="text-red-500">*</span>}
                     </label>
@@ -209,7 +218,7 @@ export default function DocumentForm({
                       value={
                         f.field_type !== "file" ? values[f.id] || "" : undefined
                       }
-                      className="w-full bg-white border border-emerald-100 p-3.5 rounded-2xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all shadow-sm text-emerald-950"
+                      className="w-full bg-white border border-orange-100 p-3.5 rounded-2xl text-sm focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all shadow-sm text-orange-950"
                       onChange={(e) =>
                         setValues({
                           ...values,

@@ -277,7 +277,7 @@ export default function EntiteeDeuxPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -310,7 +310,7 @@ export default function EntiteeDeuxPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-emerald-800 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
+          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
             <Layers size={28} />
           </div>
           <div>
@@ -326,7 +326,7 @@ export default function EntiteeDeuxPage() {
         <Button
           label={`Nouveau ${allEntiteeDeux[0]?.titre || "Élément"}`}
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -338,11 +338,11 @@ export default function EntiteeDeuxPage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
         <div className="relative group max-w-md">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
             size={20}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
             placeholder="Rechercher ..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -366,7 +366,7 @@ export default function EntiteeDeuxPage() {
                 key={entitee.id}
                 className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
                   isExpanded
-                    ? "border-emerald-500 ring-2 ring-emerald-200"
+                    ? "border-orange-500 ring-2 ring-orange-200"
                     : "border-slate-100"
                 }`}
               >
@@ -374,14 +374,14 @@ export default function EntiteeDeuxPage() {
                 <div
                   onClick={() => toggleEntitee(entitee)}
                   className={`w-full flex items-center justify-between p-5 transition-all cursor-pointer ${
-                    isExpanded ? "bg-emerald-50/50" : "hover:bg-slate-50"
+                    isExpanded ? "bg-orange-50/50" : "hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center gap-4 flex-1 min-w-0 pr-4">
                     <div
                       className={`p-2 rounded-lg flex-shrink-0 ${
                         isExpanded
-                          ? "bg-emerald-500 text-white"
+                          ? "bg-orange-500 text-white"
                           : "bg-slate-100 text-slate-500"
                       }`}
                     >
@@ -391,7 +391,7 @@ export default function EntiteeDeuxPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3
                           className={`text-base font-bold truncate ${
-                            isExpanded ? "text-emerald-800" : "text-slate-700"
+                            isExpanded ? "text-orange-800" : "text-slate-700"
                           }`}
                           title={entitee.libelle}
                         >
@@ -423,7 +423,7 @@ export default function EntiteeDeuxPage() {
                         setSelected(entitee);
                         setDetailsVisible(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                       title="Voir les détails complets"
                     >
                       <Eye size={18} />
@@ -447,7 +447,7 @@ export default function EntiteeDeuxPage() {
                         setEditing(entitee);
                         setFormVisible(true);
                       }}
-                      className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                       title="Modifier"
                     >
                       <Pencil size={18} />
@@ -465,10 +465,7 @@ export default function EntiteeDeuxPage() {
                     </button>
 
                     {isExpanded ? (
-                      <ChevronDown
-                        size={20}
-                        className="text-emerald-500 ml-1"
-                      />
+                      <ChevronDown size={20} className="text-orange-500 ml-1" />
                     ) : (
                       <ChevronRight size={20} className="text-slate-400 ml-1" />
                     )}
@@ -482,7 +479,7 @@ export default function EntiteeDeuxPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                          <GitMerge size={14} className="text-emerald-500" />
+                          <GitMerge size={14} className="text-orange-500" />
                           Sections rattachées ({entiteeSections.length})
                         </h4>
                         <Button
@@ -515,7 +512,7 @@ export default function EntiteeDeuxPage() {
                                 onClick={() => toggleSection(section.id)}
                                 className={`w-full flex items-center p-4 cursor-pointer transition-all ${
                                   expandedSections[section.id]
-                                    ? "bg-emerald-50/50"
+                                    ? "bg-orange-50/50"
                                     : "hover:bg-slate-50"
                                 }`}
                               >
@@ -523,7 +520,7 @@ export default function EntiteeDeuxPage() {
                                   <div
                                     className={`p-2 rounded-lg flex-shrink-0 ${
                                       expandedSections[section.id]
-                                        ? "bg-emerald-500 text-white"
+                                        ? "bg-orange-500 text-white"
                                         : "bg-slate-100 text-slate-500"
                                     }`}
                                   >
@@ -534,7 +531,7 @@ export default function EntiteeDeuxPage() {
                                       <span
                                         className={`text-sm font-bold truncate ${
                                           expandedSections[section.id]
-                                            ? "text-emerald-700"
+                                            ? "text-orange-700"
                                             : "text-slate-700"
                                         }`}
                                         title={section.libelle}
@@ -573,7 +570,7 @@ export default function EntiteeDeuxPage() {
                                       setAjoutFonctionTroisVisible(true);
                                       e.stopPropagation();
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2.5 text-emerald-600 font-bold bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-xl transition-all border-none shadow-sm hover:shadow-md min-w-[120px] justify-center"
+                                    className="flex items-center gap-2 px-4 py-2.5 text-orange-600 font-bold bg-orange-50 hover:bg-orange-600 hover:text-white rounded-xl transition-all border-none shadow-sm hover:shadow-md min-w-[120px] justify-center"
                                     tooltip="Ajouter une fonction"
                                   >
                                     <PlusCircle size={16} />
@@ -585,7 +582,7 @@ export default function EntiteeDeuxPage() {
                                   {expandedSections[section.id] ? (
                                     <ChevronDown
                                       size={18}
-                                      className="text-emerald-500 ml-1"
+                                      className="text-orange-500 ml-1"
                                     />
                                   ) : (
                                     <ChevronRight
@@ -606,7 +603,7 @@ export default function EntiteeDeuxPage() {
                                     .map((f) => (
                                       <div
                                         key={f.id}
-                                        className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 hover:border-emerald-200 transition-all mb-2 last:mb-0"
+                                        className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 hover:border-orange-200 transition-all mb-2 last:mb-0"
                                       >
                                         <div className="flex items-center gap-3">
                                           <Briefcase

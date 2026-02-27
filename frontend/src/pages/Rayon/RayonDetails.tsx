@@ -47,7 +47,7 @@ const RayonDetails = ({ visible, onHide, rayon }: RayonDetailsProps) => {
       {rayon ? (
         <div className="space-y-6 pt-2">
           {/* Header Info Card */}
-          <div className="bg-gradient-to-br from-green-600 to-emerald-700 text-white p-6 rounded-2xl shadow-md">
+          <div className="bg-gradient-to-br from-orange-700 to-orange-700 text-white p-6 rounded-2xl shadow-md">
             <h1 className="text-2xl font-black mb-2">{rayon.code}</h1>
             <div className="flex flex-wrap gap-4 text-sm opacity-90">
               <div className="flex items-center gap-1">

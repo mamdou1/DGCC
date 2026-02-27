@@ -119,8 +119,16 @@ export interface User {
   telephone?: string;
   username: string;
   num_matricule: string;
+
+  direction_id?: number;
+  service_id?: number;
+  sous_direction_id?: number;
+  division_id?: number;
+  section_id?: number;
+
   createdAt: string;
   updatedAt: string;
+
   is_on_line?: boolean;
   last_activity?: string;
 
@@ -148,12 +156,23 @@ export interface InscriptionPayload {
 export interface Fonction {
   id: number;
   libelle: string;
-  service_id?: number;
+
+  direction_id?: number;
+  sous_direction_id?: number;
   division_id?: number;
   section_id?: number;
+  service_id?: number;
+
+  direction?: Direction;
+  sousDirection?: SousDirection;
+  division?: Division;
+  section?: Section;
+  service?: Service;
+
   entitee_un_id?: number;
   entitee_deux_id?: number;
   entitee_trois_id?: number;
+
   entitee_un: EntiteeUn;
   entitee_deux: EntiteeDeux;
   entitee_trois: EntiteeTrois;
@@ -200,7 +219,6 @@ export interface TypeDocument {
   nom: string;
 
   // IDs (pour les formulaires)
-  division_id?: number | null;
   entitee_un_id?: number;
   entitee_deux_id?: number;
   entitee_trois_id?: number;
@@ -209,6 +227,18 @@ export interface TypeDocument {
   entitee_un?: EntiteeUn;
   entitee_deux?: EntiteeDeux;
   entitee_trois?: EntiteeTrois;
+
+  direction?: Direction;
+  sousDirection?: SousDirection;
+  division?: Division;
+  section?: Section;
+  service?: Service;
+
+  direction_id?: number | null;
+  sous_direction_id?: number | null;
+  division_id?: number | null;
+  section_id?: number | null;
+  service_id?: number | null;
 
   // Champs calculés par le backend (getAll)
   structure_libelle?: string;
@@ -515,6 +545,19 @@ export interface AgentEntiteeAccess {
   entitee_un_id?: number | null;
   entitee_deux_id?: number | null;
   entitee_trois_id?: number | null;
+
+  direction?: Direction;
+  sousDirection?: SousDirection;
+  division?: Division;
+  section?: Section;
+  service?: Service;
+
+  direction_id?: number | null;
+  sous_direction_id?: number | null;
+  division_id?: number | null;
+  section_id?: number | null;
+  service_id?: number | null;
+
   created_at?: string;
   updated_at?: string;
 
@@ -537,4 +580,76 @@ export interface UpdateAccessPayload {
   entitee_un_id?: number | null;
   entitee_deux_id?: number | null;
   entitee_trois_id?: number | null;
+}
+
+export interface Direction {
+  id: number;
+  code: string;
+  libelle: string;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Relations (optionnelles pour l'affichage)
+  sousDirections?: SousDirection[];
+  services?: Service[];
+  fonctions?: Fonction[];
+  typeDocuments?: TypeDocument[];
+}
+
+export interface SousDirection {
+  id: number;
+  code: string;
+  libelle: string;
+  direction_id?: number;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Relations
+  direction?: Direction;
+  divisions?: Division[];
+  fonctions?: Fonction[];
+  typeDocuments?: TypeDocument[];
+}
+
+export interface Division {
+  id: number;
+  code: string;
+  libelle: string;
+  sous_direction_id?: number;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Relations
+  sousDirection?: SousDirection;
+  sections?: Section[];
+  fonctions?: Fonction[];
+  typeDocuments?: TypeDocument[];
+}
+
+export interface Section {
+  id: number;
+  code: string;
+  libelle: string;
+  division_id?: number;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Relations
+  division?: Division;
+  fonctions?: Fonction[];
+  typeDocuments?: TypeDocument[];
+}
+
+export interface Service {
+  id: number;
+  code: string;
+  libelle: string;
+  direction_id?: number;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Relations
+  direction?: Direction;
+  fonctions?: Fonction[];
+  typeDocuments?: TypeDocument[];
 }

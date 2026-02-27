@@ -2,15 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { MultiSelect } from "primereact/multiselect";
-import { Save, Building2, Layers, GitMerge } from "lucide-react";
-
-import { getAllEntiteeUn } from "../../api/entiteeUn";
-import { getAllEntiteeDeux } from "../../api/entiteeDeux";
-import { getAllEntiteeTrois } from "../../api/entiteeTrois";
 import {
-  EntiteeDeux,
-  EntiteeTrois,
-  EntiteeUn,
+  Save,
+  Building2,
+  Layers,
+  GitMerge,
+  Split,
+  TableOfContents,
+  Briefcase,
+} from "lucide-react";
+
+// Importer les nouvelles API
+import { getDirections } from "../../api/direction";
+import { getSousDirections } from "../../api/sousDirection";
+import { getDivisions } from "../../api/division";
+import { getSections } from "../../api/section";
+import { getServices } from "../../api/service";
+
+// Types pour les nouvelles entités
+import {
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
   AgentEntiteeAccess,
 } from "../../interfaces";
 
@@ -23,9 +38,15 @@ type Props = {
   title?: string;
 };
 
-// Interface pour le payload de création multiple
+// Interface pour le payload de création multiple (avec nouvelles entités)
 interface GrantAccessPayload {
   agent_id: number;
+  direction_id?: number | null;
+  sous_direction_id?: number | null;
+  division_id?: number | null;
+  section_id?: number | null;
+  service_id?: number | null;
+  // Garder les anciennes pour compatibilité
   entitee_un_id?: number | null;
   entitee_deux_id?: number | null;
   entitee_trois_id?: number | null;
@@ -40,37 +61,45 @@ export default function UserAcces({
   title = "Gestion des accès",
 }: Props) {
   const [formData, setFormData] = useState({
-    entites_un_id: [] as number[],
-    entites_deux_id: [] as number[],
-    entites_trois_id: [] as number[],
+    directions_id: [] as number[],
+    sous_directions_id: [] as number[],
+    divisions_id: [] as number[],
+    sections_id: [] as number[],
+    services_id: [] as number[],
   });
 
   const [options, setOptions] = useState({
-    n1: [] as EntiteeUn[],
-    n2: [] as EntiteeDeux[],
-    n3: [] as EntiteeTrois[],
+    directions: [] as Direction[],
+    sousDirections: [] as SousDirection[],
+    divisions: [] as Division[],
+    sections: [] as Section[],
+    services: [] as Service[],
   });
 
   const [loading, setLoading] = useState(false);
 
   // Chargement des options
   useEffect(() => {
-    let isMounted = true; // Pour éviter les mises à jour sur composant démonté
+    let isMounted = true;
 
     if (visible) {
       const loadData = async () => {
         try {
-          const [r1, r2, r3] = await Promise.all([
-            getAllEntiteeUn(),
-            getAllEntiteeDeux(),
-            getAllEntiteeTrois(),
+          const [dirs, sousDirs, divs, secs, servs] = await Promise.all([
+            getDirections(),
+            getSousDirections(),
+            getDivisions(),
+            getSections(),
+            getServices(),
           ]);
 
           if (isMounted) {
             setOptions({
-              n1: Array.isArray(r1) ? r1 : [],
-              n2: Array.isArray(r2) ? r2 : [],
-              n3: Array.isArray(r3) ? r3 : [],
+              directions: Array.isArray(dirs) ? dirs : [],
+              sousDirections: Array.isArray(sousDirs) ? sousDirs : [],
+              divisions: Array.isArray(divs) ? divs : [],
+              sections: Array.isArray(secs) ? secs : [],
+              services: Array.isArray(servs) ? servs : [],
             });
           }
         } catch (err) {
@@ -81,59 +110,85 @@ export default function UserAcces({
     }
 
     return () => {
-      isMounted = false; // Nettoyage
+      isMounted = false;
     };
-  }, [visible]); // ✅ Dépendance UNIQUEMENT sur visible
+  }, [visible]);
 
-  // 2. CORRIGER le useEffect d'initialisation du formulaire
+  // Initialisation du formulaire avec les données existantes
   useEffect(() => {
     if (visible) {
       if (initial && initial.length > 0) {
-        // Mode édition
-        const unIds = initial
+        // Mode édition - Extraire les IDs des nouvelles entités
+        const directionIds = initial
           .filter(
             (
               acc,
             ): acc is AgentEntiteeAccess & {
-              entitee_un: NonNullable<AgentEntiteeAccess["entitee_un"]>;
-            } => !!acc.entitee_un,
+              direction: NonNullable<AgentEntiteeAccess["direction"]>;
+            } => !!acc.direction,
           )
-          .map((acc) => acc.entitee_un.id)
+          .map((acc) => acc.direction!.id)
           .filter((id, index, self) => self.indexOf(id) === index);
 
-        const deuxIds = initial
+        const sousDirectionIds = initial
           .filter(
             (
               acc,
             ): acc is AgentEntiteeAccess & {
-              entitee_deux: NonNullable<AgentEntiteeAccess["entitee_deux"]>;
-            } => !!acc.entitee_deux,
+              sousDirection: NonNullable<AgentEntiteeAccess["sousDirection"]>;
+            } => !!acc.sousDirection,
           )
-          .map((acc) => acc.entitee_deux.id)
+          .map((acc) => acc.sousDirection!.id)
           .filter((id, index, self) => self.indexOf(id) === index);
 
-        const troisIds = initial
+        const divisionIds = initial
           .filter(
             (
               acc,
             ): acc is AgentEntiteeAccess & {
-              entitee_trois: NonNullable<AgentEntiteeAccess["entitee_trois"]>;
-            } => !!acc.entitee_trois,
+              division: NonNullable<AgentEntiteeAccess["division"]>;
+            } => !!acc.division,
           )
-          .map((acc) => acc.entitee_trois.id)
+          .map((acc) => acc.division!.id)
+          .filter((id, index, self) => self.indexOf(id) === index);
+
+        const sectionIds = initial
+          .filter(
+            (
+              acc,
+            ): acc is AgentEntiteeAccess & {
+              section: NonNullable<AgentEntiteeAccess["section"]>;
+            } => !!acc.section,
+          )
+          .map((acc) => acc.section!.id)
+          .filter((id, index, self) => self.indexOf(id) === index);
+
+        const serviceIds = initial
+          .filter(
+            (
+              acc,
+            ): acc is AgentEntiteeAccess & {
+              service: NonNullable<AgentEntiteeAccess["service"]>;
+            } => !!acc.service,
+          )
+          .map((acc) => acc.service!.id)
           .filter((id, index, self) => self.indexOf(id) === index);
 
         setFormData({
-          entites_un_id: unIds,
-          entites_deux_id: deuxIds,
-          entites_trois_id: troisIds,
+          directions_id: directionIds,
+          sous_directions_id: sousDirectionIds,
+          divisions_id: divisionIds,
+          sections_id: sectionIds,
+          services_id: serviceIds,
         });
       } else {
         // Mode création
         setFormData({
-          entites_un_id: [],
-          entites_deux_id: [],
-          entites_trois_id: [],
+          directions_id: [],
+          sous_directions_id: [],
+          divisions_id: [],
+          sections_id: [],
+          services_id: [],
         });
       }
     }
@@ -145,33 +200,63 @@ export default function UserAcces({
     try {
       const payload: GrantAccessPayload[] = [];
 
-      // Ajouter les accès EntiteeUn
-      formData.entites_un_id.forEach((id) => {
+      // Ajouter les accès Directions
+      formData.directions_id.forEach((id) => {
         payload.push({
           agent_id: agentId,
-          entitee_un_id: id,
-          entitee_deux_id: null,
-          entitee_trois_id: null,
+          direction_id: id,
+          sous_direction_id: null,
+          division_id: null,
+          section_id: null,
+          service_id: null,
         });
       });
 
-      // Ajouter les accès EntiteeDeux
-      formData.entites_deux_id.forEach((id) => {
+      // Ajouter les accès Sous-directions
+      formData.sous_directions_id.forEach((id) => {
         payload.push({
           agent_id: agentId,
-          entitee_un_id: null,
-          entitee_deux_id: id,
-          entitee_trois_id: null,
+          direction_id: null,
+          sous_direction_id: id,
+          division_id: null,
+          section_id: null,
+          service_id: null,
         });
       });
 
-      // Ajouter les accès EntiteeTrois
-      formData.entites_trois_id.forEach((id) => {
+      // Ajouter les accès Divisions
+      formData.divisions_id.forEach((id) => {
         payload.push({
           agent_id: agentId,
-          entitee_un_id: null,
-          entitee_deux_id: null,
-          entitee_trois_id: id,
+          direction_id: null,
+          sous_direction_id: null,
+          division_id: id,
+          section_id: null,
+          service_id: null,
+        });
+      });
+
+      // Ajouter les accès Sections
+      formData.sections_id.forEach((id) => {
+        payload.push({
+          agent_id: agentId,
+          direction_id: null,
+          sous_direction_id: null,
+          division_id: null,
+          section_id: id,
+          service_id: null,
+        });
+      });
+
+      // Ajouter les accès Services
+      formData.services_id.forEach((id) => {
+        payload.push({
+          agent_id: agentId,
+          direction_id: null,
+          sous_direction_id: null,
+          division_id: null,
+          section_id: null,
+          service_id: id,
         });
       });
 
@@ -184,6 +269,14 @@ export default function UserAcces({
     }
   };
 
+  // Calculer le total des sélections
+  const totalSelections =
+    formData.directions_id.length +
+    formData.sous_directions_id.length +
+    formData.divisions_id.length +
+    formData.sections_id.length +
+    formData.services_id.length;
+
   // Styles réutilisables
   const labelStyle =
     "text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-2";
@@ -193,7 +286,7 @@ export default function UserAcces({
     <Dialog
       header={
         <div className="flex items-center gap-3 px-2 py-1">
-          <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
+          <div className="p-2 bg-orange-100 rounded-xl text-orange-600">
             <Building2 size={20} />
           </div>
           <div>
@@ -203,13 +296,13 @@ export default function UserAcces({
             <p className="text-xs text-slate-500 mt-1 font-medium">
               {initial.length > 0
                 ? `Modification des accès (${initial.length} existant(s))`
-                : "Configurer les accès aux documents"}
+                : "Configurer les accès aux entités"}
             </p>
           </div>
         </div>
       }
       visible={visible}
-      style={{ width: "700px" }}
+      style={{ width: "800px" }}
       onHide={onHide}
       className="rounded-[2rem] overflow-hidden"
       footer={
@@ -225,17 +318,13 @@ export default function UserAcces({
             icon={!loading && <Save size={18} className="mr-2" />}
             onClick={handleSubmit}
             loading={loading}
-            disabled={
-              formData.entites_un_id.length === 0 &&
-              formData.entites_deux_id.length === 0 &&
-              formData.entites_trois_id.length === 0
-            }
-            className="bg-emerald-600 text-emerald-50 border-none px-8 py-3 rounded-xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all font-bold"
+            disabled={totalSelections === 0}
+            className="bg-orange-600 text-orange-50 border-none px-8 py-3 rounded-xl shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all font-bold"
           />
         </div>
       }
     >
-      <div className="flex flex-col gap-6 pt-4 px-2">
+      <div className="flex flex-col gap-6 pt-4 px-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
         {/* Message d'info */}
         <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
           <p className="text-xs text-amber-800 flex items-center gap-2">
@@ -247,117 +336,189 @@ export default function UserAcces({
 
         {/* Section Affectations Multiples */}
         <div className="space-y-5 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
-          <h3 className="text-xs font-black uppercase text-emerald-600 tracking-tighter mb-4 flex items-center gap-2">
+          <h3 className="text-xs font-black uppercase text-orange-600 tracking-tighter mb-4 flex items-center gap-2">
             <Building2 size={14} />
             Périmètres d'application
           </h3>
 
-          {/* Niveau 1 - EntiteeUn */}
+          {/* Directions */}
           <div className={inputWrapper}>
             <label className={labelStyle}>
               <Building2 size={14} className="text-blue-500" />
-              Ministères / Directions Générales (N1)
-              {formData.entites_un_id.length > 0 && (
+              Directions
+              {formData.directions_id.length > 0 && (
                 <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                  {formData.entites_un_id.length} sélectionnée(s)
+                  {formData.directions_id.length} sélectionnée(s)
                 </span>
               )}
             </label>
             <MultiSelect
-              value={formData.entites_un_id}
-              options={options.n1}
+              value={formData.directions_id}
+              options={options.directions}
               optionLabel="libelle"
               optionValue="id"
               onChange={(e) =>
-                setFormData({ ...formData, entites_un_id: e.value })
+                setFormData({ ...formData, directions_id: e.value })
               }
-              placeholder="Sélectionner les ministères/directions"
+              placeholder="Sélectionner les directions"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-emerald-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
               maxSelectedLabels={3}
             />
           </div>
 
-          {/* Niveau 2 - EntiteeDeux */}
+          {/* Sous-directions */}
           <div className={inputWrapper}>
             <label className={labelStyle}>
-              <Layers size={14} className="text-purple-500" />
-              Directions / Services (N2)
-              {formData.entites_deux_id.length > 0 && (
+              <Split size={14} className="text-purple-500" />
+              Sous-directions
+              {formData.sous_directions_id.length > 0 && (
                 <span className="ml-2 text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-                  {formData.entites_deux_id.length} sélectionnée(s)
+                  {formData.sous_directions_id.length} sélectionnée(s)
                 </span>
               )}
             </label>
             <MultiSelect
-              value={formData.entites_deux_id}
-              options={options.n2}
+              value={formData.sous_directions_id}
+              options={options.sousDirections}
               optionLabel="libelle"
               optionValue="id"
               onChange={(e) =>
-                setFormData({ ...formData, entites_deux_id: e.value })
+                setFormData({ ...formData, sous_directions_id: e.value })
               }
-              placeholder="Sélectionner les directions/services"
+              placeholder="Sélectionner les sous-directions"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-emerald-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
               maxSelectedLabels={3}
             />
           </div>
 
-          {/* Niveau 3 - EntiteeTrois */}
+          {/* Divisions */}
           <div className={inputWrapper}>
             <label className={labelStyle}>
-              <GitMerge size={14} className="text-emerald-500" />
-              Divisions / Sous-services (N3)
-              {formData.entites_trois_id.length > 0 && (
-                <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
-                  {formData.entites_trois_id.length} sélectionnée(s)
+              <TableOfContents size={14} className="text-indigo-500" />
+              Divisions
+              {formData.divisions_id.length > 0 && (
+                <span className="ml-2 text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                  {formData.divisions_id.length} sélectionnée(s)
                 </span>
               )}
             </label>
             <MultiSelect
-              value={formData.entites_trois_id}
-              options={options.n3}
+              value={formData.divisions_id}
+              options={options.divisions}
               optionLabel="libelle"
               optionValue="id"
               onChange={(e) =>
-                setFormData({ ...formData, entites_trois_id: e.value })
+                setFormData({ ...formData, divisions_id: e.value })
               }
-              placeholder="Sélectionner les divisions/services"
+              placeholder="Sélectionner les divisions"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-emerald-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
+              maxSelectedLabels={3}
+            />
+          </div>
+
+          {/* Sections */}
+          <div className={inputWrapper}>
+            <label className={labelStyle}>
+              <GitMerge size={14} className="text-orange-500" />
+              Sections
+              {formData.sections_id.length > 0 && (
+                <span className="ml-2 text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                  {formData.sections_id.length} sélectionnée(s)
+                </span>
+              )}
+            </label>
+            <MultiSelect
+              value={formData.sections_id}
+              options={options.sections}
+              optionLabel="libelle"
+              optionValue="id"
+              onChange={(e) =>
+                setFormData({ ...formData, sections_id: e.value })
+              }
+              placeholder="Sélectionner les sections"
+              display="chip"
+              filter
+              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
+              maxSelectedLabels={3}
+            />
+          </div>
+
+          {/* Services */}
+          <div className={inputWrapper}>
+            <label className={labelStyle}>
+              <Briefcase size={14} className="text-emerald-500" />
+              Services
+              {formData.services_id.length > 0 && (
+                <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
+                  {formData.services_id.length} sélectionnée(s)
+                </span>
+              )}
+            </label>
+            <MultiSelect
+              value={formData.services_id}
+              options={options.services}
+              optionLabel="libelle"
+              optionValue="id"
+              onChange={(e) =>
+                setFormData({ ...formData, services_id: e.value })
+              }
+              placeholder="Sélectionner les services"
+              display="chip"
+              filter
+              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
               maxSelectedLabels={3}
             />
           </div>
 
           {/* Résumé des sélections */}
-          {(formData.entites_un_id.length > 0 ||
-            formData.entites_deux_id.length > 0 ||
-            formData.entites_trois_id.length > 0) && (
-            <div className="mt-4 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
-              <p className="text-[11px] font-bold text-emerald-700 flex items-center gap-2">
+          {totalSelections > 0 && (
+            <div className="mt-4 p-3 bg-orange-50 border border-orange-100 rounded-xl">
+              <p className="text-[11px] font-bold text-orange-700 flex items-center gap-2">
                 <span>📋 Récapitulatif</span>
               </p>
-              <p className="text-xs text-emerald-600 mt-1">
-                {formData.entites_un_id.length} N1,{" "}
-                {formData.entites_deux_id.length} N2,{" "}
-                {formData.entites_trois_id.length} N3
-                <span className="ml-2 text-emerald-500">•</span>
+              <p className="text-xs text-orange-600 mt-1">
+                {formData.directions_id.length > 0 &&
+                  `${formData.directions_id.length} Direction(s) `}
+                {formData.sous_directions_id.length > 0 &&
+                  `${formData.sous_directions_id.length} Sous-direction(s) `}
+                {formData.divisions_id.length > 0 &&
+                  `${formData.divisions_id.length} Division(s) `}
+                {formData.sections_id.length > 0 &&
+                  `${formData.sections_id.length} Section(s) `}
+                {formData.services_id.length > 0 &&
+                  `${formData.services_id.length} Service(s) `}
+                <span className="ml-2 text-orange-500">•</span>
                 <span className="ml-2 font-bold">
-                  Total:{" "}
-                  {formData.entites_un_id.length +
-                    formData.entites_deux_id.length +
-                    formData.entites_trois_id.length}{" "}
-                  accès
+                  Total: {totalSelections} accès
                 </span>
               </p>
             </div>
           )}
         </div>
       </div>
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
     </Dialog>
   );
 }

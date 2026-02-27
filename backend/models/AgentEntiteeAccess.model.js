@@ -3,8 +3,40 @@ module.exports = (sequelize, DataTypes) => {
   const AgentEntiteeAccess = sequelize.define(
     "AgentEntiteeAccess",
     {
-      // On supprime entitee_type et entitee_id
-      // On garde juste les foreign keys directes
+      // On garde les anciennes
+      entitee_un_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      entitee_deux_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      entitee_trois_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      // ✅ AJOUTER LES NOUVELLES COLONNES
+      direction_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      sous_direction_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      division_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      section_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      service_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
     },
     {
       tableName: "agent_entitee_access",
@@ -19,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       as: "agent",
     });
 
-    // Associations directes avec les entités
+    // Anciennes associations
     AgentEntiteeAccess.belongsTo(models.EntiteeUn, {
       foreignKey: "entitee_un_id",
       as: "entitee_un",
@@ -35,6 +67,37 @@ module.exports = (sequelize, DataTypes) => {
     AgentEntiteeAccess.belongsTo(models.EntiteeTrois, {
       foreignKey: "entitee_trois_id",
       as: "entitee_trois",
+      allowNull: true,
+    });
+
+    // ✅ AJOUTER LES NOUVELLES ASSOCIATIONS
+    AgentEntiteeAccess.belongsTo(models.Direction, {
+      foreignKey: "direction_id",
+      as: "direction",
+      allowNull: true,
+    });
+
+    AgentEntiteeAccess.belongsTo(models.SousDirection, {
+      foreignKey: "sous_direction_id",
+      as: "sousDirection",
+      allowNull: true,
+    });
+
+    AgentEntiteeAccess.belongsTo(models.Division, {
+      foreignKey: "division_id",
+      as: "division",
+      allowNull: true,
+    });
+
+    AgentEntiteeAccess.belongsTo(models.Section, {
+      foreignKey: "section_id",
+      as: "section",
+      allowNull: true,
+    });
+
+    AgentEntiteeAccess.belongsTo(models.Service, {
+      foreignKey: "service_id",
+      as: "service",
       allowNull: true,
     });
   };

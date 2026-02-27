@@ -31,6 +31,13 @@ router.get(
   authorizePermission("exercice", "read"),
   countMembres,
 );
+router.get(
+  "/online",
+  verifyToken,
+  authorizePermission("agent", "read"),
+  getOnlineUsers,
+);
+
 router.get("/me", verifyToken, getMe);
 
 router.get(
@@ -57,13 +64,6 @@ router.delete(
   verifyToken,
   authorizePermission("agent", "delete"),
   deleteMembre,
-);
-
-router.get(
-  "/online",
-  verifyToken,
-  authorizePermission("agent", "read"),
-  getOnlineUsers,
 );
 
 module.exports = router;

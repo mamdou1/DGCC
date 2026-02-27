@@ -1,7 +1,7 @@
 // models/HistoriqueLog.model.js
 module.exports = (sequelize, DataTypes) => {
   const HistoriqueLog = sequelize.define(
-    "HistoriqueLog",
+    "historiqueLog",
     {
       agent_id: {
         type: DataTypes.INTEGER,

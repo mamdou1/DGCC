@@ -63,7 +63,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
         <input
           type="text"
           placeholder="Rechercher une pièce ou une division..."
-          className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+          className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 outline-none transition-all"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -80,7 +80,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
           </p>
           <Button
             onClick={onAdd}
-            className="flex items-center gap-2 px-3 py-2 text-emerald-600 font-bold bg-emerald-50 hover:bg-emerald-500 hover:text-white rounded-lg transition-all border-none"
+            className="flex items-center gap-2 px-3 py-2 text-orange-600 font-bold bg-orange-50 hover:bg-orange-500 hover:text-white rounded-lg transition-all border-none"
           >
             <PlusCircle size={15} />
             <span className="text-xs">Ajouter</span>
@@ -94,7 +94,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
                 {piecesSansDivision.map((item, index) => (
                   <tr
                     key={index}
-                    className="group hover:bg-emerald-50/30 transition-colors"
+                    className="group hover:bg-orange-50/30 transition-colors"
                   >
                     <td className="p-3 text-xs font-bold text-slate-400 w-12">
                       {String(
@@ -103,7 +103,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
                     </td>
                     <td className="p-3">
                       <div className="flex items-center gap-2">
-                        <FileCheck size={14} className="text-emerald-300" />
+                        <FileCheck size={14} className="text-orange-300" />
                         <span className="text-sm font-bold text-slate-700">
                           {item.libelle}
                         </span>
@@ -145,7 +145,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
                 onClick={() => toggleDivision(libelle)}
                 className={`w-full flex items-center justify-between p-4 transition-all ${
                   expandedDivision === libelle
-                    ? "bg-emerald-50/50"
+                    ? "bg-orange-50/50"
                     : "hover:bg-slate-50"
                 }`}
               >
@@ -153,7 +153,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
                   <div
                     className={`p-2 rounded-lg ${
                       expandedDivision === libelle
-                        ? "bg-emerald-600 text-white"
+                        ? "bg-orange-600 text-white"
                         : "bg-slate-100 text-slate-500"
                     }`}
                   >
@@ -162,7 +162,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
                   <span
                     className={`font-bold text-sm ${
                       expandedDivision === libelle
-                        ? "text-emerald-700"
+                        ? "text-orange-700"
                         : "text-slate-700"
                     }`}
                   >
@@ -170,7 +170,7 @@ export default function DocumentTypePieceListe({ pieces, onAdd }: Props) {
                   </span>
                 </div>
                 {expandedDivision === libelle ? (
-                  <ChevronDown size={18} className="text-emerald-500" />
+                  <ChevronDown size={18} className="text-orange-500" />
                 ) : (
                   <ChevronRight size={18} className="text-slate-400" />
                 )}

@@ -202,7 +202,7 @@ export default function PiecesMetaForm({
       <Dialog
         header={
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
+            <div className="p-2 bg-orange-100 text-orange-700 rounded-lg">
               <Settings size={20} />
             </div>
             <div>
@@ -231,7 +231,7 @@ export default function PiecesMetaForm({
               icon={<Save size={18} className="mr-2" />}
               onClick={saveAll}
               disabled={loading}
-              className="bg-emerald-600 text-white font-bold py-3 px-8 rounded-2xl hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all border-none"
+              className="bg-orange-600 text-white font-bold py-3 px-8 rounded-2xl hover:bg-orange-700 shadow-lg shadow-orange-200 transition-all border-none"
             />
           </div>
         }
@@ -239,7 +239,7 @@ export default function PiecesMetaForm({
         <div className="space-y-8 pt-4">
           {loading ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
               <p className="text-slate-400 mt-2">Chargement...</p>
             </div>
           ) : (
@@ -273,7 +273,7 @@ export default function PiecesMetaForm({
                   <div className="col-span-7">
                     <InputText
                       placeholder="Libellé du champ (ex: Numéro, Objet, Date...)"
-                      className="w-full p-3.5 border-slate-200 rounded-xl shadow-sm focus:border-emerald-500"
+                      className="w-full p-3.5 border-slate-200 rounded-xl shadow-sm focus:border-orange-500"
                       value={data.label}
                       onChange={(e) =>
                         setData({ ...data, label: e.target.value })
@@ -308,7 +308,7 @@ export default function PiecesMetaForm({
                       }
                       onClick={handleAddOrUpdateField}
                       className={`${
-                        isEditingMode ? "bg-amber-500" : "bg-emerald-800"
+                        isEditingMode ? "bg-amber-500" : "bg-orange-800"
                       } text-white px-6 py-3 rounded-xl border-none font-bold transition-transform active:scale-95`}
                     />
                   </div>
@@ -338,10 +338,10 @@ export default function PiecesMetaForm({
                     fields.map((f) => (
                       <div
                         key={f.id}
-                        className="group flex justify-between items-center p-4 bg-white border border-slate-100 rounded-2xl hover:border-emerald-200 hover:shadow-xl transition-all shadow-sm"
+                        className="group flex justify-between items-center p-4 bg-white border border-slate-100 rounded-2xl hover:border-orange-200 hover:shadow-xl transition-all shadow-sm"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors">
+                          <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-orange-50 group-hover:text-orange-600 transition-colors">
                             <Hash size={18} />
                           </div>
                           <div>
@@ -363,7 +363,7 @@ export default function PiecesMetaForm({
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => editField(f)}
-                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Pencil size={18} />

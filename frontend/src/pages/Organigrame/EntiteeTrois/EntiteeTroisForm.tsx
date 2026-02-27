@@ -68,7 +68,7 @@ export default function EntiteeTroisForm({
     <Dialog
       header={
         <div className="flex items-center gap-2 font-bold text-slate-800">
-          <GitMerge className="text-emerald-500" size={20} />
+          <GitMerge className="text-orange-500" size={20} />
           {initial.id ? "Modifier" : "Nouveau"} {titreNiveau2}
         </div>
       }
@@ -80,7 +80,7 @@ export default function EntiteeTroisForm({
       <div className="pt-4 space-y-5">
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Layers size={16} className="text-emerald-500" />
+            <Layers size={16} className="text-orange-500" />
             Sélectionner le {titreNiveau1}{" "}
           </label>
           <Dropdown
@@ -97,7 +97,7 @@ export default function EntiteeTroisForm({
 
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Hash size={16} className="text-emerald-500" /> Code de la{" "}
+            <Hash size={16} className="text-orange-500" /> Code de la{" "}
             {titreNiveau2}{" "}
           </label>
           <InputText
@@ -110,7 +110,7 @@ export default function EntiteeTroisForm({
 
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Info size={16} className="text-emerald-500" />
+            <Info size={16} className="text-orange-500" />
             Libellé de la {titreNiveau2}
           </label>
           <InputText
@@ -132,7 +132,7 @@ export default function EntiteeTroisForm({
             icon={!loading && <Save size={18} className="mr-2" />}
             onClick={handleSubmit}
             disabled={!libelle || !entitee_deux_id || loading}
-            className="bg-emerald-500 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-orange-600 transition-all border-none"
+            className="bg-orange-700 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-orange-800 transition-all border-none"
           />
         </div>
       </div>

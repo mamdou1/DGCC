@@ -12,16 +12,105 @@ const {
   EntiteeTrois,
   Permission,
   AgentEntiteeAccess,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
 } = require("../models");
 const logger = require("../config/logger.config");
 const HistoriqueService = require("../services/historique.service");
 
-// Helper pour l'inclusion profonde de la hiérarchie de fonction
+// Helper pour l'inclusion profonde de la hiérarchie de fonction (CORRIGÉ)
 const fonctionInclude = {
   model: Fonction,
   as: "fonction_details",
-  attributes: ["id", "libelle"],
+  attributes: [
+    "id",
+    "libelle",
+    "direction_id",
+    "sous_direction_id",
+    "division_id",
+    "section_id",
+    "service_id",
+    "entitee_un_id",
+    "entitee_deux_id",
+    "entitee_trois_id", // Garder les anciens pour compatibilité
+  ],
   include: [
+    {
+      model: Direction,
+      as: "direction",
+      attributes: ["id", "libelle", "code"],
+      required: false,
+    },
+    {
+      model: SousDirection,
+      as: "sousDirection",
+      attributes: ["id", "libelle", "code"],
+      include: [
+        {
+          model: Direction,
+          as: "direction",
+          attributes: ["id", "libelle", "code"],
+        },
+      ],
+      required: false,
+    },
+    {
+      model: Division,
+      as: "division",
+      attributes: ["id", "libelle", "code"],
+      include: [
+        {
+          model: SousDirection,
+          as: "sousDirection",
+          attributes: ["id", "libelle", "code"],
+          include: [
+            {
+              model: Direction,
+              as: "direction",
+              attributes: ["id", "libelle", "code"],
+            },
+          ],
+        },
+      ],
+      required: false,
+    },
+    {
+      model: Section,
+      as: "section",
+      attributes: ["id", "libelle", "code"],
+      include: [
+        {
+          model: Division,
+          as: "division",
+          attributes: ["id", "libelle", "code"],
+          include: [
+            {
+              model: SousDirection,
+              as: "sousDirection",
+              attributes: ["id", "libelle", "code"],
+              include: [
+                {
+                  model: Direction,
+                  as: "direction",
+                  attributes: ["id", "libelle", "code"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      required: false,
+    },
+    {
+      model: Service,
+      as: "service",
+      attributes: ["id", "libelle", "code"],
+      required: false,
+    },
+    // Garder les anciennes entités pour compatibilité
     {
       model: EntiteeUn,
       as: "entitee_un",
@@ -61,24 +150,105 @@ const fonctionInclude = {
   ],
 };
 
-/**
- * ✅ Inclusion des accès agent_entitee_access
- */
+// Mettre à jour aussi agentAccessInclude pour inclure les nouvelles entités
 const agentAccessInclude = {
   model: AgentEntiteeAccess,
   as: "agent_access",
-  attributes: ["id", "created_at", "updated_at"],
+  attributes: [
+    "id",
+    "created_at",
+    "updated_at",
+    "direction_id",
+    "sous_direction_id",
+    "division_id",
+    "section_id",
+    "service_id",
+  ],
   include: [
+    // ✅ NOUVELLES ENTITÉS - Sans l'attribut 'titre' qui n'existe pas
+    {
+      model: Direction,
+      as: "direction",
+      attributes: ["id", "libelle", "code"], // ✅ Enlever 'titre'
+      required: false,
+    },
+    {
+      model: SousDirection,
+      as: "sousDirection",
+      attributes: ["id", "libelle", "code"], // ✅ Enlever 'titre'
+      include: [
+        {
+          model: Direction,
+          as: "direction",
+          attributes: ["id", "libelle", "code"],
+        },
+      ],
+      required: false,
+    },
+    {
+      model: Division,
+      as: "division",
+      attributes: ["id", "libelle", "code"], // ✅ Enlever 'titre'
+      include: [
+        {
+          model: SousDirection,
+          as: "sousDirection",
+          attributes: ["id", "libelle", "code"],
+          include: [
+            {
+              model: Direction,
+              as: "direction",
+              attributes: ["id", "libelle", "code"],
+            },
+          ],
+        },
+      ],
+      required: false,
+    },
+    {
+      model: Section,
+      as: "section",
+      attributes: ["id", "libelle", "code"], // ✅ Enlever 'titre'
+      include: [
+        {
+          model: Division,
+          as: "division",
+          attributes: ["id", "libelle", "code"],
+          include: [
+            {
+              model: SousDirection,
+              as: "sousDirection",
+              attributes: ["id", "libelle", "code"],
+              include: [
+                {
+                  model: Direction,
+                  as: "direction",
+                  attributes: ["id", "libelle", "code"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      required: false,
+    },
+    {
+      model: Service,
+      as: "service",
+      attributes: ["id", "libelle", "code"], // ✅ Enlever 'titre'
+      required: false,
+    },
+    // Garder les anciennes entités avec 'titre' car elles ont cette colonne
     {
       model: EntiteeUn,
       as: "entitee_un",
-      attributes: ["id", "libelle", "code", "titre"],
+      attributes: ["id", "libelle", "code", "titre"], // ✅ 'titre' existe ici
       required: false,
     },
     {
       model: EntiteeDeux,
       as: "entitee_deux",
-      attributes: ["id", "libelle", "code", "titre"],
+      attributes: ["id", "libelle", "code", "titre"], // ✅ 'titre' existe ici
       include: [
         {
           model: EntiteeUn,
@@ -91,7 +261,7 @@ const agentAccessInclude = {
     {
       model: EntiteeTrois,
       as: "entitee_trois",
-      attributes: ["id", "libelle", "code", "titre"],
+      attributes: ["id", "libelle", "code", "titre"], // ✅ 'titre' existe ici
       include: [
         {
           model: EntiteeDeux,

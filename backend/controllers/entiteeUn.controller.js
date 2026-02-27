@@ -1,5 +1,5 @@
 // controllers/entiteeUn.controller.js
-const { EntiteeUn, Fonction } = require("../models");
+const { EntiteeUn, Fonction, sequelize } = require("../models");
 const logger = require("../config/logger.config");
 const HistoriqueService = require("../services/historique.service");
 
@@ -12,13 +12,23 @@ exports.createEntiteeUn = async (req, res) => {
       body: req.body,
     });
 
-    // 1. Trouver le titre utilisé par les autres éléments
-    const exemple = await EntiteeUn.findOne({ attributes: ["titre"] });
-    const titreGlobal = exemple?.titre || "Défaut";
+    // ✅ SOLUTION RADICALE : Requête SQL brute
+    const [result] = await sequelize.query(
+      "SELECT titre FROM entitee_un LIMIT 1",
+      { type: sequelize.QueryTypes.SELECT },
+    );
 
-    // 2. Créer l'élément avec le titre récupéré
+    // Maintenant result.titre est une vraie chaîne primitive
+    const titreGlobal = result?.titre || "Défaut";
+
+    // Vérification avec console.log classique (pas logger)
+    console.log("🎯 Titre global (brut):", titreGlobal);
+    console.log("📊 Type (brut):", typeof titreGlobal);
+
+    // 2. Créer l'élément
     const entitee_un = await EntiteeUn.create({
-      ...req.body,
+      code: req.body.code,
+      libelle: req.body.libelle,
       titre: titreGlobal,
     });
 
@@ -29,7 +39,6 @@ exports.createEntiteeUn = async (req, res) => {
       duration: Date.now() - startTime,
     });
 
-    // Journalisation dans l'historique
     await HistoriqueService.logCreate(req, "entiteeUn", entitee_un);
 
     res.status(201).json(entitee_un);

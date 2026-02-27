@@ -90,7 +90,7 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
       case "deux":
         return <Layers size={16} className="text-purple-500" />;
       case "trois":
-        return <GitMerge size={16} className="text-emerald-500" />;
+        return <GitMerge size={16} className="text-orange-500" />;
       default:
         return <FolderTree size={16} className="text-slate-400" />;
     }
@@ -104,8 +104,8 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
         onHide={onHide}
         header={
           <div className="flex items-center gap-2">
-            <Info className="text-emerald-600" size={20} />
-            <span className="font-bold text-emerald-900">Contenu du Box</span>
+            <Info className="text-orange-600" size={20} />
+            <span className="font-bold text-orange-900">Contenu du Box</span>
           </div>
         }
         className="w-full max-w-4xl rounded-3xl"
@@ -114,12 +114,12 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
       >
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
           </div>
         ) : box ? (
           <div className="space-y-6 pt-2">
             {/* En-tête du box */}
-            <div className="bg-gradient-to-r from-emerald-700 to-emerald-900 text-white p-6 rounded-2xl shadow-xl">
+            <div className="bg-gradient-to-r from-orange-700 to-orange-900 text-white p-6 rounded-2xl shadow-xl">
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="text-2xl font-black flex items-center gap-2">
@@ -132,7 +132,7 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
                       />
                     )}
                   </h2>
-                  <div className="flex items-center gap-4 mt-2 text-emerald-100">
+                  <div className="flex items-center gap-4 mt-2 text-orange-100">
                     <p className="font-mono text-sm flex items-center gap-1">
                       <Hash size={14} /> {box.code_box}
                     </p>
@@ -155,12 +155,12 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
 
               {/* Informations structurelles */}
               {(box.entitee_un || box.entitee_deux || box.entitee_trois) && (
-                <div className="mt-4 pt-4 border-t border-emerald-600/30 grid grid-cols-3 gap-4">
+                <div className="mt-4 pt-4 border-t border-orange-600/30 grid grid-cols-3 gap-4">
                   {box.entitee_un && (
                     <div className="flex items-center gap-2">
-                      <Building2 size={16} className="text-emerald-300" />
+                      <Building2 size={16} className="text-orange-300" />
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-emerald-300">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-orange-300">
                           Niveau 1
                         </p>
                         <p className="text-sm font-bold">
@@ -171,9 +171,9 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
                   )}
                   {box.entitee_deux && (
                     <div className="flex items-center gap-2">
-                      <Layers size={16} className="text-emerald-300" />
+                      <Layers size={16} className="text-orange-300" />
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-emerald-300">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-orange-300">
                           Niveau 2
                         </p>
                         <p className="text-sm font-bold">
@@ -184,9 +184,9 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
                   )}
                   {box.entitee_trois && (
                     <div className="flex items-center gap-2">
-                      <GitMerge size={16} className="text-emerald-300" />
+                      <GitMerge size={16} className="text-orange-300" />
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-emerald-300">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-orange-300">
                           Niveau 3
                         </p>
                         <p className="text-sm font-bold">
@@ -203,7 +203,7 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
             <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
               <div className="bg-slate-50 px-6 py-3 border-b border-slate-100 flex justify-between items-center">
                 <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                  <FileText size={16} className="text-emerald-500" />
+                  <FileText size={16} className="text-orange-500" />
                   Documents ({documents.length})
                 </h3>
               </div>
@@ -222,12 +222,12 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
                     documents.map((doc) => (
                       <tr
                         key={doc.id}
-                        className="hover:bg-emerald-50/30 transition-colors group"
+                        className="hover:bg-orange-50/30 transition-colors group"
                       >
                         <td className="px-6 py-4 font-bold text-slate-700 flex items-center gap-3">
                           <FileText
                             size={18}
-                            className="text-slate-300 group-hover:text-emerald-500 transition-colors"
+                            className="text-slate-300 group-hover:text-orange-500 transition-colors"
                           />
                           <span className="font-mono text-sm bg-slate-100 px-2 py-1 rounded">
                             #{String(doc.id).padStart(4, "0")}
@@ -317,7 +317,7 @@ export default function BoxDetails({ visible, onHide, boxId, onUpdate }: any) {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-emerald-600">
+                <span className="font-bold text-orange-600">
                   {box.current_count || 0}/{box.capacite_max || 0}
                 </span>
                 <span className="text-slate-400">documents</span>

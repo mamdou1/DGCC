@@ -14,6 +14,12 @@ module.exports = (sequelize, DataTypes) => {
       entitee_un_id: { type: DataTypes.INTEGER, allowNull: true },
       entitee_deux_id: { type: DataTypes.INTEGER, allowNull: true },
       entitee_trois_id: { type: DataTypes.INTEGER, allowNull: true },
+
+      direction_id: DataTypes.INTEGER,
+      service_id: DataTypes.INTEGER,
+      sous_direction_id: DataTypes.INTEGER,
+      division_id: DataTypes.INTEGER,
+      section_id: DataTypes.INTEGER,
     },
     {
       tableName: "typedocuments", // 👈 correspond exactement au nom réel de la table timestamps: false,
@@ -50,6 +56,31 @@ module.exports = (sequelize, DataTypes) => {
     TypeDocument.belongsTo(models.EntiteeTrois, {
       foreignKey: "entitee_trois_id",
       as: "entitee_trois",
+    });
+    // TypeDocument.belongsTo(models.EntiteeQuatre, {
+    //   foreignKey: "entitee_quatre_id",
+    //   as: "entitee_quatre",
+    // });
+
+    TypeDocument.belongsTo(models.Direction, {
+      foreignKey: "direction_id",
+      as: "direction",
+    });
+    TypeDocument.belongsTo(models.SousDirection, {
+      foreignKey: "sous_direction_id",
+      as: "sousDirection",
+    });
+    TypeDocument.belongsTo(models.Division, {
+      foreignKey: "division_id",
+      as: "division",
+    });
+    TypeDocument.belongsTo(models.Section, {
+      foreignKey: "section_id",
+      as: "section",
+    });
+    TypeDocument.belongsTo(models.Service, {
+      foreignKey: "service_id",
+      as: "service",
     });
   };
 

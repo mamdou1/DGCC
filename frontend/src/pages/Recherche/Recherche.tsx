@@ -13,6 +13,10 @@ import {
   Pencil,
   Trash2,
   CloudDownload,
+  Split,
+  TableOfContents,
+  Briefcase,
+  Map,
 } from "lucide-react";
 import { getMetaById } from "../../api/metaField";
 import { getDocuments } from "../../api/document";
@@ -21,19 +25,35 @@ import Pagination from "../../components/layout/Pagination";
 import { useAuth } from "../../context/AuthContext";
 import {
   TypeDocument,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
   User,
 } from "../../interfaces";
-import { getAllEntiteeUn, getEntiteeUnTitre } from "../../api/entiteeUn";
-import { getAllEntiteeDeux, getEntiteeDeuxTitre } from "../../api/entiteeDeux";
-import {
-  getAllEntiteeTrois,
-  getEntiteeTroisTitre,
-} from "../../api/entiteeTrois";
+import { getDirections } from "../../api/direction";
+import { getSousDirections } from "../../api/sousDirection";
+import { getDivisions } from "../../api/division";
+import { getSections } from "../../api/section";
+import { getServices } from "../../api/service";
 import DocumentDetails from "../Document/DocumentDetails";
 import RechercheUploadPieces from "./RechercheUploadPieces";
+
+// Type pour les entités unifiées
+type EntityType =
+  | "direction"
+  | "sousDirection"
+  | "division"
+  | "section"
+  | "service";
+
+interface EntityOption {
+  label: string;
+  value: number;
+  code?: string;
+  type: EntityType;
+}
 
 export default function Recherche() {
   const { user } = useAuth();
@@ -42,12 +62,14 @@ export default function Recherche() {
   const [documentType_id, setDocumentType_id] = useState<number | null>(null);
   const [metaFields, setMetaFields] = useState<any[]>([]);
 
-  // États pour les dropdowns en cascade
-  const [entiteeUn, setEntiteeUn] = useState<EntiteeUn[]>([]);
-  const [entiteeDeux, setEntiteeDeux] = useState<EntiteeDeux[]>([]);
-  const [entiteeTrois, setEntiteeTrois] = useState<EntiteeTrois[]>([]);
+  // États pour les dropdowns en cascade (nouvelles entités)
+  const [directions, setDirections] = useState<Direction[]>([]);
+  const [sousDirections, setSousDirections] = useState<SousDirection[]>([]);
+  const [divisions, setDivisions] = useState<Division[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
 
-  const [selectedNiveau, setSelectedNiveau] = useState<string | null>(null);
+  const [selectedNiveau, setSelectedNiveau] = useState<EntityType | null>(null);
   const [selectedEntitee, setSelectedEntitee] = useState<number | null>(null);
   const [filteredTypesByEntitee, setFilteredTypesByEntitee] = useState<
     TypeDocument[]
@@ -56,17 +78,6 @@ export default function Recherche() {
   const [selected, setSelected] = useState<any>(null);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [ajoutVisible, setAjoutVisible] = useState(false);
-
-  // Titres dynamiques
-  const [titres, setTitres] = useState<{
-    niveau1: string;
-    niveau2: string;
-    niveau3: string;
-  }>({
-    niveau1: "",
-    niveau2: "",
-    niveau3: "",
-  });
 
   // États spécifiques à la recherche dynamique
   const [selectedFields, setSelectedFields] = useState<number[]>([]);
@@ -100,33 +111,46 @@ export default function Recherche() {
   const getUserAccessibleEntityIds = (user: User | null) => {
     if (!user)
       return {
-        un: new Set<number>(),
-        deux: new Set<number>(),
-        trois: new Set<number>(),
+        direction: new Set<number>(),
+        sousDirection: new Set<number>(),
+        division: new Set<number>(),
+        section: new Set<number>(),
+        service: new Set<number>(),
       };
 
     const ids = {
-      un: new Set<number>(),
-      deux: new Set<number>(),
-      trois: new Set<number>(),
+      direction: new Set<number>(),
+      sousDirection: new Set<number>(),
+      division: new Set<number>(),
+      section: new Set<number>(),
+      service: new Set<number>(),
     };
 
     // Entité de la fonction
-    if (user.fonction_details?.entitee_un?.id) {
-      ids.un.add(user.fonction_details.entitee_un.id);
+    if (user.fonction_details?.direction?.id) {
+      ids.direction.add(user.fonction_details.direction.id);
     }
-    if (user.fonction_details?.entitee_deux?.id) {
-      ids.deux.add(user.fonction_details.entitee_deux.id);
+    if (user.fonction_details?.sousDirection?.id) {
+      ids.sousDirection.add(user.fonction_details.sousDirection.id);
     }
-    if (user.fonction_details?.entitee_trois?.id) {
-      ids.trois.add(user.fonction_details.entitee_trois.id);
+    if (user.fonction_details?.division?.id) {
+      ids.division.add(user.fonction_details.division.id);
+    }
+    if (user.fonction_details?.section?.id) {
+      ids.section.add(user.fonction_details.section.id);
+    }
+    if (user.fonction_details?.service?.id) {
+      ids.service.add(user.fonction_details.service.id);
     }
 
     // Entités des agent_access
     user.agent_access?.forEach((access) => {
-      if (access.entitee_un?.id) ids.un.add(access.entitee_un.id);
-      if (access.entitee_deux?.id) ids.deux.add(access.entitee_deux.id);
-      if (access.entitee_trois?.id) ids.trois.add(access.entitee_trois.id);
+      if (access.direction?.id) ids.direction.add(access.direction.id);
+      if (access.sousDirection?.id)
+        ids.sousDirection.add(access.sousDirection.id);
+      if (access.division?.id) ids.division.add(access.division.id);
+      if (access.section?.id) ids.section.add(access.section.id);
+      if (access.service?.id) ids.service.add(access.service.id);
     });
 
     return ids;
@@ -136,20 +160,22 @@ export default function Recherche() {
     return (user?.agent_access?.length ?? 0) > 0;
   };
 
-  const getUserFonctionEntityType = (
-    user: User | null,
-  ): "un" | "deux" | "trois" | null => {
-    if (user?.fonction_details?.entitee_trois) return "trois";
-    if (user?.fonction_details?.entitee_deux) return "deux";
-    if (user?.fonction_details?.entitee_un) return "un";
+  const getUserFonctionEntityType = (user: User | null): EntityType | null => {
+    if (user?.fonction_details?.section) return "section";
+    if (user?.fonction_details?.division) return "division";
+    if (user?.fonction_details?.sousDirection) return "sousDirection";
+    if (user?.fonction_details?.direction) return "direction";
+    if (user?.fonction_details?.service) return "service";
     return null;
   };
 
   const getUserFonctionEntityId = (user: User | null): number | null => {
     return (
-      user?.fonction_details?.entitee_trois?.id ||
-      user?.fonction_details?.entitee_deux?.id ||
-      user?.fonction_details?.entitee_un?.id ||
+      user?.fonction_details?.section?.id ||
+      user?.fonction_details?.division?.id ||
+      user?.fonction_details?.sousDirection?.id ||
+      user?.fonction_details?.direction?.id ||
+      user?.fonction_details?.service?.id ||
       null
     );
   };
@@ -165,9 +191,12 @@ export default function Recherche() {
     if (!entityType || !entityId) return [];
 
     return allTypes.filter((typeDoc) => {
-      if (entityType === "un") return typeDoc.entitee_un_id === entityId;
-      if (entityType === "deux") return typeDoc.entitee_deux_id === entityId;
-      if (entityType === "trois") return typeDoc.entitee_trois_id === entityId;
+      if (entityType === "direction") return typeDoc.direction_id === entityId;
+      if (entityType === "sousDirection")
+        return typeDoc.sous_direction_id === entityId;
+      if (entityType === "division") return typeDoc.division_id === entityId;
+      if (entityType === "section") return typeDoc.section_id === entityId;
+      if (entityType === "service") return typeDoc.service_id === entityId;
       return false;
     });
   };
@@ -177,29 +206,43 @@ export default function Recherche() {
     if (isUserAdmin(user)) return types;
 
     const accessibleIds = getUserAccessibleEntityIds(user);
-    const hasUnAccess = accessibleIds.un.size > 0;
-    const hasDeuxAccess = accessibleIds.deux.size > 0;
-    const hasTroisAccess = accessibleIds.trois.size > 0;
+    const hasDirectionAccess = accessibleIds.direction.size > 0;
+    const hasSousDirectionAccess = accessibleIds.sousDirection.size > 0;
+    const hasDivisionAccess = accessibleIds.division.size > 0;
+    const hasSectionAccess = accessibleIds.section.size > 0;
+    const hasServiceAccess = accessibleIds.service.size > 0;
 
     // Cas 2.1 : Utilisateur avec accès supplémentaires
     if (hasAdditionalAccess(user)) {
       return types.filter((typeDoc) => {
         if (
-          typeDoc.entitee_un_id &&
-          hasUnAccess &&
-          accessibleIds.un.has(typeDoc.entitee_un_id)
+          typeDoc.direction_id &&
+          hasDirectionAccess &&
+          accessibleIds.direction.has(typeDoc.direction_id)
         )
           return true;
         if (
-          typeDoc.entitee_deux_id &&
-          hasDeuxAccess &&
-          accessibleIds.deux.has(typeDoc.entitee_deux_id)
+          typeDoc.sous_direction_id &&
+          hasSousDirectionAccess &&
+          accessibleIds.sousDirection.has(typeDoc.sous_direction_id)
         )
           return true;
         if (
-          typeDoc.entitee_trois_id &&
-          hasTroisAccess &&
-          accessibleIds.trois.has(typeDoc.entitee_trois_id)
+          typeDoc.division_id &&
+          hasDivisionAccess &&
+          accessibleIds.division.has(typeDoc.division_id)
+        )
+          return true;
+        if (
+          typeDoc.section_id &&
+          hasSectionAccess &&
+          accessibleIds.section.has(typeDoc.section_id)
+        )
+          return true;
+        if (
+          typeDoc.service_id &&
+          hasServiceAccess &&
+          accessibleIds.service.has(typeDoc.service_id)
         )
           return true;
         return false;
@@ -213,89 +256,98 @@ export default function Recherche() {
     if (!fonctionId || !fonctionType) return [];
 
     return types.filter((typeDoc) => {
-      if (fonctionType === "un") return typeDoc.entitee_un_id === fonctionId;
-      if (fonctionType === "deux")
-        return typeDoc.entitee_deux_id === fonctionId;
-      if (fonctionType === "trois")
-        return typeDoc.entitee_trois_id === fonctionId;
+      if (fonctionType === "direction")
+        return typeDoc.direction_id === fonctionId;
+      if (fonctionType === "sousDirection")
+        return typeDoc.sous_direction_id === fonctionId;
+      if (fonctionType === "division")
+        return typeDoc.division_id === fonctionId;
+      if (fonctionType === "section") return typeDoc.section_id === fonctionId;
+      if (fonctionType === "service") return typeDoc.service_id === fonctionId;
       return false;
     });
   }, [types, user]);
 
-  // Charger les titres et les entités
+  // Charger les entités
   useEffect(() => {
-    const loadTitresEtEntites = async () => {
+    const loadEntites = async () => {
       try {
-        const [t1, t2, t3, e1, e2, e3] = await Promise.all([
-          getEntiteeUnTitre(),
-          getEntiteeDeuxTitre(),
-          getEntiteeTroisTitre(),
-          getAllEntiteeUn(),
-          getAllEntiteeDeux(),
-          getAllEntiteeTrois(),
+        const [dirs, sDirs, divs, secs, servs] = await Promise.all([
+          getDirections(),
+          getSousDirections(),
+          getDivisions(),
+          getSections(),
+          getServices(),
         ]);
 
-        // ✅ Ne garder que les niveaux qui ont un titre
-        const newTitres = {
-          niveau1: t1.titre || "",
-          niveau2: t2.titre || "",
-          niveau3: t3.titre || "",
-        };
-        setTitres(newTitres);
-
-        setEntiteeUn(Array.isArray(e1) ? e1 : []);
-        setEntiteeDeux(Array.isArray(e2) ? e2 : []);
-        setEntiteeTrois(Array.isArray(e3) ? e3 : []);
+        setDirections(Array.isArray(dirs) ? dirs : []);
+        setSousDirections(Array.isArray(sDirs) ? sDirs : []);
+        setDivisions(Array.isArray(divs) ? divs : []);
+        setSections(Array.isArray(secs) ? secs : []);
+        setServices(Array.isArray(servs) ? servs : []);
       } catch (error) {
-        console.error("❌ Erreur chargement titres:", error);
+        console.error("❌ Erreur chargement entités:", error);
       }
     };
-    loadTitresEtEntites();
+    loadEntites();
   }, []);
 
   // Options pour le premier dropdown (niveaux)
   const niveauOptions = useMemo(() => {
-    const options = [];
+    const options: { label: string; value: EntityType }[] = [];
 
-    // Admin voit tous les niveaux avec titre
+    // Admin voit tous les niveaux
     if (isUserAdmin(user)) {
-      if (titres.niveau1) options.push({ label: titres.niveau1, value: "un" });
-      if (titres.niveau2)
-        options.push({ label: titres.niveau2, value: "deux" });
-      if (titres.niveau3)
-        options.push({ label: titres.niveau3, value: "trois" });
+      if (directions.length > 0)
+        options.push({ label: "Directions", value: "direction" });
+      if (sousDirections.length > 0)
+        options.push({ label: "Sous-directions", value: "sousDirection" });
+      if (divisions.length > 0)
+        options.push({ label: "Divisions", value: "division" });
+      if (sections.length > 0)
+        options.push({ label: "Sections", value: "section" });
+      if (services.length > 0)
+        options.push({ label: "Services", value: "service" });
       return options;
     }
 
     // Non-admin : vérifier les accès
     const ids = getUserAccessibleEntityIds(user);
 
-    if (ids.un.size > 0 && titres.niveau1) {
-      options.push({ label: titres.niveau1, value: "un" });
+    if (ids.direction.size > 0 && directions.length > 0) {
+      options.push({ label: "Directions", value: "direction" });
     }
-    if (ids.deux.size > 0 && titres.niveau2) {
-      options.push({ label: titres.niveau2, value: "deux" });
+    if (ids.sousDirection.size > 0 && sousDirections.length > 0) {
+      options.push({ label: "Sous-directions", value: "sousDirection" });
     }
-    if (ids.trois.size > 0 && titres.niveau3) {
-      options.push({ label: titres.niveau3, value: "trois" });
+    if (ids.division.size > 0 && divisions.length > 0) {
+      options.push({ label: "Divisions", value: "division" });
+    }
+    if (ids.section.size > 0 && sections.length > 0) {
+      options.push({ label: "Sections", value: "section" });
+    }
+    if (ids.service.size > 0 && services.length > 0) {
+      options.push({ label: "Services", value: "service" });
     }
 
     return options;
-  }, [titres, user]);
+  }, [directions, sousDirections, divisions, sections, services, user]);
 
   // Options pour le deuxième dropdown (entités du niveau sélectionné)
   const entiteeOptions = useMemo(() => {
     if (!selectedNiveau) return [];
 
     let entites: any[] = [];
-    if (selectedNiveau === "un") entites = entiteeUn;
-    if (selectedNiveau === "deux") entites = entiteeDeux;
-    if (selectedNiveau === "trois") entites = entiteeTrois;
+    if (selectedNiveau === "direction") entites = directions;
+    if (selectedNiveau === "sousDirection") entites = sousDirections;
+    if (selectedNiveau === "division") entites = divisions;
+    if (selectedNiveau === "section") entites = sections;
+    if (selectedNiveau === "service") entites = services;
 
     // Filtrer selon les accès si nécessaire
     if (!isUserAdmin(user)) {
       const ids = getUserAccessibleEntityIds(user);
-      const targetSet = ids[selectedNiveau as keyof typeof ids];
+      const targetSet = ids[selectedNiveau];
 
       entites = entites.filter((e) => targetSet.has(e.id));
     }
@@ -305,7 +357,15 @@ export default function Recherche() {
       value: e.id,
       code: e.code,
     }));
-  }, [selectedNiveau, entiteeUn, entiteeDeux, entiteeTrois, user]);
+  }, [
+    selectedNiveau,
+    directions,
+    sousDirections,
+    divisions,
+    sections,
+    services,
+    user,
+  ]);
 
   // Filtrer les types de documents selon l'entité sélectionnée
   useEffect(() => {
@@ -315,12 +375,16 @@ export default function Recherche() {
     }
 
     const filtered = types.filter((typeDoc) => {
-      if (selectedNiveau === "un")
-        return typeDoc.entitee_un_id === selectedEntitee;
-      if (selectedNiveau === "deux")
-        return typeDoc.entitee_deux_id === selectedEntitee;
-      if (selectedNiveau === "trois")
-        return typeDoc.entitee_trois_id === selectedEntitee;
+      if (selectedNiveau === "direction")
+        return typeDoc.direction_id === selectedEntitee;
+      if (selectedNiveau === "sousDirection")
+        return typeDoc.sous_direction_id === selectedEntitee;
+      if (selectedNiveau === "division")
+        return typeDoc.division_id === selectedEntitee;
+      if (selectedNiveau === "section")
+        return typeDoc.section_id === selectedEntitee;
+      if (selectedNiveau === "service")
+        return typeDoc.service_id === selectedEntitee;
       return false;
     });
 
@@ -381,6 +445,24 @@ export default function Recherche() {
     currentPage * itemsPerPage,
   );
 
+  // Obtenir l'icône pour chaque type d'entité
+  const getNiveauIcon = (niveau: EntityType) => {
+    switch (niveau) {
+      case "direction":
+        return <Building2 size={16} className="text-blue-600" />;
+      case "sousDirection":
+        return <Split size={16} className="text-purple-600" />;
+      case "division":
+        return <TableOfContents size={16} className="text-indigo-600" />;
+      case "section":
+        return <GitMerge size={16} className="text-orange-600" />;
+      case "service":
+        return <Briefcase size={16} className="text-emerald-600" />;
+      default:
+        return <Layers size={16} />;
+    }
+  };
+
   // Déterminer ce qu'il faut afficher
   const getSearchInterface = () => {
     // Cas 3 : Sans accès supplémentaires
@@ -390,10 +472,13 @@ export default function Recherche() {
 
       return (
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm">
-            <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2 block">
-              Types de documents de votre structure
-            </label>
+          <div className="bg-white p-6 rounded-2xl border border-orange-100 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              {fonctionEntityType && getNiveauIcon(fonctionEntityType)}
+              <label className="text-xs font-bold text-orange-700 uppercase tracking-wider">
+                Types de documents de votre structure
+              </label>
+            </div>
             <Dropdown
               value={documentType_id}
               options={fonctionTypes}
@@ -401,7 +486,7 @@ export default function Recherche() {
               optionLabel="nom"
               optionValue="id"
               placeholder="Sélectionner un type de document"
-              className="w-full border-none shadow-none bg-emerald-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
               filter
             />
           </div>
@@ -411,11 +496,11 @@ export default function Recherche() {
 
     // Cas 1 et 2 : Interface à 3 dropdowns
     return (
-      <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm mb-6">
+      <div className="bg-white p-6 rounded-2xl border border-orange-100 shadow-sm mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Dropdown 1 : Niveaux */}
           <div>
-            <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2 block">
+            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-2 block">
               Niveau structure
             </label>
             <Dropdown
@@ -427,13 +512,19 @@ export default function Recherche() {
                 setDocumentType_id(null);
               }}
               placeholder="Sélectionner un niveau"
-              className="w-full border-none shadow-none bg-emerald-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
+              itemTemplate={(option) => (
+                <div className="flex items-center gap-2">
+                  {getNiveauIcon(option.value)}
+                  <span>{option.label}</span>
+                </div>
+              )}
             />
           </div>
 
           {/* Dropdown 2 : Entités du niveau */}
           <div>
-            <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2 block">
+            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-2 block">
               {selectedNiveau
                 ? niveauOptions.find((n) => n.value === selectedNiveau)?.label
                 : "Structure"}
@@ -453,16 +544,47 @@ export default function Recherche() {
                     ? "Aucune structure accessible"
                     : "Sélectionner une structure"
               }
-              className="w-full border-none shadow-none bg-emerald-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
               optionLabel="label"
               optionValue="value"
               filter
+              itemTemplate={(option) => (
+                <div className="flex items-center justify-between w-full dropdown-item">
+                  <span className="dropdown-item-text">{option.label}</span>
+                  {option.code && (
+                    <span className="dropdown-item-code">{option.code}</span>
+                  )}
+                </div>
+              )}
+              panelClassName="!max-w-[400px]"
             />
+
+            {/* Ajoutez ce CSS dans votre composant */}
+            <style>{`
+  .dropdown-item {
+    max-width: 400px;
+  }
+  .dropdown-item-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dropdown-item-code {
+    font-size: 10px;
+    font-family: monospace;
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+  }
+`}</style>
           </div>
 
           {/* Dropdown 3 : Types de documents */}
           <div>
-            <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2 block">
+            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-2 block">
               Type de document
             </label>
             <Dropdown
@@ -477,7 +599,7 @@ export default function Recherche() {
                     ? "Aucun type disponible"
                     : "Sélectionner un type"
               }
-              className="w-full border-none shadow-none bg-emerald-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
               optionLabel="nom"
               optionValue="id"
               filter
@@ -492,8 +614,8 @@ export default function Recherche() {
     <Layout>
       <Toast ref={toast} />
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-emerald-950 flex items-center gap-3">
-          <div className="p-3 bg-emerald-600 text-white rounded-2xl shadow-lg">
+        <h1 className="text-3xl font-black text-orange-950 flex items-center gap-3">
+          <div className="p-3 bg-orange-800 text-white rounded-2xl shadow-lg">
             <Search size={24} />
           </div>
           Recherche Avancée
@@ -505,21 +627,21 @@ export default function Recherche() {
 
       {/* Checkboxes des libellés (Critères) - à afficher si un type est sélectionné */}
       {documentType_id && metaFields.length > 0 && (
-        <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm mb-6">
-          <p className="text-sm font-bold text-emerald-800 mb-3">
+        <div className="bg-white p-6 rounded-2xl border border-orange-100 shadow-sm mb-6">
+          <p className="text-sm font-bold text-orange-800 mb-3">
             Critères de recherche :
           </p>
           <div className="flex flex-wrap gap-4">
             {metaFields.map((m) => (
               <div
                 key={m.id}
-                className="flex items-center gap-2 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-100"
+                className="flex items-center gap-2 bg-orange-50 px-3 py-2 rounded-lg border border-orange-100"
               >
                 <Checkbox
                   onChange={() => toggleField(m.id)}
                   checked={selectedFields.includes(m.id)}
                 />
-                <label className="text-sm text-emerald-900 font-medium">
+                <label className="text-sm text-orange-900 font-medium">
                   {m.label}
                 </label>
               </div>
@@ -536,7 +658,7 @@ export default function Recherche() {
             .map((m) => (
               <div key={m.id} className="relative group">
                 <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400"
                   size={16}
                 />
                 <input
@@ -545,7 +667,7 @@ export default function Recherche() {
                   onChange={(e) =>
                     setSearchValues({ ...searchValues, [m.id]: e.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-3 bg-white border border-emerald-100 rounded-xl shadow-sm outline-none focus:border-emerald-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-orange-100 rounded-xl shadow-sm outline-none focus:border-orange-500 transition-all text-sm"
                 />
               </div>
             ))}
@@ -553,27 +675,27 @@ export default function Recherche() {
       )}
 
       {/* Résultats (Tableau) */}
-      <div className="bg-white rounded-[2rem] border border-emerald-100 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-[2rem] border border-orange-100 shadow-xl overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-emerald-50/30 border-b border-emerald-50">
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase w-24">
+            <tr className="bg-orange-50/30 border-b border-orange-50">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase w-24">
                 Réf.
               </th>
               {metaFields.map((m) => (
                 <th
                   key={m.id}
-                  className="p-5 text-[11px] font-black text-emerald-800 uppercase"
+                  className="p-5 text-[11px] font-black text-orange-800 uppercase"
                 >
                   {m.label}
                 </th>
               ))}
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase w-24">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase w-24">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-emerald-50">
+          <tbody className="divide-y divide-orange-50">
             {documentType_id &&
               paginated.map((d) => (
                 <tr
@@ -582,10 +704,10 @@ export default function Recherche() {
                     setSelected(d);
                     setDetailsVisible(true);
                   }}
-                  className="cursor-pointer hover:bg-emerald-50/40 transition-colors"
+                  className="cursor-pointer hover:bg-orange-50/40 transition-colors"
                 >
                   <td className="p-5">
-                    <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-xs font-bold">
+                    <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-xs font-bold">
                       #{String(d.id).padStart(3, "0")}
                     </span>
                   </td>
@@ -596,9 +718,9 @@ export default function Recherche() {
                     return (
                       <td
                         key={m.id}
-                        className="p-5 text-sm text-emerald-900 font-medium"
+                        className="p-5 text-sm text-orange-900 font-medium"
                       >
-                        {value || <span className="text-emerald-200">---</span>}
+                        {value || <span className="text-orange-200">---</span>}
                       </td>
                     );
                   })}
@@ -623,7 +745,7 @@ export default function Recherche() {
                           setAjoutVisible(true);
                           e.stopPropagation();
                         }}
-                        className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                         title="Chargement des fichiers"
                       >
                         <CloudDownload size={18} />
@@ -637,10 +759,10 @@ export default function Recherche() {
 
         {!documentType_id && (
           <div className="p-20 text-center">
-            <div className="inline-flex p-6 bg-emerald-50 rounded-full mb-4 text-emerald-200">
+            <div className="inline-flex p-6 bg-orange-50 rounded-full mb-4 text-orange-200">
               <FileText size={48} />
             </div>
-            <p className="text-emerald-800 font-bold text-lg">
+            <p className="text-orange-800 font-bold text-lg">
               {!hasAdditionalAccess(user) && !isUserAdmin(user)
                 ? "Sélectionnez un type de document"
                 : "Sélectionnez un niveau, une structure et un type de document"}

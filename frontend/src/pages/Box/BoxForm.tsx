@@ -285,7 +285,7 @@ export default function BoxForm({
   const labelClass =
     "flex items-center gap-2 text-sm font-bold text-slate-700 mb-2";
   const inputClass =
-    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-emerald-900 font-medium";
+    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none text-orange-900 font-medium";
 
   return (
     <Dialog
@@ -293,7 +293,7 @@ export default function BoxForm({
       onHide={onHide}
       header={
         <div className="flex items-center gap-2">
-          <BoxIcon className="text-emerald-600" size={20} />
+          <BoxIcon className="text-orange-600" size={20} />
           <span>{initial?.id ? "Modifier le Box" : "Nouveau Box"}</span>
         </div>
       }
@@ -309,7 +309,7 @@ export default function BoxForm({
           </h3>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+            <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
               <Hash size={14} /> Code Identifiant
             </label>
             <InputText
@@ -324,7 +324,7 @@ export default function BoxForm({
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+            <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
               <Type size={14} /> Libellé / Nom
             </label>
             <InputText
@@ -339,7 +339,7 @@ export default function BoxForm({
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+            <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
               <BarChart3 size={14} /> Capacité maximale (Documents)
             </label>
             <InputNumber
@@ -356,7 +356,7 @@ export default function BoxForm({
 
           {/* Sélection de la Travée */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+            <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
               <MapPin size={14} /> Travée de destination
             </label>
             <Dropdown
@@ -367,7 +367,7 @@ export default function BoxForm({
               placeholder={
                 loadingTrave ? "Chargement..." : "Choisir une travée"
               }
-              className="w-full bg-emerald-50 border-emerald-200 rounded-xl text-left"
+              className="w-full bg-orange-50 border-orange-200 rounded-xl text-left"
               onChange={(e) => setFormData({ ...formData, trave_id: e.value })}
               filter
               required
@@ -377,14 +377,14 @@ export default function BoxForm({
 
         {/* Colonne Droite: Affectation */}
         <div className="space-y-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
-          <h3 className="text-xs font-black uppercase text-emerald-500 tracking-widest border-b border-emerald-100 pb-2">
+          <h3 className="text-xs font-black uppercase text-orange-500 tracking-widest border-b border-orange-100 pb-2">
             Affectation Structurelle
           </h3>
 
           {/* Niveau 1 */}
           <div>
             <label className={labelClass}>
-              <Building2 size={14} className="text-emerald-500" /> {titreUn}
+              <Building2 size={14} className="text-orange-500" /> {titreUn}
             </label>
             <Dropdown
               value={entitee_un_id}
@@ -401,7 +401,7 @@ export default function BoxForm({
           {/* Niveau 2 */}
           <div>
             <label className={labelClass}>
-              <Layers size={14} className="text-emerald-500" /> {titreDeux}
+              <Layers size={14} className="text-orange-500" /> {titreDeux}
             </label>
             <Dropdown
               value={entitee_deux_id}
@@ -466,13 +466,13 @@ export default function BoxForm({
             type="button"
             label="Annuler"
             onClick={onHide}
-            className="p-button-text text-emerald-400"
+            className="p-button-text text-orange-400"
           />
           <Button
             type="submit"
             icon={<Save size={18} className="mr-2" />}
             label="Enregistrer"
-            className="bg-emerald-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-emerald-700 transition-all"
+            className="bg-orange-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-orange-700 transition-all"
           />
         </div>
       </form>

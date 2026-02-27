@@ -173,7 +173,7 @@
 //       {/* Header */}
 //       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
 //         <div className="flex items-center gap-4">
-//           <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
+//           <div className="bg-orange-600 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
 //             <Briefcase size={28} />
 //           </div>
 //           <div>
@@ -188,7 +188,7 @@
 //         <Button
 //           label={`Nouveau ${allEntiteeUn[0]?.titre || "Élément"}`}
 //           icon={<Plus size={20} className="mr-2" />}
-//           className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+//           className="bg-orange-600 hover:bg-orange-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
 //           onClick={() => setFormVisible(true)}
 //         />
 //       </div>
@@ -197,11 +197,11 @@
 //       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
 //         <div className="relative group max-w-md">
 //           <Search
-//             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+//             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
 //             size={20}
 //           />
 //           <InputText
-//             className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 outline-none"
+//             className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
 //             placeholder="Rechercher ..."
 //             value={query}
 //             onChange={(e) => setQuery(e.target.value)}
@@ -227,7 +227,7 @@
 //                   setSelected(s);
 //                   setDetailsVisible(true);
 //                 }}
-//                 className="hover:bg-emerald-50/30 transition-all group cursor-pointer"
+//                 className="hover:bg-orange-50/30 transition-all group cursor-pointer"
 //               >
 //                 <td className="px-6 py-4">
 //                   <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono text-xs">
@@ -255,7 +255,7 @@
 //     setSelected(s);
 //     setDetailsVisible(true);
 //   }}
-//   className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+//   className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
 // >
 //   <Eye size={18} />
 // </button>
@@ -265,7 +265,7 @@
 //                         setFormVisible(true);
 //                         e.stopPropagation();
 //                       }}
-//                       className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+//                       className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
 //                     >
 //                       <Pencil size={18} />
 //                     </button>
@@ -616,7 +616,7 @@ export default function EntiteeUnPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -625,7 +625,7 @@ export default function EntiteeUnPage() {
   if (error) {
     return (
       <Layout>
-        <div className="text-center text-red-600 p-8">
+        <div className="text-center text-red-800 p-8">
           <XCircle size={48} className="mx-auto mb-4" />
           <p>Erreur de chargement: {error.message}</p>
           <Button
@@ -648,7 +648,7 @@ export default function EntiteeUnPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
+          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
             <Briefcase size={28} />
           </div>
           <div>
@@ -663,7 +663,7 @@ export default function EntiteeUnPage() {
         <Button
           label={`Nouveau ${allEntiteeUn[0]?.titre || "Élément"}`}
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -675,11 +675,11 @@ export default function EntiteeUnPage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
         <div className="relative group max-w-md">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
             size={20}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
             placeholder="Rechercher ..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -699,7 +699,7 @@ export default function EntiteeUnPage() {
                 key={entitee.id}
                 className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
                   isExpanded
-                    ? "border-emerald-500 ring-2 ring-emerald-200"
+                    ? "border-orange-500 ring-2 ring-orange-200"
                     : "border-slate-100"
                 }`}
               >
@@ -707,14 +707,14 @@ export default function EntiteeUnPage() {
                 <div
                   onClick={() => toggleEntitee(entitee)}
                   className={`w-full flex items-center justify-between p-5 transition-all cursor-pointer ${
-                    isExpanded ? "bg-emerald-50/50" : "hover:bg-slate-50"
+                    isExpanded ? "bg-orange-50/50" : "hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className={`p-2 rounded-lg ${
                         isExpanded
-                          ? "bg-emerald-500 text-white"
+                          ? "bg-orange-500 text-white"
                           : "bg-slate-100 text-slate-500"
                       }`}
                     >
@@ -724,7 +724,7 @@ export default function EntiteeUnPage() {
                       <div className="flex items-center gap-2">
                         <h3
                           className={`font-bold ${
-                            isExpanded ? "text-emerald-800" : "text-slate-700"
+                            isExpanded ? "text-orange-800" : "text-slate-700"
                           }`}
                         >
                           {entitee.libelle}
@@ -747,7 +747,7 @@ export default function EntiteeUnPage() {
                         setSelected(entitee);
                         setDetailsVisible(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                       title="Voir les détails complets"
                     >
                       <Eye size={18} />
@@ -769,7 +769,7 @@ export default function EntiteeUnPage() {
                         setEditing(entitee);
                         setFormVisible(true);
                       }}
-                      className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                       title="Modifier"
                     >
                       <Pencil size={18} />
@@ -785,7 +785,7 @@ export default function EntiteeUnPage() {
                       <Trash2 size={18} />
                     </button>
                     {isExpanded ? (
-                      <ChevronDown size={20} className="text-emerald-500" />
+                      <ChevronDown size={20} className="text-orange-700" />
                     ) : (
                       <ChevronRight size={20} className="text-slate-400" />
                     )}
@@ -798,7 +798,7 @@ export default function EntiteeUnPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                          <Layers size={14} className="text-emerald-500" />
+                          <Layers size={14} className="text-orange-500" />
                           {entitee.titre || "Divisions"} rattachées (
                           {entiteeDivisions.length})
                         </h4>
@@ -830,7 +830,7 @@ export default function EntiteeUnPage() {
                                 onClick={() => toggleEntiteeDeux(div.id)}
                                 className={`w-full flex items-center justify-between p-3 cursor-pointer transition-all ${
                                   expandedEntiteeDeux === div.id
-                                    ? "bg-emerald-50/50"
+                                    ? "bg-orange-50/50"
                                     : "hover:bg-slate-50"
                                 }`}
                               >
@@ -838,7 +838,7 @@ export default function EntiteeUnPage() {
                                   <div
                                     className={`p-1.5 rounded-lg flex-shrink-0 ${
                                       expandedEntiteeDeux === div.id
-                                        ? "bg-emerald-500 text-white"
+                                        ? "bg-orange-500 text-white"
                                         : "bg-slate-100 text-slate-500"
                                     }`}
                                   >
@@ -848,7 +848,7 @@ export default function EntiteeUnPage() {
                                     <span
                                       className={`text-sm font-bold truncate max-w-[400px] ${
                                         expandedEntiteeDeux === div.id
-                                          ? "text-emerald-700"
+                                          ? "text-orange-700"
                                           : "text-slate-700"
                                       }`}
                                       title={div.libelle}
@@ -883,7 +883,7 @@ export default function EntiteeUnPage() {
                                       setAjoutFonctionDeuxVisible(true);
                                       e.stopPropagation();
                                     }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-emerald-600 font-bold bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border-none shadow-sm hover:shadow-md"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-orange-600 font-bold bg-orange-50 hover:bg-orange-600 hover:text-white rounded-lg transition-all border-none shadow-sm hover:shadow-md"
                                     tooltip="Ajouter une fonction"
                                     tooltipOptions={{ position: "top" }}
                                   >
@@ -898,7 +898,7 @@ export default function EntiteeUnPage() {
                                   {expandedEntiteeDeux === div.id ? (
                                     <ChevronDown
                                       size={16}
-                                      className="text-emerald-500"
+                                      className="text-orange-700"
                                     />
                                   ) : (
                                     <ChevronRight
@@ -917,7 +917,7 @@ export default function EntiteeUnPage() {
                                     entiteeTroisMap[div.id].map((sec) => (
                                       <div
                                         key={sec.id}
-                                        className="flex items-center gap-3 p-2 text-sm text-slate-600 hover:text-emerald-600 transition-colors"
+                                        className="flex items-center gap-3 p-2 text-sm text-slate-600 hover:text-orange-600 transition-colors"
                                       >
                                         <GitMerge
                                           size={14}
@@ -957,7 +957,7 @@ export default function EntiteeUnPage() {
                               setFormDeuxVisible(true);
                               e.stopPropagation();
                             }}
-                            className="inline-flex items-center gap-2 px-4 py-2 text-emerald-600 font-bold bg-emerald-50 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border-none"
+                            className="inline-flex items-center gap-2 px-4 py-2 text-orange-600 font-bold bg-orange-50 hover:bg-orange-600 hover:text-white rounded-lg transition-all border-none"
                           >
                             <PlusCircle size={14} />
                             <span className="text-xs">

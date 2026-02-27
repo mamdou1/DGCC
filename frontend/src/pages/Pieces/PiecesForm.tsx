@@ -23,7 +23,6 @@ export default function PiecesForm({
   title,
 }: Props) {
   const [formData, setFormData] = useState({
-    code_pieces: "",
     libelle: "",
   });
 
@@ -33,19 +32,17 @@ export default function PiecesForm({
   useEffect(() => {
     if (visible && initial?.id) {
       setFormData({
-        code_pieces: initial.code_pieces || "",
         libelle: initial.libelle || "",
       });
     } else {
       setFormData({
-        code_pieces: "",
         libelle: "",
       });
     }
   }, [visible, initial]);
 
   const handleSubmit = async () => {
-    if (!formData.libelle || !formData.code_pieces) return;
+    if (!formData.libelle) return;
     setLoading(true);
     try {
       await onSubmit(formData);
@@ -65,8 +62,8 @@ export default function PiecesForm({
     <Dialog
       header={
         <div className="flex items-center gap-2 text-slate-800 font-bold">
-          <div className="bg-emerald-100 p-2 rounded-lg">
-            <FileStack size={18} className="text-emerald-600" />
+          <div className="bg-orange-100 p-2 rounded-lg">
+            <FileStack size={18} className="text-orange-700" />
           </div>
           <span>{title}</span>
         </div>
@@ -83,9 +80,9 @@ export default function PiecesForm({
         <form onSubmit={handleSubmit} className="pt-4 grid grid-cols-1 gap-6">
           {/* Colonne Gauche: Identité */}
           <div className="grid grid-cols-2 gap-4">
-            <div className={inputWrapper}>
+            {/* <div className={inputWrapper}>
               <label className={labelStyle}>
-                <Hash size={14} className="text-emerald-500" /> Code
+                <Hash size={14} className="text-orange-700" /> Code
               </label>
               <InputText
                 value={formData.code_pieces}
@@ -96,12 +93,12 @@ export default function PiecesForm({
                   })
                 }
                 placeholder="Ex: DOC-01"
-                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20"
+                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20"
               />
-            </div>
+            </div> */}
             <div className={inputWrapper}>
               <label className={labelStyle}>
-                <FileText size={14} className="text-emerald-500" /> Nom du type
+                <FileText size={14} className="text-orange-700" /> Nom du type
               </label>
               <InputText
                 value={formData.libelle}
@@ -109,7 +106,7 @@ export default function PiecesForm({
                   setFormData({ ...formData, libelle: e.target.value })
                 }
                 placeholder="Ex: Facture d'achat"
-                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20"
+                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20"
               />
             </div>
           </div>
@@ -129,8 +126,8 @@ export default function PiecesForm({
             label={loading ? "Traitement..." : "Enregistrer la pièce"}
             icon={!loading && <Save size={18} className="mr-2" />}
             onClick={handleSubmit}
-            disabled={loading || !formData.code_pieces || !formData.libelle}
-            className="bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl border-none shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95"
+            disabled={loading || !formData.libelle}
+            className="bg-orange-700 text-white font-bold px-6 py-3 rounded-xl border-none shadow-lg shadow-orange-100 hover:bg-orange-700 transition-all active:scale-95"
           />
         </div>
       </div>

@@ -47,7 +47,7 @@ const TraveDetails = ({ visible, onHide, trave }: TraveDetailsProps) => {
       {trave ? (
         <div className="space-y-6 pt-2">
           {/* Header Info Card */}
-          <div className="bg-gradient-to-br from-green-600 to-emerald-700 text-white p-6 rounded-2xl shadow-md">
+          <div className="bg-gradient-to-br from-orange-700 to-orange-800 text-white p-6 rounded-2xl shadow-md">
             <h1 className="text-2xl font-black mb-2">{trave.code}</h1>
             <div className="flex flex-wrap gap-4 text-sm opacity-90">
               <div className="flex items-center gap-1">
@@ -63,13 +63,13 @@ const TraveDetails = ({ visible, onHide, trave }: TraveDetailsProps) => {
           {/* Boxes Section */}
           <div>
             <h2 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-              <BoxIcon className="text-green-600" size={20} />
+              <BoxIcon className="text-orange-600" size={20} />
               Boxes rattachés ({boxes.length})
             </h2>
 
             {loading ? (
               <div className="flex justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
               </div>
             ) : boxes.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -82,12 +82,12 @@ const TraveDetails = ({ visible, onHide, trave }: TraveDetailsProps) => {
                       className="p-4 border border-slate-100 rounded-xl bg-slate-50/50 hover:bg-white hover:shadow-md transition-all group"
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <span className="font-bold text-slate-700 group-hover:text-green-600 transition-colors">
+                        <span className="font-bold text-slate-700 group-hover:text-orange-600 transition-colors">
                           {b.libelle}
                         </span>
                         <div
                           className={`h-2.5 w-2.5 rounded-full shadow-sm ${
-                            isFull ? "bg-red-500" : "bg-green-500"
+                            isFull ? "bg-red-500" : "bg-orange-500"
                           }`}
                         />
                       </div>
@@ -95,7 +95,7 @@ const TraveDetails = ({ visible, onHide, trave }: TraveDetailsProps) => {
                       <div className="flex flex-col gap-1">
                         <div className="w-full bg-slate-200 rounded-full h-1.5 mt-1">
                           <div
-                            className={`h-1.5 rounded-full ${isFull ? "bg-red-500" : "bg-green-500"}`}
+                            className={`h-1.5 rounded-full ${isFull ? "bg-red-500" : "bg-orange-500"}`}
                             style={{
                               width: `${Math.min((Number(b.current_count) / Number(b.capacite_max)) * 100, 100)}%`,
                             }}

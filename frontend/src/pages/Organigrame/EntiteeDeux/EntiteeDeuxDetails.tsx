@@ -84,8 +84,8 @@ export default function EntiteeDeuxDetails({
     <Dialog
       header={
         <div className="flex items-center gap-2 text-slate-800 font-bold">
-          <div className="bg-emerald-100 p-2 rounded-lg">
-            <Layers size={18} className="text-emerald-600" />
+          <div className="bg-orange-100 p-2 rounded-lg">
+            <Layers size={18} className="text-orange-600" />
           </div>
           <span>Détails</span>
         </div>
@@ -107,20 +107,20 @@ export default function EntiteeDeuxDetails({
       <div className="pt-2 space-y-6">
         {/* Header Entitee deux */}
         <div className="border-b border-slate-100 pb-4 space-y-2">
-          <p className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
+          <p className="text-orange-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
             {entiteeDeux.titre}
           </p>
 
           {/* Infos complémentaires */}
-          <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50/50 border border-emerald-100/50">
-            <div className="p-2 bg-emerald-500 rounded-lg shadow-sm shadow-emerald-200">
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-orange-50/50 border border-orange-100/50">
+            <div className="p-2 bg-orange-500 rounded-lg shadow-sm shadow-orange-200">
               <Building2 size={16} className="text-white" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-emerald-600/50 uppercase tracking-widest">
+              <p className="text-[10px] font-black text-orange-600/50 uppercase tracking-widest">
                 Structure parente
               </p>
-              <p className="text-sm text-emerald-800 font-bold uppercase">
+              <p className="text-sm text-orange-800 font-bold uppercase">
                 {entiteeUnLibelle || "Non spécifié"}
               </p>
             </div>
@@ -141,7 +141,7 @@ export default function EntiteeDeuxDetails({
               <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Fonctions rattachées
               </p>
-              <span className="bg-emerald-500 text-white text-[10px] font-bold px-2 ml-2 py-0.5 rounded-full shadow-sm">
+              <span className="bg-orange-500 text-white text-[10px] font-bold px-2 ml-2 py-0.5 rounded-full shadow-sm">
                 {fonctions.length}
               </span>
             </div>
@@ -151,7 +151,7 @@ export default function EntiteeDeuxDetails({
                 setAjoutFonctionVisible(true);
                 e.stopPropagation();
               }}
-              className="flex items-center gap-2 px-3 py-2 text-emerald-600 font-bold bg-emerald-50 hover:text-white hover:bg-emerald-500 rounded-lg transition-all border-none shadow-sm"
+              className="flex items-center gap-2 px-3 py-2 text-orange-600 font-bold bg-orange-50 hover:text-white hover:bg-orange-500 rounded-lg transition-all border-none shadow-sm"
             >
               <PlusCircle size={15} />
               <span className="text-xs">Ajouter une fonction</span>
@@ -181,10 +181,10 @@ export default function EntiteeDeuxDetails({
                   {fonctions.map((f, index) => (
                     <tr
                       key={f.id}
-                      className="group hover:bg-emerald-50/30 transition-colors"
+                      className="group hover:bg-orange-50/30 transition-colors"
                     >
                       <td className="p-3">
-                        <span className="text-xs font-bold text-slate-400 group-hover:text-emerald-500">
+                        <span className="text-xs font-bold text-slate-400 group-hover:text-orange-500">
                           {String(index + 1).padStart(2, "0")}
                         </span>
                       </td>
@@ -192,7 +192,7 @@ export default function EntiteeDeuxDetails({
                         <div className="flex items-center gap-2">
                           <Briefcase
                             size={14}
-                            className="text-slate-300 group-hover:text-emerald-400"
+                            className="text-slate-300 group-hover:text-orange-400"
                           />
                           <span className="text-sm font-bold text-slate-700 group-hover:text-slate-900">
                             {f.libelle}
@@ -215,7 +215,7 @@ export default function EntiteeDeuxDetails({
                               setAjoutFonctionVisible(true);
                               e.stopPropagation();
                             }}
-                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                            className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                           >
                             <Pencil size={18} />
                           </button>

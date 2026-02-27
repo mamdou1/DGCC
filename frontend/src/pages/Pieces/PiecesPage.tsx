@@ -149,7 +149,7 @@ export default function PiecesPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -158,7 +158,7 @@ export default function PiecesPage() {
   if (error) {
     return (
       <Layout>
-        <div className="text-center text-red-600 p-8">
+        <div className="text-center text-red-800 p-8">
           <XCircle size={48} className="mx-auto mb-4" />
           <p>Erreur de chargement: {error.message}</p>
           <Button
@@ -178,7 +178,7 @@ export default function PiecesPage() {
       {/* Header (inchangé) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
+          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
             <FileStack size={28} />
           </div>
           <div>
@@ -193,7 +193,7 @@ export default function PiecesPage() {
         <Button
           label="Nouvelle pièce"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all shadow-emerald-200"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all shadow-orange-200"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -205,11 +205,11 @@ export default function PiecesPage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative group max-w-md w-full">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
             size={20}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 transition-all outline-none"
             placeholder="Rechercher..."
             value={query}
             onChange={(e) => {
@@ -238,10 +238,10 @@ export default function PiecesPage() {
                   setSelected(n);
                   setDetailsVisible(true);
                 }}
-                className="cursor-pointer hover:bg-emerald-50/30 transition-all group"
+                className="cursor-pointer hover:bg-orange-50/30 transition-all group"
               >
                 <td className="px-6 py-4">
-                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg font-mono font-bold text-xs border border-emerald-100">
+                  <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg font-mono font-bold text-xs border border-orange-100">
                     {n.code_pieces}
                   </span>
                 </td>
@@ -249,7 +249,7 @@ export default function PiecesPage() {
                   <div className="flex items-center gap-2">
                     <FileText
                       size={16}
-                      className="text-slate-300 group-hover:text-emerald-400 transition-colors"
+                      className="text-slate-300 group-hover:text-orange-400 transition-colors"
                     />
                     {n.libelle}
                   </div>
@@ -261,7 +261,7 @@ export default function PiecesPage() {
                         setSelected(n);
                         setDetailsVisible(true);
                       }}
-                      className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
+                      className="p-3 text-slate-400 hover:text-orange-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
                       title="Voir détails"
                     >
                       <Eye size={20} />
@@ -272,7 +272,7 @@ export default function PiecesPage() {
                         setFormVisible(true);
                         e.stopPropagation();
                       }}
-                      className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
+                      className="p-3 text-slate-400 hover:text-orange-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
                       title="Modifier"
                     >
                       <Pencil size={20} />
@@ -283,7 +283,7 @@ export default function PiecesPage() {
                         setMetaVisible(true);
                         e.stopPropagation();
                       }}
-                      className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
+                      className="p-3 text-slate-400 hover:text-orange-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
                     >
                       <Settings size={20} />
                     </button>

@@ -7,6 +7,20 @@ const {
 const upload = require("../middlewares/ulpoadDocument.middleware");
 const historiqueMiddleware = require("../middlewares/historiqueLogger.middleware");
 
+router.post(
+  "/",
+  verifyToken,
+  authorizePermission("document", "create"),
+  ctrl.create,
+);
+
+router.get(
+  "/",
+  verifyToken,
+  authorizePermission("document", "read"),
+  ctrl.getAll,
+);
+
 // =============================================
 // 1. ROUTES SPÉCIFIQUES (avec mots-clés) - EN PREMIER !
 // =============================================
@@ -101,20 +115,6 @@ router.delete(
   verifyToken,
   authorizePermission("document", "delete"),
   ctrl.remove,
-);
-
-router.post(
-  "/",
-  verifyToken,
-  authorizePermission("document", "create"),
-  ctrl.create,
-);
-
-router.get(
-  "/",
-  verifyToken,
-  authorizePermission("document", "read"),
-  ctrl.getAll,
 );
 
 module.exports = router;

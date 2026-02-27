@@ -142,7 +142,7 @@
 //   const labelClass =
 //     "flex items-center gap-2 text-sm font-bold text-slate-700 mb-2";
 //   const inputClass =
-//     "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-emerald-900 font-medium";
+//     "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none text-orange-900 font-medium";
 
 //   return (
 //     <Dialog
@@ -165,8 +165,8 @@
 //             icon={!loading && <Save size={20} className="mr-2" />}
 //             onClick={handleSubmit}
 //             disabled={loading || !nom || !code}
-//             // Changement : bg-emerald-600 et shadow-emerald-200
-//             className="bg-emerald-600 text-white font-bold py-3.5 px-10 rounded-2xl hover:bg-emerald-700 shadow-xl shadow-emerald-200 transition-all active:scale-95 border-none"
+//             // Changement : bg-orange-600 et shadow-orange-200
+//             className="bg-orange-600 text-white font-bold py-3.5 px-10 rounded-2xl hover:bg-orange-700 shadow-xl shadow-orange-200 transition-all active:scale-95 border-none"
 //           />
 //         </div>
 //       }
@@ -177,12 +177,12 @@
 //           <div className="grid grid-cols-1 gap-6">
 //             <div className="space-y-3">
 //               <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-//                 <Hash size={14} className="text-emerald-500" /> Code Référence
+//                 <Hash size={14} className="text-orange-500" /> Code Référence
 //               </label>
 //               <InputText
 //                 value={code}
 //                 onChange={(e) => setCode(e.target.value.toUpperCase())}
-//                 // Changement : focus:ring-emerald-500
+//                 // Changement : focus:ring-orange-500
 //                 className={inputClass}
 //                 placeholder="ex: FACT-SC"
 //               />
@@ -191,14 +191,14 @@
 
 //           <div className="space-y-3">
 //             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-//               <FileText size={14} className="text-emerald-500" /> Nom Complet du
+//               <FileText size={14} className="text-orange-500" /> Nom Complet du
 //               Document
 //             </label>
 //             <InputText
 //               value={nom}
 //               onChange={(e) => setNom(e.target.value)}
-//               // Changement : focus:ring-emerald-500
-//               className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 font-semibold"
+//               // Changement : focus:ring-orange-500
+//               className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-orange-500 font-semibold"
 //               placeholder="ex: Facture Fournisseur Service"
 //             />
 //           </div>
@@ -206,13 +206,13 @@
 
 //         {/* Colonne Droite: Affectation */}
 //         <div className="space-y-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
-//           <h3 className="text-xs font-black uppercase text-emerald-500 tracking-widest border-b border-emerald-100 pb-2">
+//           <h3 className="text-xs font-black uppercase text-orange-500 tracking-widest border-b border-orange-100 pb-2">
 //             Affectation
 //           </h3>
 
 //           <div>
 //             <label className={labelClass}>
-//               <Building2 size={14} className="text-emerald-500" /> {titreUn}
+//               <Building2 size={14} className="text-orange-500" /> {titreUn}
 //             </label>
 //             <Dropdown
 //               value={entitee_un_id}
@@ -228,7 +228,7 @@
 
 //           <div>
 //             <label className={labelClass}>
-//               <Layers size={14} className="text-emerald-500" /> {titreDeux}
+//               <Layers size={14} className="text-orange-500" /> {titreDeux}
 //             </label>
 //             <Dropdown
 //               value={entitee_deux_id}
@@ -274,26 +274,25 @@ import { FileText, Save, Hash, Info, X } from "lucide-react";
 export default function DocumentTypeForm({
   onHide,
   onSubmit,
-  refresh,
   initial = {},
   currentStructureLabel = "",
   isFiltered = false,
 }: any) {
-  const [code, setCode] = useState("");
+  //const [code, setCode] = useState("");
   const [nom, setNom] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Initialisation des champs (le visible n'est plus requis ici car le TabView monte le composant)
   useEffect(() => {
-    setCode(initial?.code || "");
+    //setCode(initial?.code || "");
     setNom(initial?.nom || "");
   }, [initial]);
 
   const handleSubmit = async () => {
-    if (!nom || !code) return;
+    if (!nom) return;
     setLoading(true);
     try {
-      await onSubmit({ code, nom });
+      await onSubmit({ nom });
       // On peut appeler onHide() ici si on veut fermer la modale après succès
       //refresh();
     } catch (error) {
@@ -323,28 +322,28 @@ export default function DocumentTypeForm({
 
       {/* 2. Champs de saisie */}
       <div className="space-y-5">
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <Hash size={14} className="text-emerald-500" /> Code Référence
+            <Hash size={14} className="text-orange-500" /> Code Référence
           </label>
           <InputText
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono"
+            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 transition-all font-mono"
             placeholder="ex: FACT-SC"
             autoFocus
           />
-        </div>
+        </div> */}
 
         <div className="space-y-2">
           <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <FileText size={14} className="text-emerald-500" /> Libellé du
+            <FileText size={14} className="text-orange-500" /> Libellé du
             document
           </label>
           <InputText
             value={nom}
             onChange={(e) => setNom(e.target.value)}
-            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 transition-all"
+            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 transition-all"
             placeholder="ex: Facture de service"
           />
         </div>
@@ -364,8 +363,8 @@ export default function DocumentTypeForm({
           icon={!loading && <Save size={18} className="mr-2" />}
           onClick={handleSubmit}
           loading={loading}
-          disabled={!nom || !code}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-emerald-200 transition-all font-bold"
+          disabled={!nom}
+          className="bg-orange-600 hover:bg-orange-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
         />
       </div>
     </div>

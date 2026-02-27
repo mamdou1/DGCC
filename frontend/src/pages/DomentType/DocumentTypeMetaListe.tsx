@@ -21,10 +21,10 @@ export default function DocumentTypeMetaListe({ metaFields }: Props) {
       {metaFields.map((m: any) => (
         <div
           key={m.id}
-          className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-emerald-200 transition-colors"
+          className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-orange-200 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-200" />
+            <div className="w-2 h-2 rounded-full bg-orange-500 shadow-lg shadow-orange-200" />
             <span className="font-bold text-slate-700">{m.label}</span>
           </div>
           <div className="flex items-center gap-2">

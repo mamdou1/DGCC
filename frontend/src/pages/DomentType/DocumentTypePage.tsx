@@ -382,8 +382,8 @@ export default function DocumentTypePage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
         <div>
           <h1 className="text-4xl font-black text-slate-800 tracking-tight flex items-center gap-4">
-            {/* Changement : Gradient Emerald */}
-            <div className="p-4 bg-gradient-to-br from-emerald-500 to-emerald-800 text-white rounded-3xl shadow-xl shadow-emerald-100">
+            {/* Changement : Gradient orange */}
+            <div className="p-4 bg-gradient-to-br from-orange-700 to-orange-800 text-white rounded-3xl shadow-xl shadow-orange-100">
               <Database size={28} />
             </div>
             Types de Documents
@@ -400,7 +400,7 @@ export default function DocumentTypePage() {
               setEditing(null);
               setFormVisible(true);
             }}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-4 rounded-2xl shadow-lg transition-all font-bold"
+            className="bg-orange-700 hover:bg-orange-800 text-white border-none px-8 py-4 rounded-2xl shadow-lg transition-all font-bold"
           />
         </div>
       </div>
@@ -409,11 +409,11 @@ export default function DocumentTypePage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-[300px] relative group">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
             size={18}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 transition-all"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 transition-all"
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher par code ou nom de document..."
             value={query}
@@ -480,7 +480,7 @@ export default function DocumentTypePage() {
                   setSelected(t);
                   setDetailsVisible(true);
                 }}
-                className="cursor-pointer group hover:bg-emerald-50/30 transition-all"
+                className="cursor-pointer group hover:bg-orange-50/30 transition-all"
               >
                 <td className="p-6">
                   <span className="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-black border border-slate-200 uppercase">
@@ -502,8 +502,8 @@ export default function DocumentTypePage() {
                         : "Non assigné"}
                 </td>
                 <td className="p-6">
-                  {/* Changement : Badge Emerald */}
-                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-[11px] font-black">
+                  {/* Changement : Badge orange */}
+                  <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-[11px] font-black">
                     {t.metaFields?.length || 0} CHAMPS
                   </span>
                 </td>
@@ -526,7 +526,7 @@ export default function DocumentTypePage() {
                         setAffectationFormVisible(true);
                         e.stopPropagation();
                       }}
-                      className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
+                      className="p-3 text-slate-400 hover:text-orange-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
                     >
                       <SplinePointer size={20} />
                     </button>
@@ -536,7 +536,7 @@ export default function DocumentTypePage() {
                         setFormVisible(true);
                         e.stopPropagation();
                       }}
-                      className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
+                      className="p-3 text-slate-400 hover:text-orange-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
                     >
                       <Pencil size={20} />
                     </button>
@@ -546,7 +546,7 @@ export default function DocumentTypePage() {
                         setMetaVisible(true);
                         e.stopPropagation();
                       }}
-                      className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
+                      className="p-3 text-slate-400 hover:text-orange-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
                     >
                       <Settings size={20} />
                     </button>

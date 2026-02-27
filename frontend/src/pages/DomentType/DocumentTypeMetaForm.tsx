@@ -104,8 +104,8 @@ export default function DocumentTypeMetaForm({
       <Dialog
         header={
           <div className="flex items-center gap-3">
-            {/* Changement : bg-emerald-100 et text-emerald-700 */}
-            <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
+            {/* Changement : bg-orange-100 et text-orange-700 */}
+            <div className="p-2 bg-orange-100 text-orange-700 rounded-lg">
               <Settings size={20} />
             </div>
             <div>
@@ -133,8 +133,8 @@ export default function DocumentTypeMetaForm({
               label="Enregistrer la structure"
               icon={<Save size={18} className="mr-2" />}
               onClick={saveAll}
-              // Changement : bg-emerald-600
-              className="bg-emerald-600 text-white font-bold py-3 px-8 rounded-2xl hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all border-none"
+              // Changement : bg-orange-600
+              className="bg-orange-600 text-white font-bold py-3 px-8 rounded-2xl hover:bg-orange-700 shadow-lg shadow-orange-200 transition-all border-none"
             />
           </div>
         }
@@ -164,7 +164,7 @@ export default function DocumentTypeMetaForm({
               <div className="col-span-7">
                 <InputText
                   placeholder="Libellé du champ"
-                  className="w-full p-3.5 border-slate-200 rounded-xl shadow-sm focus:border-emerald-500"
+                  className="w-full p-3.5 border-slate-200 rounded-xl shadow-sm focus:border-orange-500"
                   value={data.label}
                   onChange={(e) => setData({ ...data, label: e.target.value })}
                 />
@@ -192,8 +192,8 @@ export default function DocumentTypeMetaForm({
                   label={isEditingMode ? "Mettre à jour" : "Ajouter au modèle"}
                   icon={isEditingMode ? <Save size={18} /> : <Plus size={18} />}
                   onClick={handleAddOrUpdateField}
-                  // Changement : bg-emerald-800 pour le bouton d'action secondaire
-                  className={`${isEditingMode ? "bg-amber-500" : "bg-emerald-800"} text-white px-6 py-3 rounded-xl border-none font-bold transition-transform active:scale-95`}
+                  // Changement : bg-orange-800 pour le bouton d'action secondaire
+                  className={`${isEditingMode ? "bg-amber-500" : "bg-orange-800"} text-white px-6 py-3 rounded-xl border-none font-bold transition-transform active:scale-95`}
                 />
               </div>
             </div>
@@ -207,12 +207,12 @@ export default function DocumentTypeMetaForm({
               {fields.map((f) => (
                 <div
                   key={f.id}
-                  // Changement : hover:border-emerald-200
-                  className="group flex justify-between items-center p-4 bg-white border border-slate-100 rounded-2xl hover:border-emerald-200 hover:shadow-xl transition-all shadow-sm"
+                  // Changement : hover:border-orange-200
+                  className="group flex justify-between items-center p-4 bg-white border border-slate-100 rounded-2xl hover:border-orange-200 hover:shadow-xl transition-all shadow-sm"
                 >
                   <div className="flex items-center gap-4">
-                    {/* Changement : group-hover colors Emerald */}
-                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors">
+                    {/* Changement : group-hover colors orange */}
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-orange-50 group-hover:text-orange-600 transition-colors">
                       <Hash size={18} />
                     </div>
                     <div>
@@ -234,7 +234,7 @@ export default function DocumentTypeMetaForm({
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => editField(f)}
-                      className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                     >
                       <Pencil size={18} />
                     </button>

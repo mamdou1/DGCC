@@ -69,11 +69,11 @@ export default function TraveForm({
       <form onSubmit={handleSubmit} className="flex flex-col gap-5 pt-4">
         {/* Code de l'étagère */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+          <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
             <Hash size={14} /> Code Travé
           </label>
           <InputText
-            className="p-3 bg-emerald-50 border-emerald-200 rounded-xl"
+            className="p-3 bg-orange-50 border-orange-200 rounded-xl"
             placeholder="Ex: ETG-01"
             value={formData.code}
             onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -83,7 +83,7 @@ export default function TraveForm({
 
         {/* Sélection de la Rayon */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+          <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
             <MapPin size={14} /> Salle de destination
           </label>
           <Dropdown
@@ -92,7 +92,7 @@ export default function TraveForm({
             optionLabel="code"
             optionValue="id"
             placeholder={loadingRayon ? "Chargement..." : "Choisir une rayon"}
-            className="w-full bg-emerald-50 border-emerald-200 rounded-xl text-left"
+            className="w-full bg-orange-50 border-orange-200 rounded-xl text-left"
             onChange={(e) => setFormData({ ...formData, rayon_id: e.value })}
             filter
             required
@@ -105,13 +105,13 @@ export default function TraveForm({
             label="Annuler"
             icon="pi pi-times"
             onClick={onHide}
-            className="p-button-text text-emerald-500"
+            className="p-button-text text-orange-500"
           />
           <Button
             type="submit"
             label={initial?.id ? "Mettre à jour" : "Enregistrer"}
             icon={<Save size={18} className="mr-2" />}
-            className="bg-emerald-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-emerald-700 transition-all"
+            className="bg-orange-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-orange-700 transition-all"
           />
         </div>
       </form>

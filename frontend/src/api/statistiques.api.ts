@@ -35,35 +35,55 @@ export const getTotalDocuments = async () => {
 };
 
 // =============================================
-// AGENTS PAR STRUCTURE
+// AGENTS PAR STRUCTURE (NOUVELLES ENTITÉS)
 // =============================================
 
-export const getAgentsByEntiteeUn = async () => {
+export const getAgentsByDirection = async () => {
   try {
-    const res = await api.get("/statistiques/agents/entitee-un");
+    const res = await api.get("/statistiques/agents/direction");
     return res.data;
   } catch (error) {
-    console.error("❌ Erreur getAgentsByEntiteeUn:", error);
+    console.error("❌ Erreur getAgentsByDirection:", error);
     throw error;
   }
 };
 
-export const getAgentsByEntiteeDeux = async () => {
+export const getAgentsBySousDirection = async () => {
   try {
-    const res = await api.get("/statistiques/agents/entitee-deux");
+    const res = await api.get("/statistiques/agents/sous-direction");
     return res.data;
   } catch (error) {
-    console.error("❌ Erreur getAgentsByEntiteeDeux:", error);
+    console.error("❌ Erreur getAgentsBySousDirection:", error);
     throw error;
   }
 };
 
-export const getAgentsByEntiteeTrois = async () => {
+export const getAgentsByDivision = async () => {
   try {
-    const res = await api.get("/statistiques/agents/entitee-trois");
+    const res = await api.get("/statistiques/agents/division");
     return res.data;
   } catch (error) {
-    console.error("❌ Erreur getAgentsByEntiteeTrois:", error);
+    console.error("❌ Erreur getAgentsByDivision:", error);
+    throw error;
+  }
+};
+
+export const getAgentsBySection = async () => {
+  try {
+    const res = await api.get("/statistiques/agents/section");
+    return res.data;
+  } catch (error) {
+    console.error("❌ Erreur getAgentsBySection:", error);
+    throw error;
+  }
+};
+
+export const getAgentsByService = async () => {
+  try {
+    const res = await api.get("/statistiques/agents/service");
+    return res.data;
+  } catch (error) {
+    console.error("❌ Erreur getAgentsByService:", error);
     throw error;
   }
 };

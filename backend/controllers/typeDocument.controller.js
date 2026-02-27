@@ -3,9 +3,11 @@ const {
   TypeDocument,
   MetaField,
   Pieces,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
+  Direction,
+  SousDirection,
+  Service,
+  Division,
+  Section,
   sequelize,
 } = require("../models");
 const logger = require("../config/logger.config");
@@ -20,7 +22,30 @@ exports.create = async (req, res) => {
       body: req.body,
     });
 
-    const data = await TypeDocument.create(req.body);
+    const {
+      nom,
+      section_id,
+      division_id,
+      sous_direction_id,
+      service_id,
+      direction_id,
+    } = req.body;
+
+    const count = await TypeDocument.count();
+
+    const nextNumber = count + 1;
+    const paddedNumber = nextNumber.toString().padStart(3, "0");
+    const code = `TD-${paddedNumber}`;
+
+    const data = await TypeDocument.create({
+      code,
+      nom,
+      section_id,
+      division_id,
+      sous_direction_id,
+      service_id,
+      direction_id,
+    });
 
     logger.info("✅ Type de document créé avec succès", {
       typeId: data.id,
@@ -66,23 +91,38 @@ exports.update = async (req, res) => {
     }
 
     const oldCopy = oldType.toJSON();
+
+    // ✅ Extraire TOUS les champs possibles
     const {
       nom,
       code,
+      // Anciennes entités
       entitee_un_id,
       entitee_deux_id,
       entitee_trois_id,
+      // NOUVELLES ENTITÉS
+      direction_id,
+      service_id,
+      sous_direction_id,
       division_id,
+      section_id,
     } = req.body;
 
+    // ✅ Mettre à jour avec TOUS les champs
     const [updated] = await TypeDocument.update(
       {
         nom,
         code,
+        // Anciennes entités
         entitee_un_id,
         entitee_deux_id,
         entitee_trois_id,
+        // NOUVELLES ENTITÉS
+        direction_id,
+        service_id,
+        sous_direction_id,
         division_id,
+        section_id,
       },
       { where: { id } },
     );
@@ -106,7 +146,6 @@ exports.update = async (req, res) => {
       duration: Date.now() - startTime,
     });
 
-    // Journalisation dans l'historique
     await HistoriqueService.logUpdate(
       req,
       "typeDocument",
@@ -145,19 +184,29 @@ exports.getAll = async (req, res) => {
       include: [
         { model: MetaField, as: "metaFields" },
         {
-          model: EntiteeUn,
-          as: "entitee_un",
-          attributes: ["id", "libelle", "code", "titre"],
+          model: Direction,
+          as: "direction",
+          attributes: ["id", "libelle", "code"],
         },
         {
-          model: EntiteeDeux,
-          as: "entitee_deux",
-          attributes: ["id", "libelle", "code", "titre"],
+          model: SousDirection,
+          as: "sousDirection",
+          attributes: ["id", "libelle", "code"],
         },
         {
-          model: EntiteeTrois,
-          as: "entitee_trois",
-          attributes: ["id", "libelle", "code", "titre"],
+          model: Division,
+          as: "division",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: Section,
+          as: "section",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: Service,
+          as: "service",
+          attributes: ["id", "libelle", "code"],
         },
         {
           model: Pieces,
@@ -170,22 +219,50 @@ exports.getAll = async (req, res) => {
     });
 
     const formatted = data.map((td) => {
+      // Déterminer l'entité concernée (priorité aux nouvelles)
       const entiteeConcernee =
-        td.entitee_trois || td.entitee_deux || td.entitee_un;
+        td.section ||
+        td.division ||
+        td.sousDirection ||
+        td.service ||
+        td.direction ||
+        td.entitee_trois ||
+        td.entitee_deux ||
+        td.entitee_un;
 
       return {
         id: td.id,
         code: td.code,
         nom: td.nom,
+
+        // Anciens IDs (pour compatibilité)
         entitee_un_id: td.entitee_un?.id || null,
         entitee_deux_id: td.entitee_deux?.id || null,
         entitee_trois_id: td.entitee_trois?.id || null,
+
+        // ✅ NOUVEAUX IDs
+        direction_id: td.direction?.id || null,
+        service_id: td.service?.id || null,
+        sous_direction_id: td.sousDirection?.id || null,
+        division_id: td.division?.id || null,
+        section_id: td.section?.id || null,
+
         structure_libelle: entiteeConcernee
           ? entiteeConcernee.libelle
           : "Non assigné",
+
+        // Anciens objets (pour compatibilité)
         entitee_un: td.entitee_un,
         entitee_deux: td.entitee_deux,
         entitee_trois: td.entitee_trois,
+
+        // ✅ NOUVEAUX OBJETS
+        direction: td.direction,
+        service: td.service,
+        sousDirection: td.sousDirection,
+        division: td.division,
+        section: td.section,
+
         metaFields: td.metaFields || [],
         pieces: (td.pieces || []).map((p) => ({
           id: p.id,
@@ -202,27 +279,6 @@ exports.getAll = async (req, res) => {
       userId: req.user?.id,
       duration: Date.now() - startTime,
     });
-
-    // Journalisation dans l'historique pour les GET avec sidebar
-    if (req.headers["x-sidebar-navigation"] === "true") {
-      await HistoriqueService.log({
-        agent_id: req.user?.id || null,
-        action: "read",
-        resource: "typeDocument",
-        resource_id: null,
-        resource_identifier: "liste des types de documents",
-        description: "Consultation de la liste des types de documents",
-        method: req.method,
-        path: req.originalUrl,
-        status: 200,
-        ip: req.ip,
-        user_agent: req.headers["user-agent"],
-        data: {
-          count: formatted.length,
-          duration: Date.now() - startTime,
-        },
-      });
-    }
 
     res.json({ typeDocument: formatted });
   } catch (e) {
@@ -248,9 +304,11 @@ exports.getById = async (req, res) => {
 
     const data = await TypeDocument.findByPk(id, {
       include: [
-        { model: EntiteeUn },
-        { model: EntiteeDeux },
-        { model: EntiteeTrois },
+        { model: Direction },
+        { model: SousDirection },
+        { model: Division },
+        { model: Section },
+        { model: Service },
         { model: MetaField },
       ],
     });

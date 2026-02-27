@@ -19,7 +19,7 @@ export default function SiteForm({ visible, onHide, onSubmit, initial }: any) {
       onHide={onHide}
       header={
         <div className="flex items-center gap-2">
-          <DoorOpen className="text-emerald-600" size={20} />{" "}
+          <DoorOpen className="text-orange-600" size={20} />{" "}
           <span>{initial?.id ? "Modifier la site" : "Nouvelle site"}</span>
         </div>
       }
@@ -34,11 +34,11 @@ export default function SiteForm({ visible, onHide, onSubmit, initial }: any) {
         className="flex flex-col gap-5 pt-4"
       >
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+          <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
             <Hash size={14} /> Nom du Site
           </label>
           <InputText
-            className="p-3 bg-emerald-50 border-emerald-200 rounded-xl"
+            className="p-3 bg-orange-50 border-orange-200 rounded-xl"
             placeholder="Ex: SITE-01"
             value={formData.nom}
             onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
@@ -46,11 +46,11 @@ export default function SiteForm({ visible, onHide, onSubmit, initial }: any) {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-emerald-600 flex items-center gap-2">
+          <label className="text-sm font-semibold text-orange-600 flex items-center gap-2">
             <Type size={14} /> Adresse
           </label>
           <InputText
-            className="p-3 bg-emerald-50 border-emerald-200 rounded-xl"
+            className="p-3 bg-orange-50 border-orange-200 rounded-xl"
             placeholder="Ex: SITE des archives comptables"
             value={formData.adresse}
             onChange={(e) =>
@@ -64,13 +64,13 @@ export default function SiteForm({ visible, onHide, onSubmit, initial }: any) {
             type="button"
             label="Annuler"
             onClick={onHide}
-            className="p-button-text text-emerald-400"
+            className="p-button-text text-orange-400"
           />
           <Button
             type="submit"
             icon={<Save size={18} className="mr-2" />}
             label="Enregistrer"
-            className="bg-emerald-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-emerald-700 transition-all"
+            className="bg-orange-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-orange-700 transition-all"
           />
         </div>
       </form>

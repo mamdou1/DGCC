@@ -234,13 +234,33 @@ export default function DroitPermissionForm({
       onHide={onHide}
       draggable={false}
       className="rounded-2xl"
+      footer={
+        <div className="flex justify-end gap-3 mt-4 pt-2 border-t">
+          <Button
+            label="Annuler"
+            icon={<X size={16} />}
+            onClick={onHide}
+            className="p-button-text text-slate-400 hover:text-slate-600 transition-colors"
+            disabled={loading}
+          />
+          <Button
+            label={
+              loading ? "Enregistrement..." : "Enregistrer les modifications"
+            }
+            icon={!loading && <Save size={16} />}
+            disabled={loading}
+            onClick={save}
+            className="bg-slate-900 text-white font-bold px-8 py-3 rounded-xl border-none shadow-lg hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+        </div>
+      }
     >
       <Toast ref={toast} />
 
       {loading && !allPermissionsGrouped.length ? (
         <div className="flex items-center justify-center h-[450px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
             <p className="mt-4 text-slate-600">Chargement des permissions...</p>
           </div>
         </div>
@@ -248,13 +268,6 @@ export default function DroitPermissionForm({
         <div className="space-y-4">
           {/* Barre de filtres et recherche */}
           <div className="bg-slate-50 p-4 rounded-xl space-y-3">
-            <div className="flex items-center gap-2">
-              <Filter size={16} className="text-slate-500" />
-              <span className="text-xs font-bold text-slate-500 uppercase">
-                Filtres
-              </span>
-            </div>
-
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
                 <Search
@@ -280,7 +293,7 @@ export default function DroitPermissionForm({
             <div className="flex items-center justify-between pt-2">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
-                  <CheckCircle size={14} className="text-emerald-500" />
+                  <CheckCircle size={14} className="text-orange-500" />
                   <span className="text-xs text-slate-600">
                     {assignedIds.length} permission(s) accordée(s)
                   </span>
@@ -322,7 +335,7 @@ export default function DroitPermissionForm({
                       className="sticky top-0 bg-slate-50 p-3 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <ShieldCheck size={16} className="text-emerald-600" />
+                        <ShieldCheck size={16} className="text-orange-600" />
                         <span className="text-sm font-bold uppercase text-slate-700">
                           {group.resource}
                         </span>
@@ -347,7 +360,7 @@ export default function DroitPermissionForm({
                             <div
                               key={perm.id}
                               className={`flex items-center justify-between p-3 hover:bg-slate-50 transition-colors ${
-                                isGranted ? "bg-emerald-50/20" : ""
+                                isGranted ? "bg-orange-50/20" : ""
                               }`}
                             >
                               <div className="flex items-center gap-3 flex-1">
@@ -397,36 +410,16 @@ export default function DroitPermissionForm({
           </div>
 
           {/* Résumé des modifications */}
-          <div className="bg-emerald-50 p-3 rounded-lg flex items-center justify-between">
-            <span className="text-xs text-emerald-700">
+          <div className="bg-orange-50 p-3 rounded-lg flex items-center justify-between">
+            <span className="text-xs text-orange-700">
               {assignedIds.length} permission(s) sélectionnée(s)
             </span>
-            <span className="text-[10px] text-emerald-500">
+            <span className="text-[10px] text-orange-500">
               Les modifications seront appliquées après validation
             </span>
           </div>
         </div>
       )}
-
-      {/* FOOTER */}
-      <div className="flex justify-end gap-3 mt-4 pt-2 border-t">
-        <Button
-          label="Annuler"
-          icon={<X size={16} />}
-          onClick={onHide}
-          className="p-button-text text-slate-400 hover:text-slate-600 transition-colors"
-          disabled={loading}
-        />
-        <Button
-          label={
-            loading ? "Enregistrement..." : "Enregistrer les modifications"
-          }
-          icon={!loading && <Save size={16} />}
-          disabled={loading}
-          onClick={save}
-          className="bg-slate-900 text-white font-bold px-8 py-3 rounded-xl border-none shadow-lg hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        />
-      </div>
     </Dialog>
   );
 }

@@ -26,6 +26,12 @@ import ChangePassword from "../pages/Auth/ChangePassword";
 import SendEmail from "../pages/Auth/SendEmail";
 import VerifyEmail from "../pages/Auth/VerifyEmail";
 import UpdatePassword from "../pages/Auth/UpdatePassword";
+import DirectionPage from "../pages/Organigrame/Direction/DirectionPage";
+import SousDirectionPage from "../pages/Organigrame/Sous Direction/SousDirectionPage";
+import DivisionPage from "../pages/Organigrame/Division/DivisionPage";
+import SectionPage from "../pages/Organigrame/Section/SectionPage";
+import ServicePage from "../pages/Organigrame/Service/ServicePage";
+import FonctionPage from "../pages/Fonction/FonctionPage";
 
 // 🔥FIX ICI🔥
 const PrivateRoute: React.FC<{ children: ReactElement }> = ({ children }) => {
@@ -220,6 +226,54 @@ export default function AppRouter() {
         element={
           <PrivateRoute>
             <ChangePassword />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/direction"
+        element={
+          <PrivateRoute>
+            <DirectionPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/sous-direction"
+        element={
+          <PrivateRoute>
+            <SousDirectionPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/division"
+        element={
+          <PrivateRoute>
+            <DivisionPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/section"
+        element={
+          <PrivateRoute>
+            <SectionPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/service"
+        element={
+          <PrivateRoute>
+            <ServicePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/fonction"
+        element={
+          <PrivateRoute>
+            <FonctionPage />
           </PrivateRoute>
         }
       />

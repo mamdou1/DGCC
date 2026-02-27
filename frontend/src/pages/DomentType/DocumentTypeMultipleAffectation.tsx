@@ -133,7 +133,7 @@ export default function DocumentTypeMultipleAffectation({
         htmlFor={String(t.id)}
         className="text-sm font-semibold text-slate-700 cursor-pointer flex-1"
       >
-        <span className="text-xs font-black text-emerald-600 mr-2">
+        <span className="text-xs font-black text-orange-600 mr-2">
           [{t.code}]
         </span>
         {t.nom}
@@ -180,7 +180,7 @@ export default function DocumentTypeMultipleAffectation({
             icon={<ArrowRight size={18} />}
             onClick={moveRight}
             disabled={checkedAvailable.length === 0 || !isFiltered}
-            className="p-button-rounded bg-emerald-600 text-emerald-50 border-none w-10 h-10 shadow-lg shadow-emerald-100"
+            className="p-button-rounded bg-orange-600 text-orange-50 border-none w-10 h-10 shadow-lg shadow-orange-100"
           />
           <Button
             icon={<ArrowLeft size={18} />}
@@ -191,10 +191,10 @@ export default function DocumentTypeMultipleAffectation({
         </div>
 
         <div className="col-span-5 flex flex-col">
-          <label className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2 px-1">
+          <label className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-2 px-1">
             Documents rattachés à {structureLabel}
           </label>
-          <div className="h-[350px] border-2 border-emerald-50 rounded-2xl overflow-y-auto bg-emerald-50/20 shadow-inner">
+          <div className="h-[350px] border-2 border-orange-50 rounded-2xl overflow-y-auto bg-orange-50/20 shadow-inner">
             {selectedToAssign.map((t) =>
               renderItem(t, checkedSelected, setCheckedSelected),
             )}
@@ -217,7 +217,7 @@ export default function DocumentTypeMultipleAffectation({
           icon={<CheckCircle2 size={18} className="mr-2" />}
           onClick={handleConfirm}
           disabled={selectedToAssign.length === 0 || loading || !isFiltered}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-emerald-200 transition-all font-bold"
+          className="bg-orange-600 hover:bg-orange-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
         />
       </div>
     </div>

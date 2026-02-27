@@ -3,9 +3,11 @@ import {
   getTotalAgents,
   getTotalTypesDocument,
   getTotalDocuments,
-  getAgentsByEntiteeUn,
-  getAgentsByEntiteeDeux,
-  getAgentsByEntiteeTrois,
+  getAgentsByDirection,
+  getAgentsBySousDirection,
+  getAgentsByDivision,
+  getAgentsBySection,
+  getAgentsByService,
   getAgentsByStructure,
   getDocumentsByType,
   getDocumentsByMonth,
@@ -17,10 +19,6 @@ import { Button } from "primereact/button";
 import { Exercice } from "../../interfaces";
 import { getExercices } from "../../api/exercice";
 import { Toast } from "primereact/toast";
-import { getAllEntiteeUn } from "../../api/entiteeUn";
-import { getAllEntiteeDeux } from "../../api/entiteeDeux";
-import { getAllEntiteeTrois } from "../../api/entiteeTrois";
-import { EntiteeDeux, EntiteeUn, EntiteeTrois } from "../../interfaces";
 import {
   LayoutDashboard,
   Calendar,
@@ -34,6 +32,10 @@ import {
   GitMerge,
   Database,
   Clock,
+  Split,
+  TableOfContents,
+  Map,
+  Briefcase,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -41,18 +43,17 @@ export default function Dashboard() {
   const [totalTypesDocument, setTotalTypesDocument] = useState<number>(0);
   const [totalDocuments, setTotalDocuments] = useState<number>(0);
 
-  const [agentsByEntiteeUn, setAgentsByEntiteeUn] = useState([]);
-  const [agentsByEntiteeDeux, setAgentsByEntiteeDeux] = useState([]);
-  const [agentsByEntiteeTrois, setAgentsByEntiteeTrois] = useState([]);
+  // États pour les nouvelles entités
+  const [agentsByDirection, setAgentsByDirection] = useState([]);
+  const [agentsBySousDirection, setAgentsBySousDirection] = useState([]);
+  const [agentsByDivision, setAgentsByDivision] = useState([]);
+  const [agentsBySection, setAgentsBySection] = useState([]);
+  const [agentsByService, setAgentsByService] = useState([]);
   const [agentsByStructure, setAgentsByStructure] = useState([]);
 
   const [documentsByType, setDocumentsByType] = useState([]);
   const [documentsByMonth, setDocumentsByMonth] = useState([]);
   const [documentsByStructure, setDocumentsByStructure] = useState([]);
-
-  const [allEntiteeTrois, setAllEntiteeTrois] = useState<EntiteeTrois[]>([]);
-  const [allEntiteeDeux, setAllEntiteeDeux] = useState<EntiteeDeux[]>([]);
-  const [allEntiteeUn, setAllEntiteeUn] = useState<EntiteeUn[]>([]);
 
   const [loading, setLoading] = useState(false);
   const toast = useRef<Toast>(null);
@@ -66,32 +67,36 @@ export default function Dashboard() {
     setLoading(true);
     try {
       // Totaux
-      const [agents, types, docs, ent1, ent2, ent3] = await Promise.all([
+      const [agents, types, docs] = await Promise.all([
         getTotalAgents(),
         getTotalTypesDocument(),
         getTotalDocuments(),
-        getAllEntiteeUn(),
-        getAllEntiteeDeux(),
-        getAllEntiteeTrois(),
       ]);
       setTotalAgents(agents.total);
       setTotalTypesDocument(types.total);
       setTotalDocuments(docs.total);
-      setAllEntiteeUn(Array.isArray(ent1) ? ent1 : []);
-      setAllEntiteeDeux(Array.isArray(ent2) ? ent2 : []);
-      setAllEntiteeTrois(Array.isArray(ent3) ? ent3 : []);
 
-      // Agents par structure
-      const [agentsUn, agentsDeux, agentsTrois, agentsStruct] =
-        await Promise.all([
-          getAgentsByEntiteeUn(),
-          getAgentsByEntiteeDeux(),
-          getAgentsByEntiteeTrois(),
-          getAgentsByStructure(),
-        ]);
-      setAgentsByEntiteeUn(agentsUn);
-      setAgentsByEntiteeDeux(agentsDeux);
-      setAgentsByEntiteeTrois(agentsTrois);
+      // Agents par structure (nouvelles entités)
+      const [
+        agentsDir,
+        agentsSousDir,
+        agentsDiv,
+        agentsSec,
+        agentsServ,
+        agentsStruct,
+      ] = await Promise.all([
+        getAgentsByDirection(),
+        getAgentsBySousDirection(),
+        getAgentsByDivision(),
+        getAgentsBySection(),
+        getAgentsByService(),
+        getAgentsByStructure(),
+      ]);
+      setAgentsByDirection(agentsDir);
+      setAgentsBySousDirection(agentsSousDir);
+      setAgentsByDivision(agentsDiv);
+      setAgentsBySection(agentsSec);
+      setAgentsByService(agentsServ);
       setAgentsByStructure(agentsStruct);
 
       // Documents
@@ -116,7 +121,7 @@ export default function Dashboard() {
     }
   };
 
-  const affichage = async () => {
+  const loadExercices = async () => {
     try {
       const data = await getExercices();
       setExercices(Array.isArray(data) ? data : []);
@@ -131,7 +136,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadStats();
-    affichage();
+    loadExercices();
   }, []);
 
   // Composant Card pour les totaux
@@ -166,9 +171,10 @@ export default function Dashboard() {
     colorClass,
     bgClass,
     valueLabel = "Nombre",
+    showParent = false,
   }: any) => (
-    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow duration-300 h-full">
-      <div className="p-6">
+    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow duration-300 h-full flex flex-col">
+      <div className="p-6 flex-1">
         <div className="flex items-center justify-between mb-6">
           <div className={`p-3 rounded-2xl ${bgClass}`}>
             <Icon size={24} className={colorClass} />
@@ -193,23 +199,30 @@ export default function Dashboard() {
             {data.map((item: any, index: number) => (
               <div
                 key={index}
-                className="group flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-transparent hover:border-emerald-100 hover:bg-emerald-50/50 transition-all cursor-default"
+                className="group flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-transparent hover:border-orange-100 hover:bg-orange-50/50 transition-all cursor-default"
               >
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-slate-500 group-hover:text-emerald-600 transition-colors uppercase tracking-tight">
-                    {item.libelle ||
-                      item.typeNom ||
-                      item.structureLibelle ||
-                      item.moisLibelle ||
-                      "N/A"}
-                  </span>
-                  {item.code && (
-                    <span className="text-[10px] font-mono text-slate-400 mt-0.5">
-                      {item.code}
+                <div className="flex flex-col flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-500 group-hover:text-orange-600 transition-colors uppercase tracking-tight">
+                      {item.entiteeLibelle || item.structureLibelle || "N/A"}
                     </span>
+                    {item.entiteeCode && (
+                      <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
+                        {item.entiteeCode}
+                      </span>
+                    )}
+                  </div>
+                  {showParent && (
+                    <div className="text-[9px] text-slate-400 mt-0.5">
+                      {item.directionLibelle && `Dir: ${item.directionLibelle}`}
+                      {item.sousDirectionLibelle &&
+                        ` • SD: ${item.sousDirectionLibelle}`}
+                      {item.divisionLibelle &&
+                        ` • Div: ${item.divisionLibelle}`}
+                    </div>
                   )}
                 </div>
-                <div className="text-right">
+                <div className="text-right ml-4">
                   <span className="text-xl font-black text-slate-700">
                     {item.nombre || item.total || 0}
                   </span>
@@ -240,13 +253,13 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <LayoutDashboard size={20} className="text-emerald-600" />
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-[0.2em]">
+            <LayoutDashboard size={20} className="text-orange-600" />
+            <span className="text-xs font-bold text-orange-600 uppercase tracking-[0.2em]">
               Reporting System
             </span>
           </div>
           <h1 className="text-4xl font-black text-slate-800 tracking-tight">
-            Tableau de <span className="text-emerald-600">Bord</span>
+            Tableau de <span className="text-orange-800">Bord</span>
           </h1>
           <p className="text-slate-500 font-medium mt-1">
             Visualisation consolidée des statistiques de la plateforme
@@ -269,7 +282,7 @@ export default function Dashboard() {
             placeholder="Sélectionner..."
           />
           <button
-            className="bg-emerald-600 text-white p-2 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-100"
+            className="bg-orange-600 text-white p-2 rounded-xl hover:bg-orange-700 transition-colors shadow-lg shadow-orange-100"
             title="Ajouter un exercice"
           >
             <Plus size={20} />
@@ -297,57 +310,89 @@ export default function Dashboard() {
           title="Documents archivés"
           value={totalDocuments}
           icon={FileText}
-          colorClass="text-emerald-600"
-          bgClass="bg-emerald-100"
+          colorClass="text-orange-600"
+          bgClass="bg-orange-100"
         />
       </div>
 
-      {/* AGENTS PAR STRUCTURE - 3 CARDS */}
+      {/* AGENTS PAR STRUCTURE - 5 CARDS POUR LES NOUVELLES ENTITÉS */}
       <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <Users size={20} className="text-emerald-600" />
-        Répartition des agents
+        <Users size={20} className="text-orange-600" />
+        Répartition des agents par entité
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
         <ListCard
-          title={`Agents par ${allEntiteeUn[0]?.titre || "Niveau 1"}`}
-          data={agentsByEntiteeUn}
+          title="Agents par Direction"
+          data={agentsByDirection}
           icon={Building2}
           colorClass="text-blue-600"
           bgClass="bg-blue-100"
-          valueLabel="Agents"
+          showParent={false}
         />
         <ListCard
-          title={`Agents par ${allEntiteeDeux[0]?.titre || "Niveau 2"}`}
-          data={agentsByEntiteeDeux}
-          icon={Layers}
+          title="Agents par Sous-direction"
+          data={agentsBySousDirection}
+          icon={Split}
           colorClass="text-purple-600"
           bgClass="bg-purple-100"
-          valueLabel="Agents"
+          showParent={true}
         />
         <ListCard
-          title={`Agents par ${allEntiteeTrois[0]?.titre || "Niveau 3"}`}
-          data={agentsByEntiteeTrois}
+          title="Agents par Division"
+          data={agentsByDivision}
+          icon={TableOfContents}
+          colorClass="text-indigo-600"
+          bgClass="bg-indigo-100"
+          showParent={true}
+        />
+        <ListCard
+          title="Agents par Section"
+          data={agentsBySection}
           icon={GitMerge}
+          colorClass="text-orange-600"
+          bgClass="bg-orange-100"
+          showParent={true}
+        />
+        <ListCard
+          title="Agents par Service"
+          data={agentsByService}
+          icon={Briefcase}
           colorClass="text-emerald-600"
           bgClass="bg-emerald-100"
-          valueLabel="Agents"
+          showParent={true}
         />
+      </div>
+
+      {/* VUE SYNTHÉTIQUE */}
+      <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2 mt-4">
+        <Database size={20} className="text-orange-600" />
+        Vue synthétique
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <ListCard
-          title="Agents par structure"
+          title="Agents par structure (tous niveaux)"
           data={agentsByStructure}
           icon={Users}
           colorClass="text-amber-600"
           bgClass="bg-amber-100"
           valueLabel="Agents"
         />
+        <ListCard
+          title="Documents par structure"
+          data={documentsByStructure}
+          icon={Database}
+          colorClass="text-emerald-600"
+          bgClass="bg-emerald-100"
+          valueLabel="Documents"
+        />
       </div>
 
-      {/* DOCUMENTS - 3 CARDS */}
+      {/* DOCUMENTS - 2 CARDS */}
       <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <FileText size={20} className="text-emerald-600" />
+        <FileText size={20} className="text-orange-600" />
         Statistiques documentaires
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <ListCard
           title="Documents par type"
           data={documentsByType}
@@ -364,35 +409,27 @@ export default function Dashboard() {
           bgClass="bg-purple-100"
           valueLabel="Documents"
         />
-        <ListCard
-          title="Documents par structure"
-          data={documentsByStructure}
-          icon={Database}
-          colorClass="text-emerald-600"
-          bgClass="bg-emerald-100"
-          valueLabel="Documents"
-        />
       </div>
 
       {/* OPTIONNEL : Bouton d'export */}
-      <div className="mt-10 bg-emerald-700 rounded-[2.5rem] p-10 relative overflow-hidden shadow-2xl shadow-emerald-200">
+      {/* <div className="mt-10 bg-orange-700 rounded-[2.5rem] p-10 relative overflow-hidden shadow-2xl shadow-orange-200">
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-white">
             <h3 className="text-2xl font-bold">Prêt pour l'export ?</h3>
-            <p className="text-emerald-100 opacity-80 mt-1 font-medium">
+            <p className="text-orange-100 opacity-80 mt-1 font-medium">
               Générez un rapport PDF détaillé de l'exercice en cours.
             </p>
           </div>
           <Button
             label="Exporter les statistiques"
             icon="pi pi-file-pdf"
-            className="bg-white text-emerald-700 border-none px-8 py-4 rounded-2xl font-black text-sm hover:bg-emerald-50 transition-all"
+            className="bg-white text-orange-700 border-none px-8 py-4 rounded-2xl font-black text-sm hover:bg-orange-50 transition-all"
           />
         </div>
-        {/* Cercles de décoration en arrière-plan */}
+        Cercles de décoration en arrière-plan
         <div className="absolute top-[-10%] right-[-5%] w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-[-20%] left-[10%] w-48 h-48 bg-emerald-400/20 rounded-full blur-2xl"></div>
-      </div>
+        <div className="absolute bottom-[-20%] left-[10%] w-48 h-48 bg-orange-400/20 rounded-full blur-2xl"></div>
+      </div> */}
     </Layout>
   );
 }

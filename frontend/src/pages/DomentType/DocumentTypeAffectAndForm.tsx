@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Dialog } from "primereact/dialog";
 import { TabView, TabPanel } from "primereact/tabview";
-import { PlusCircle, FilePlus, Layers, Edit3, Settings2 } from "lucide-react";
+import {
+  PlusCircle,
+  FilePlus,
+  Layers,
+  Edit3,
+  Settings2,
+  Building2,
+  Briefcase,
+  Split,
+  TableOfContents,
+  GitMerge,
+} from "lucide-react";
 import DocumentTypeForm from "./DocumentTypeForm";
 import DocumentTypeMultipleAffectation from "./DocumentTypeMultipleAffectation";
 
@@ -24,12 +35,26 @@ export default function DocumentTypeAffectAndForm({
     }
   }, [initial]);
 
+  // Déterminer l'icône en fonction du libellé de structure
+  const getStructureIcon = () => {
+    if (!structureLabel) return <Settings2 size={22} />;
+
+    if (structureLabel.includes("Direction")) return <Building2 size={22} />;
+    if (structureLabel.includes("Service")) return <Briefcase size={22} />;
+    if (structureLabel.includes("Sous-direction")) return <Split size={22} />;
+    if (structureLabel.includes("Division"))
+      return <TableOfContents size={22} />;
+    if (structureLabel.includes("Section")) return <GitMerge size={22} />;
+
+    return <Settings2 size={22} />;
+  };
+
   // Personnalisation du Header en fonction du mode (Ajout vs Edition)
   const renderHeader = () => (
     <div className="flex items-center justify-between w-full pr-8">
       <div className="flex items-center gap-3">
         <div
-          className={`p-2 rounded-xl ${initial?.id ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}
+          className={`p-2 rounded-xl ${initial?.id ? "bg-amber-100 text-amber-700" : "bg-orange-100 text-orange-700"}`}
         >
           {initial?.id ? <Edit3 size={22} /> : <PlusCircle size={22} />}
         </div>
@@ -45,11 +70,11 @@ export default function DocumentTypeAffectAndForm({
         </div>
       </div>
 
-      {/* Badge indicateur de structure si filtré */}
-      {isFiltered && (
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full border border-slate-200">
-          <Settings2 size={14} className="text-slate-500" />
-          <span className="text-[10px] font-bold text-slate-600 uppercase tracking-tighter">
+      {/* Badge indicateur de structure si sélectionnée */}
+      {isFiltered && structureLabel && (
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-orange-50 rounded-full border border-orange-200">
+          {getStructureIcon()}
+          <span className="text-[10px] font-bold text-orange-700 uppercase tracking-tighter">
             Cible : {structureLabel}
           </span>
         </div>
@@ -72,7 +97,6 @@ export default function DocumentTypeAffectAndForm({
         <TabView
           activeIndex={activeIndex}
           onTabChange={(e) => setActiveIndex(e.index)}
-          // On ajoute un style custom pour rendre les onglets plus "boutons"
           className="custom-tabview"
         >
           <TabPanel
@@ -93,10 +117,9 @@ export default function DocumentTypeAffectAndForm({
           <TabPanel
             header="Affectation en masse"
             leftIcon={<Layers size={18} className="mr-2" />}
-            disabled={!!initial?.id} // Toujours désactivé en édition
+            disabled={!!initial?.id}
           >
             <div className="py-6 transition-all duration-300">
-              {/* Note: on affiche un message d'aide si l'onglet est vide */}
               <DocumentTypeMultipleAffectation
                 types={types}
                 isFiltered={isFiltered}
@@ -132,10 +155,10 @@ export default function DocumentTypeAffectAndForm({
     font-weight: 700;
   }
   .custom-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
-    background: #10b981 !important;
+    background: #f97316 !important;
     color: white !important;
-    border-color: #10b981 !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    border-color: #f97316 !important;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
   }
   .custom-tabview .p-tabview-panels {
     background: transparent !important;

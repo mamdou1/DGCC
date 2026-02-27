@@ -11,6 +11,14 @@ import { getMetaById } from "../api/metaField";
 import { getAllEntiteeUn } from "../api/entiteeUn";
 import { getAllEntiteeDeux } from "../api/entiteeDeux";
 import { getAllEntiteeTrois } from "../api/entiteeTrois";
+
+// ✅ IMPORTER LES NOUVELLES API
+import { getDirections } from "../api/direction";
+import { getSousDirections } from "../api/sousDirection";
+import { getDivisions } from "../api/division";
+import { getSections } from "../api/section";
+import { getServices } from "../api/service";
+
 import type { Document, TypeDocument } from "../interfaces";
 
 // =============================================
@@ -38,6 +46,10 @@ export const entiteeKeys = {
   un: ["entiteeUn"] as const,
   deux: ["entiteeDeux"] as const,
   trois: ["entiteeTrois"] as const,
+  directions: ["directions"] as const,
+  sousDirections: ["sousDirections"] as const,
+  divisions: ["divisions"] as const,
+  sections: ["sections"] as const,
 };
 
 // =============================================
@@ -63,7 +75,7 @@ export const useDocumentsByType = (typeId: number | null) => {
       const data = await getDocuments();
       return data.filter((d: any) => d.type_document_id === typeId);
     },
-    enabled: !!typeId, // Ne s'exécute que si typeId existe
+    enabled: !!typeId,
   });
 };
 
@@ -91,7 +103,7 @@ export const useMetaFieldsByType = (typeId: number | null) => {
   });
 };
 
-// Récupérer toutes les entités
+// Récupérer toutes les entités (anciennes)
 export const useEntitees = () => {
   const queryUn = useQuery({
     queryKey: entiteeKeys.un,
@@ -121,7 +133,6 @@ export const useEntitees = () => {
     queryUn.isLoading || queryDeux.isLoading || queryTrois.isLoading;
   const error = queryUn.error || queryDeux.error || queryTrois.error;
 
-  // Fusionner toutes les entités
   const allEntitees = [
     ...(queryUn.data || []).map((e: any) => ({ ...e, type: "un" as const })),
     ...(queryDeux.data || []).map((e: any) => ({
@@ -151,15 +162,88 @@ export const useEntitees = () => {
   };
 };
 
-// Hook combiné pour charger toutes les données initiales
+// ✅ NOUVEAU HOOK : Récupérer toutes les nouvelles entités
+export const useNouvellesEntitees = () => {
+  const queryDirections = useQuery({
+    queryKey: entiteeKeys.directions,
+    queryFn: async () => {
+      const res = await getDirections();
+      return Array.isArray(res) ? res : [];
+    },
+  });
+
+  const querySousDirections = useQuery({
+    queryKey: entiteeKeys.sousDirections,
+    queryFn: async () => {
+      const res = await getSousDirections();
+      return Array.isArray(res) ? res : [];
+    },
+  });
+
+  const queryDivisions = useQuery({
+    queryKey: entiteeKeys.divisions,
+    queryFn: async () => {
+      const res = await getDivisions();
+      return Array.isArray(res) ? res : [];
+    },
+  });
+
+  const querySections = useQuery({
+    queryKey: entiteeKeys.sections,
+    queryFn: async () => {
+      const res = await getSections();
+      return Array.isArray(res) ? res : [];
+    },
+  });
+
+  const isLoading =
+    queryDirections.isLoading ||
+    querySousDirections.isLoading ||
+    queryDivisions.isLoading ||
+    querySections.isLoading;
+
+  const error =
+    queryDirections.error ||
+    querySousDirections.error ||
+    queryDivisions.error ||
+    querySections.error;
+
+  return {
+    directions: queryDirections.data || [],
+    sousDirections: querySousDirections.data || [],
+    divisions: queryDivisions.data || [],
+    sections: querySections.data || [],
+    isLoading,
+    error,
+    refetch: async () => {
+      await Promise.all([
+        queryDirections.refetch(),
+        querySousDirections.refetch(),
+        queryDivisions.refetch(),
+        querySections.refetch(),
+      ]);
+    },
+  };
+};
+
+// Hook combiné pour charger toutes les données initiales (MIS À JOUR)
 export const useInitialData = () => {
   const documentsQuery = useDocuments();
   const typesQuery = useTypeDocuments();
   const entitees = useEntitees();
+  const nouvellesEntitees = useNouvellesEntitees(); // ✅ AJOUT
 
   const isLoading =
-    documentsQuery.isLoading || typesQuery.isLoading || entitees.isLoading;
-  const error = documentsQuery.error || typesQuery.error || entitees.error;
+    documentsQuery.isLoading ||
+    typesQuery.isLoading ||
+    entitees.isLoading ||
+    nouvellesEntitees.isLoading;
+
+  const error =
+    documentsQuery.error ||
+    typesQuery.error ||
+    entitees.error ||
+    nouvellesEntitees.error;
 
   return {
     documents: documentsQuery.data || [],
@@ -168,12 +252,18 @@ export const useInitialData = () => {
     entiteeUn: entitees.entiteeUn,
     entiteeDeux: entitees.entiteeDeux,
     entiteeTrois: entitees.entiteeTrois,
+    // ✅ NOUVELLES ENTITÉS
+    directions: nouvellesEntitees.directions,
+    sousDirections: nouvellesEntitees.sousDirections,
+    divisions: nouvellesEntitees.divisions,
+    sections: nouvellesEntitees.sections,
     isLoading,
     error,
     refetch: async () => {
       await documentsQuery.refetch();
       await typesQuery.refetch();
       await entitees.refetch();
+      await nouvellesEntitees.refetch();
     },
   };
 };
@@ -189,10 +279,7 @@ export const useCreateDocument = () => {
   return useMutation({
     mutationFn: (newDoc: any) => createDocument(newDoc),
     onSuccess: (savedDoc) => {
-      // Invalider toutes les listes de documents
       queryClient.invalidateQueries({ queryKey: documentKeys.lists() });
-
-      // Si le document a un type, invalider aussi la liste par type
       if (savedDoc?.type_document_id) {
         queryClient.invalidateQueries({
           queryKey: documentKeys.byType(savedDoc.type_document_id),
@@ -210,15 +297,10 @@ export const useUpdateDocument = () => {
     mutationFn: ({ id, data }: { id: string; data: any }) =>
       updateDocument(id, data),
     onSuccess: (updatedDoc, variables) => {
-      // Invalider toutes les listes
       queryClient.invalidateQueries({ queryKey: documentKeys.lists() });
-
-      // Invalider le détail
       queryClient.invalidateQueries({
         queryKey: documentKeys.detail(parseInt(variables.id)),
       });
-
-      // Invalider la liste par type si disponible
       if (updatedDoc?.type_document_id) {
         queryClient.invalidateQueries({
           queryKey: documentKeys.byType(updatedDoc.type_document_id),

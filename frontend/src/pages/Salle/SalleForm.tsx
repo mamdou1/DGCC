@@ -82,7 +82,7 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
       onHide={onHide}
       header={
         <div className="flex items-center gap-2">
-          <DoorOpen className="text-emerald-600" size={20} />
+          <DoorOpen className="text-orange-600" size={20} />
           <span>
             {initial?.id
               ? "Modifier la salle"
@@ -103,11 +103,11 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
         <div className="grid grid-cols-2 gap-4">
           {/* Code Salle */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-emerald-700 flex items-center gap-2 uppercase tracking-wider">
+            <label className="text-xs font-bold text-orange-700 flex items-center gap-2 uppercase tracking-wider">
               <Hash size={14} /> Code Salle
             </label>
             <InputText
-              className="p-3 bg-emerald-50 border-emerald-200 rounded-xl"
+              className="p-3 bg-orange-50 border-orange-200 rounded-xl"
               placeholder="Ex: SALLE-01"
               value={formData.code_salle}
               onChange={(e) =>
@@ -119,7 +119,7 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
 
           {/* Site */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-emerald-700 flex items-center gap-2 uppercase tracking-wider">
+            <label className="text-xs font-bold text-orange-700 flex items-center gap-2 uppercase tracking-wider">
               <MapPin size={14} /> Site
             </label>
             <Dropdown
@@ -128,7 +128,7 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
               optionLabel="nom"
               optionValue="id"
               placeholder={loadingSite ? "Chargement..." : "Choisir un site"}
-              className="w-full bg-emerald-50 border-emerald-200 rounded-xl text-left"
+              className="w-full bg-orange-50 border-orange-200 rounded-xl text-left"
               onChange={(e) => setFormData({ ...formData, site_id: e.value })}
               filter
               required
@@ -138,11 +138,11 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
 
         {/* Libellé */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-bold text-emerald-700 flex items-center gap-2 uppercase tracking-wider">
+          <label className="text-xs font-bold text-orange-700 flex items-center gap-2 uppercase tracking-wider">
             <Type size={14} /> Libellé
           </label>
           <InputText
-            className="p-3 bg-emerald-50 border-emerald-200 rounded-xl"
+            className="p-3 bg-orange-50 border-orange-200 rounded-xl"
             placeholder="Ex: Archives Nord - Rez de chaussée"
             value={formData.libelle}
             onChange={(e) =>
@@ -161,7 +161,7 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
             <div className="grid grid-cols-3 gap-4">
               {/* Rayons */}
               <div className="space-y-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <label className="text-[10px] font-black text-emerald-800 flex items-center gap-1 uppercase">
+                <label className="text-[10px] font-black text-orange-800 flex items-center gap-1 uppercase">
                   <Layers size={12} /> Rayons
                 </label>
                 <InputNumber
@@ -191,7 +191,7 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
 
               {/* Travées */}
               <div className="space-y-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <label className="text-[10px] font-black text-emerald-800 flex items-center gap-1 uppercase">
+                <label className="text-[10px] font-black text-orange-800 flex items-center gap-1 uppercase">
                   <Grid3X3 size={12} /> Travées / R
                 </label>
                 <InputNumber
@@ -230,13 +230,13 @@ export default function SalleForm({ visible, onHide, onSubmit, initial }: any) {
             type="button"
             label="Annuler"
             onClick={onHide}
-            className="p-button-text text-emerald-600"
+            className="p-button-text text-orange-600"
           />
           <Button
             type="submit"
             icon={<Save size={18} className="mr-2" />}
             label="Générer la structure"
-            className="bg-emerald-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-emerald-700 transition-all font-bold"
+            className="bg-orange-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-orange-700 transition-all font-bold"
           />
         </div>
       </form>

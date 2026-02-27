@@ -26,23 +26,32 @@ import {
   GitMerge,
   Building2,
   FileStack,
+  Settings2,
+  Briefcase,
 } from "lucide-react";
 
 import logo from "../../assets/digidoc1.png";
 import profil from "../../assets/homme.jpg";
 import { Link, useLocation } from "react-router-dom";
-import { createContext, useContext, useState, useMemo } from "react";
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SidebarProps, SidebarContextType } from "../../interfaces/composant";
 import { useAuth } from "../../context/AuthContext";
-import { getAllEntiteeUn, getEntiteeUnTitre } from "../../api/entiteeUn";
-import { getAllEntiteeDeux, getEntiteeDeuxTitre } from "../../api/entiteeDeux";
-import {
-  getAllEntiteeTrois,
-  getEntiteeTroisTitre,
-} from "../../api/entiteeTrois";
 import { getTypeDocuments } from "../../api/typeDocument";
-import { TypeDocument, User } from "../../interfaces";
+import {
+  TypeDocument,
+  User,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+} from "../../interfaces";
+
+// NOUVEAUX IMPORTS
+import { getDirections } from "../../api/direction";
+import { getSousDirections } from "../../api/sousDirection";
+import { getDivisions } from "../../api/division";
+import { getSections } from "../../api/section";
 
 export const SidebarContext = createContext<SidebarContextType>({
   expended: true,
@@ -67,64 +76,52 @@ export default function Sidebar({ children }: SidebarProps) {
       const res = await getTypeDocuments();
       return res.typeDocument || [];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
-  // ✅ QUERY POUR LES ENTITÉES UN
-  const { data: entiteeUn = [] } = useQuery({
-    queryKey: ["entiteeUn"],
+  // ✅ NOUVELLES QUERIES POUR LES ENTITÉS
+  const { data: directions = [] } = useQuery({
+    queryKey: ["directions"],
     queryFn: async () => {
-      const res = await getAllEntiteeUn();
-      return Array.isArray(res) ? res : res.entiteeUn || [];
+      const res = await getDirections();
+      return Array.isArray(res) ? res : res || [];
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  // ✅ QUERY POUR LES ENTITÉES DEUX
-  const { data: entiteeDeux = [] } = useQuery({
-    queryKey: ["entiteeDeux"],
+  const { data: sousDirections = [] } = useQuery({
+    queryKey: ["sousDirections"],
     queryFn: async () => {
-      const res = await getAllEntiteeDeux();
-      return Array.isArray(res) ? res : res.entiteeDeux || [];
+      const res = await getSousDirections();
+      return Array.isArray(res) ? res : res || [];
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  // ✅ QUERY POUR LES ENTITÉES TROIS
-  const { data: entiteeTrois = [] } = useQuery({
-    queryKey: ["entiteeTrois"],
+  const { data: divisions = [] } = useQuery({
+    queryKey: ["divisions"],
     queryFn: async () => {
-      const res = await getAllEntiteeTrois();
-      return Array.isArray(res) ? res : res.entiteeTrois || [];
+      const res = await getDivisions();
+      return Array.isArray(res) ? res : res || [];
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  // ✅ QUERY POUR LES TITRES DYNAMIQUES
-  const { data: dynamicTitles = { titre1: "", titre2: "", titre3: "" } } =
-    useQuery({
-      queryKey: ["entiteeTitres"],
-      queryFn: async () => {
-        const [t1, t2, t3] = await Promise.all([
-          getEntiteeUnTitre(),
-          getEntiteeDeuxTitre(),
-          getEntiteeTroisTitre(),
-        ]);
-        return {
-          titre1: t1.titre || "Ministères",
-          titre2: t2.titre || "Directions",
-          titre3: t3.titre || "Services",
-        };
-      },
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
-    });
+  const { data: sections = [] } = useQuery({
+    queryKey: ["sections"],
+    queryFn: async () => {
+      const res = await getSections();
+      return Array.isArray(res) ? res : res || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
 
-  // ✅ Fonction identique à DocumentTypeEntitee
+  // ✅ Fonction pour vérifier si l'utilisateur est admin
   const isUserAdmin = (user: User | null): boolean => {
     if (!user) return false;
 
@@ -142,68 +139,85 @@ export default function Sidebar({ children }: SidebarProps) {
     );
   };
 
+  // ✅ NOUVELLE FONCTION : Vérifier l'accès à un document avec les nouvelles entités
   const hasAccessToDocument = (typeDoc: TypeDocument): boolean => {
     // ADMIN voit tout
     if (isUserAdmin(user)) return true;
 
-    // NON-ADMIN : vérifier les accès STRICTS
+    // NON-ADMIN : vérifier les accès
     const userEntityIds = {
-      un: new Set<number>(),
-      deux: new Set<number>(),
-      trois: new Set<number>(),
+      direction: new Set<number>(),
+      sousDirection: new Set<number>(),
+      division: new Set<number>(),
+      section: new Set<number>(),
     };
 
-    // Entité de la fonction
-    if (user?.fonction_details?.entitee_un?.id) {
-      userEntityIds.un.add(user.fonction_details.entitee_un.id);
+    // Entités de la fonction
+    if (user?.fonction_details?.direction?.id) {
+      userEntityIds.direction.add(user.fonction_details.direction.id);
     }
-    if (user?.fonction_details?.entitee_deux?.id) {
-      userEntityIds.deux.add(user.fonction_details.entitee_deux.id);
+    if (user?.fonction_details?.sousDirection?.id) {
+      userEntityIds.sousDirection.add(user.fonction_details.sousDirection.id);
     }
-    if (user?.fonction_details?.entitee_trois?.id) {
-      userEntityIds.trois.add(user.fonction_details.entitee_trois.id);
+    if (user?.fonction_details?.division?.id) {
+      userEntityIds.division.add(user.fonction_details.division.id);
+    }
+    if (user?.fonction_details?.section?.id) {
+      userEntityIds.section.add(user.fonction_details.section.id);
     }
 
-    // Entités des agent_access
+    // Entités des agent_access - CORRIGÉ (userEntityIds au lieu de ids)
     user?.agent_access?.forEach((access) => {
-      if (access.entitee_un?.id) userEntityIds.un.add(access.entitee_un.id);
-      if (access.entitee_deux?.id)
-        userEntityIds.deux.add(access.entitee_deux.id);
-      if (access.entitee_trois?.id)
-        userEntityIds.trois.add(access.entitee_trois.id);
+      // Direction
+      if (access.direction_id) {
+        userEntityIds.direction.add(access.direction_id);
+      } else if (access.direction?.id) {
+        userEntityIds.direction.add(access.direction.id);
+      }
+
+      // Sous-direction
+      if (access.sous_direction_id) {
+        userEntityIds.sousDirection.add(access.sous_direction_id);
+      } else if (access.sousDirection?.id) {
+        userEntityIds.sousDirection.add(access.sousDirection.id);
+      }
+
+      // Division
+      if (access.division_id) {
+        userEntityIds.division.add(access.division_id);
+      } else if (access.division?.id) {
+        userEntityIds.division.add(access.division.id);
+      }
+
+      // Section
+      if (access.section_id) {
+        userEntityIds.section.add(access.section_id);
+      } else if (access.section?.id) {
+        userEntityIds.section.add(access.section.id);
+      }
     });
 
-    // 🔴 CORRECTION : VÉRIFICATION STRICTE PAR NIVEAU
-
-    // 1. Si le document est lié à une entitee_trois
-    if (typeDoc.entitee_trois_id) {
-      // ✅ Seulement si l'utilisateur a ACCÈS DIRECT à CETTE entitee_trois
-      return userEntityIds.trois.has(typeDoc.entitee_trois_id);
+    // Vérification par niveau
+    if (typeDoc.section_id) {
+      return userEntityIds.section.has(typeDoc.section_id);
     }
-
-    // 2. Si le document est lié à une entitee_deux (et PAS à une entitee_trois)
-    if (typeDoc.entitee_deux_id && !typeDoc.entitee_trois_id) {
-      // ✅ Seulement si l'utilisateur a ACCÈS DIRECT à CETTE entitee_deux
-      return userEntityIds.deux.has(typeDoc.entitee_deux_id);
+    if (typeDoc.division_id && !typeDoc.section_id) {
+      return userEntityIds.division.has(typeDoc.division_id);
     }
-
-    // 3. Si le document est lié à une entitee_un (et PAS à entitee_deux/trois)
     if (
-      typeDoc.entitee_un_id &&
-      !typeDoc.entitee_deux_id &&
-      !typeDoc.entitee_trois_id
+      typeDoc.sous_direction_id &&
+      !typeDoc.division_id &&
+      !typeDoc.section_id
     ) {
-      // ✅ Seulement si l'utilisateur a ACCÈS DIRECT à CETTE entitee_un
-      return userEntityIds.un.has(typeDoc.entitee_un_id);
+      return userEntityIds.sousDirection.has(typeDoc.sous_direction_id);
     }
-
-    // 4. Document non assigné
     if (
-      !typeDoc.entitee_un_id &&
-      !typeDoc.entitee_deux_id &&
-      !typeDoc.entitee_trois_id
+      typeDoc.direction_id &&
+      !typeDoc.sous_direction_id &&
+      !typeDoc.division_id &&
+      !typeDoc.section_id
     ) {
-      return false; // Seuls les admins voient les non assignés
+      return userEntityIds.direction.has(typeDoc.direction_id);
     }
 
     return false;
@@ -211,8 +225,7 @@ export default function Sidebar({ children }: SidebarProps) {
 
   // ✅ Filtrer les documents accessibles
   const accessibleDocTypes = useMemo(() => {
-    const filtered = docTypes.filter((doc) => hasAccessToDocument(doc));
-    return filtered;
+    return docTypes.filter((doc) => hasAccessToDocument(doc));
   }, [docTypes, user]);
 
   const toggleTree = (label: string) => {
@@ -231,33 +244,91 @@ export default function Sidebar({ children }: SidebarProps) {
   const getUserAccessibleEntityIds = (user: User | null) => {
     if (!user)
       return {
-        un: new Set<number>(),
-        deux: new Set<number>(),
-        trois: new Set<number>(),
+        direction: new Set<number>(),
+        sousDirection: new Set<number>(),
+        division: new Set<number>(),
+        section: new Set<number>(),
       };
 
     const ids = {
-      un: new Set<number>(),
-      deux: new Set<number>(),
-      trois: new Set<number>(),
+      direction: new Set<number>(),
+      sousDirection: new Set<number>(),
+      division: new Set<number>(),
+      section: new Set<number>(),
     };
 
-    // Entité de la fonction
-    if (user.fonction_details?.entitee_un?.id) {
-      ids.un.add(user.fonction_details.entitee_un.id);
-    }
-    if (user.fonction_details?.entitee_deux?.id) {
-      ids.deux.add(user.fonction_details.entitee_deux.id);
-    }
-    if (user.fonction_details?.entitee_trois?.id) {
-      ids.trois.add(user.fonction_details.entitee_trois.id);
+    // ✅ CORRECTION : Chercher dans fonction_details d'abord
+    if (user.fonction_details) {
+      // Nouvelles entités dans fonction_details
+      if (user.fonction_details.direction_id) {
+        ids.direction.add(user.fonction_details.direction_id);
+      }
+      if (user.fonction_details.sous_direction_id) {
+        ids.sousDirection.add(user.fonction_details.sous_direction_id);
+      }
+      if (user.fonction_details.division_id) {
+        ids.division.add(user.fonction_details.division_id);
+      }
+      if (user.fonction_details.section_id) {
+        ids.section.add(user.fonction_details.section_id);
+      }
+
+      // Fallback aux anciennes entités
+      if (user.fonction_details.entitee_un?.id) {
+        console.log(
+          "⚠️ Ancienne entité_un:",
+          user.fonction_details.entitee_un.id,
+        );
+        // Mapper entitee_un -> direction
+        ids.direction.add(user.fonction_details.entitee_un.id);
+      }
+      if (user.fonction_details.entitee_deux?.id) {
+        console.log(
+          "⚠️ Ancienne entité_deux:",
+          user.fonction_details.entitee_deux.id,
+        );
+        // Mapper entitee_deux -> division
+        ids.division.add(user.fonction_details.entitee_deux.id);
+      }
+      if (user.fonction_details.entitee_trois?.id) {
+        console.log(
+          "⚠️ Ancienne entité_trois:",
+          user.fonction_details.entitee_trois.id,
+        );
+        // Mapper entitee_trois -> section
+        ids.section.add(user.fonction_details.entitee_trois.id);
+      }
     }
 
     // Entités des agent_access
     user.agent_access?.forEach((access) => {
-      if (access.entitee_un?.id) ids.un.add(access.entitee_un.id);
-      if (access.entitee_deux?.id) ids.deux.add(access.entitee_deux.id);
-      if (access.entitee_trois?.id) ids.trois.add(access.entitee_trois.id);
+      // Direction
+      if (access.direction_id) {
+        ids.direction.add(access.direction_id);
+      } else if (access.direction?.id) {
+        ids.direction.add(access.direction.id);
+      }
+
+      // Sous-direction
+      if (access.sous_direction_id) {
+        ids.sousDirection.add(access.sous_direction_id);
+      } else if (access.sousDirection?.id) {
+        ids.sousDirection.add(access.sousDirection.id);
+      }
+
+      // Division
+      if (access.division_id) {
+        ids.division.add(access.division_id);
+      } else if (access.division?.id) {
+        ids.division.add(access.division.id);
+      }
+
+      // Section
+      if (access.section_id) {
+        ids.section.add(access.section_id);
+      } else if (access.section?.id) {
+        ids.section.add(access.section.id);
+      }
     });
 
     return ids;
@@ -266,7 +337,12 @@ export default function Sidebar({ children }: SidebarProps) {
   // 2. Compter le nombre total de niveaux accessibles
   const getUserAccessibleNiveauxCount = (user: User | null) => {
     const ids = getUserAccessibleEntityIds(user);
-    return ids.un.size + ids.deux.size + ids.trois.size;
+    return (
+      ids.direction.size +
+      ids.sousDirection.size +
+      ids.division.size +
+      ids.section.size
+    );
   };
 
   // 3. Vérifier si l'utilisateur a des accès supplémentaires (agent_access)
@@ -274,47 +350,52 @@ export default function Sidebar({ children }: SidebarProps) {
     return (user?.agent_access?.length ?? 0) > 0;
   };
 
-  // 4. Récupérer le type d'entité de la fonction de l'utilisateur
+  // 4. Récupérer le type d'entité de la fonction de l'utilisateur (CORRIGÉ)
   const getUserFonctionEntityType = (
     user: User | null,
-  ): "un" | "deux" | "trois" | null => {
-    if (user?.fonction_details?.entitee_trois) return "trois";
-    if (user?.fonction_details?.entitee_deux) return "deux";
-    if (user?.fonction_details?.entitee_un) return "un";
+  ): "direction" | "sousDirection" | "division" | "section" | null => {
+    if (!user?.fonction_details) return null;
+
+    // ✅ CORRECTION : Chercher dans fonction_details
+    if (user.fonction_details.section_id) return "section";
+    if (user.fonction_details.division_id) return "division";
+    if (user.fonction_details.sous_direction_id) return "sousDirection";
+    if (user.fonction_details.direction_id) return "direction";
+
+    // Fallback aux anciennes entités
+    if (user.fonction_details.entitee_trois?.id) return "section";
+    if (user.fonction_details.entitee_deux?.id) return "division";
+    if (user.fonction_details.entitee_un?.id) return "direction";
+
     return null;
   };
 
-  // 5. Récupérer l'ID de l'entité de la fonction
+  // 5. Récupérer l'ID de l'entité de la fonction (CORRIGÉ)
   const getUserFonctionEntityId = (user: User | null): number | null => {
-    return (
-      user?.fonction_details?.entitee_trois?.id ||
-      user?.fonction_details?.entitee_deux?.id ||
-      user?.fonction_details?.entitee_un?.id ||
-      null
-    );
+    if (!user?.fonction_details) return null;
+
+    // ✅ CORRECTION : Chercher dans fonction_details
+    if (user.fonction_details.section_id)
+      return user.fonction_details.section_id;
+    if (user.fonction_details.division_id)
+      return user.fonction_details.division_id;
+    if (user.fonction_details.sous_direction_id)
+      return user.fonction_details.sous_direction_id;
+    if (user.fonction_details.direction_id)
+      return user.fonction_details.direction_id;
+
+    // Fallback aux anciennes entités
+    if (user.fonction_details.entitee_trois?.id)
+      return user.fonction_details.entitee_trois.id;
+    if (user.fonction_details.entitee_deux?.id)
+      return user.fonction_details.entitee_deux.id;
+    if (user.fonction_details.entitee_un?.id)
+      return user.fonction_details.entitee_un.id;
+
+    return null;
   };
 
-  // 6. Récupérer les types de documents accessibles pour un niveau donné
-  const getAccessibleTypesForNiveau = (
-    user: User | null,
-    niveau: "un" | "deux" | "trois",
-    docTypes: TypeDocument[],
-  ) => {
-    const ids = getUserAccessibleEntityIds(user);
-    const targetSet = ids[niveau];
-
-    return docTypes.filter((doc) => {
-      if (niveau === "un")
-        return doc.entitee_un_id && targetSet.has(doc.entitee_un_id);
-      if (niveau === "deux")
-        return doc.entitee_deux_id && targetSet.has(doc.entitee_deux_id);
-      if (niveau === "trois")
-        return doc.entitee_trois_id && targetSet.has(doc.entitee_trois_id);
-      return false;
-    });
-  };
-
-  // 7. Récupérer les types de documents de la fonction de l'utilisateur
+  // 6. Récupérer les types de documents de la fonction de l'utilisateur (CORRIGÉ)
   const getUserFonctionTypes = (
     user: User | null,
     docTypes: TypeDocument[],
@@ -322,31 +403,63 @@ export default function Sidebar({ children }: SidebarProps) {
     const entityType = getUserFonctionEntityType(user);
     const entityId = getUserFonctionEntityId(user);
 
-    if (!entityType || !entityId) return [];
+    console.log("🔍 getUserFonctionTypes - Entity:", { entityType, entityId });
+    console.log(
+      "🔍 getUserFonctionTypes - fonction_details:",
+      user?.fonction_details,
+    );
 
-    return docTypes.filter((doc) => {
-      if (entityType === "un") return doc.entitee_un_id === entityId;
-      if (entityType === "deux") return doc.entitee_deux_id === entityId;
-      if (entityType === "trois") return doc.entitee_trois_id === entityId;
-      return false;
+    if (!entityType || !entityId) {
+      console.log("❌ Pas d'entité de fonction trouvée");
+      return [];
+    }
+
+    const filtered = docTypes.filter((doc) => {
+      let match = false;
+
+      if (entityType === "direction") {
+        match = doc.direction_id === entityId;
+        // Fallback aux anciens champs
+        if (!match) match = doc.entitee_un_id === entityId;
+      }
+      if (entityType === "sousDirection") {
+        match = doc.sous_direction_id === entityId;
+      }
+      if (entityType === "division") {
+        match = doc.division_id === entityId;
+        // Fallback aux anciens champs
+        if (!match) match = doc.entitee_deux_id === entityId;
+      }
+      if (entityType === "section") {
+        match = doc.section_id === entityId;
+        // Fallback aux anciens champs
+        if (!match) match = doc.entitee_trois_id === entityId;
+      }
+
+      if (match) {
+        console.log(`✅ Document correspondant:`, { id: doc.id, nom: doc.nom });
+      }
+      return match;
     });
+
+    console.log(`📊 ${filtered.length} document(s) trouvé(s) pour la fonction`);
+    return filtered;
   };
 
   return (
     <aside className="h-screen sticky top-0">
       <nav
-        className={`h-full flex flex-col bg-emerald-950 border-r border-emerald-900 shadow-2xl transition-all duration-300 ${
+        className={`h-full flex flex-col bg-orange-950 border-r border-orange-900 shadow-2xl transition-all duration-300 ${
           expended ? "w-72" : "w-20"
         }`}
       >
         {/* Header - Logo et Toggle */}
-        <div className="flex items-center justify-between p-4 h-20 bg-emerald-950">
+        <div className="flex items-center justify-between p-4 h-20 bg-orange-950">
           <div
             className={`overflow-hidden transition-all duration-300 ${
               expended ? "w-full" : "w-0"
             }`}
           >
-            {/* brightness-0 invert permet de rendre ton logo blanc pur pour le fond sombre */}
             <img
               src={logo}
               alt="Logo"
@@ -356,7 +469,7 @@ export default function Sidebar({ children }: SidebarProps) {
 
           <button
             onClick={() => setExpended((v) => !v)}
-            className="p-2 rounded-lg bg-emerald-800 text-emerald-100 hover:bg-emerald-600 hover:text-white transition-all shadow-lg"
+            className="p-2 rounded-lg bg-orange-800 text-orange-100 hover:bg-orange-600 hover:text-white transition-all shadow-lg"
           >
             {expended ? <ChevronFirst size={20} /> : <ChevronLast size={20} />}
           </button>
@@ -383,52 +496,49 @@ export default function Sidebar({ children }: SidebarProps) {
               )}
 
               <div
-                className={`my-4 border-t border-emerald-800/50 mx-2 ${
+                className={`my-4 border-t border-orange-800/50 mx-2 ${
                   !expended && "hidden"
                 }`}
               />
 
               {/* ================= ORGANIGRAMME ================= */}
-
-              {(can("entiteeUn", "access") ||
-                can("entiteeDeux", "access") ||
-                can("entiteeTrois", "access")) && (
-                <SidebarTree label="Organigrame" icon={GitFork}>
-                  {/* Condition : Affiché seulement si titre1 existe */}
-                  {dynamicTitles.titre1 && (
+              {(can("direction", "access") ||
+                can("sousDirection", "access") ||
+                can("division", "access") ||
+                can("section", "access")) && (
+                <SidebarTree label="Organigramme" icon={GitFork}>
+                  {can("direction", "access") && (
+                    <SidebarLink
+                      icon={Building2}
+                      text="Directions"
+                      to="/direction"
+                      active={location.pathname.startsWith("/direction")}
+                    />
+                  )}
+                  {can("sousDirection", "access") && (
                     <SidebarLink
                       icon={Landmark}
-                      text={dynamicTitles.titre1}
-                      to="/entiteeUn"
-                      active={location.pathname.startsWith("/entiteeUn")}
+                      text="Sous-directions"
+                      to="/sous-direction"
+                      active={location.pathname.startsWith("/sous-direction")}
                     />
                   )}
-
-                  {/* Condition : Affiché seulement si titre2 existe */}
-                  {dynamicTitles.titre2 && (
+                  {can("division", "access") && (
                     <SidebarLink
                       icon={Split}
-                      text={dynamicTitles.titre2}
-                      to="/entiteeDeux"
-                      active={location.pathname.startsWith("/entiteeDeux")}
+                      text="Divisions"
+                      to="/division"
+                      active={location.pathname.startsWith("/division")}
                     />
                   )}
-
-                  {/* Condition : Affiché seulement si titre3 existe */}
-                  {dynamicTitles.titre3 && (
+                  {can("section", "access") && (
                     <SidebarLink
                       icon={TableOfContents}
-                      text={dynamicTitles.titre3}
-                      to="/entiteeTrois"
-                      active={location.pathname.startsWith("/entiteeTrois")}
+                      text="Sections"
+                      to="/section"
+                      active={location.pathname.startsWith("/section")}
                     />
                   )}
-                  <SidebarLink
-                    icon={Pyramid}
-                    text="Configuration"
-                    to="/organigrame"
-                    active={location.pathname.startsWith("/organigrame")}
-                  />
                 </SidebarTree>
               )}
 
@@ -449,82 +559,68 @@ export default function Sidebar({ children }: SidebarProps) {
                   {can("documentType", "access") && (
                     <SidebarLink
                       icon={Database}
-                      text="DocumentType"
+                      text="Types de documents"
                       to="/dossierType"
                       active={location.pathname.startsWith("/dossierType")}
                     />
                   )}
-                  {/*Remplacer la partie "Documents" dans le return*/}
                   {can("document", "access") && (
-                    <SidebarTree
-                      label="Documents"
-                      icon={FileText}
-                      badge={
-                        <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
-                          {isUserAdmin(user)
-                            ? entiteeUn.length +
-                              entiteeDeux.length +
-                              entiteeTrois.length
-                            : getUserAccessibleNiveauxCount(user)}
-                        </span>
-                      }
-                    >
+                    <SidebarTree label="Documents" icon={FileText}>
                       {isUserAdmin(user) ? (
                         /* ===== CAS ADMIN ===== */
                         <>
-                          {entiteeUn.length > 0 && (
+                          {directions.length > 0 && (
                             <SidebarLink
                               icon={Building2}
-                              text={dynamicTitles.titre1 || "Niveau 1"}
-                              to={`/document?entitee=un`}
+                              text="Directions"
+                              to="/document?entitee=direction"
                               active={
                                 location.pathname === "/document" &&
                                 new URLSearchParams(location.search).get(
                                   "entitee",
-                                ) === "un"
-                              }
-                              suffix={
-                                <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full ml-2">
-                                  {entiteeUn.length}
-                                </span>
+                                ) === "direction"
                               }
                             />
                           )}
 
-                          {entiteeDeux.length > 0 && (
+                          {sousDirections.length > 0 && (
                             <SidebarLink
-                              icon={Layers}
-                              text={dynamicTitles.titre2 || "Niveau 2"}
-                              to={`/document?entitee=deux`}
+                              icon={Landmark}
+                              text="Sous-directions"
+                              to="/document?entitee=sousDirection"
                               active={
                                 location.pathname === "/document" &&
                                 new URLSearchParams(location.search).get(
                                   "entitee",
-                                ) === "deux"
-                              }
-                              suffix={
-                                <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full ml-2">
-                                  {entiteeDeux.length}
-                                </span>
+                                ) === "sousDirection"
                               }
                             />
                           )}
 
-                          {entiteeTrois.length > 0 && (
+                          {divisions.length > 0 && (
                             <SidebarLink
-                              icon={GitMerge}
-                              text={dynamicTitles.titre3 || "Niveau 3"}
-                              to={`/document?entitee=trois`}
+                              icon={Split}
+                              text="Divisions"
+                              to="/document?entitee=division"
                               active={
                                 location.pathname === "/document" &&
                                 new URLSearchParams(location.search).get(
                                   "entitee",
-                                ) === "trois"
+                                ) === "division"
                               }
-                              suffix={
-                                <span className="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full ml-2">
-                                  {entiteeTrois.length}
-                                </span>
+                            />
+                          )}
+
+                          {sections.length > 0 && (
+                            <SidebarLink
+                              icon={TableOfContents}
+                              text="Sections"
+                              to="/document?entitee=section"
+                              active={
+                                location.pathname === "/document" &&
+                                new URLSearchParams(location.search).get(
+                                  "entitee",
+                                ) === "section"
                               }
                             />
                           )}
@@ -534,74 +630,75 @@ export default function Sidebar({ children }: SidebarProps) {
                         <>
                           {(() => {
                             const ids = getUserAccessibleEntityIds(user);
-                            const hasUnAccess = ids.un.size > 0;
-                            const hasDeuxAccess = ids.deux.size > 0;
-                            const hasTroisAccess = ids.trois.size > 0;
+                            const hasDirectionAccess = ids.direction.size > 0;
+                            const hasSousDirectionAccess =
+                              ids.sousDirection.size > 0;
+                            const hasDivisionAccess = ids.division.size > 0;
+                            const hasSectionAccess = ids.section.size > 0;
 
-                            // Cas 2.1 : L'utilisateur a des accès supplémentaires
+                            // Cas 1 : L'utilisateur a des accès supplémentaires
                             if (hasAdditionalAccess(user)) {
                               return (
                                 <>
-                                  {hasUnAccess && (
+                                  {hasDirectionAccess && (
                                     <SidebarLink
                                       icon={Building2}
-                                      text={dynamicTitles.titre1 || "Niveau 1"}
-                                      to={`/document?entitee=un&niveaux=un`}
+                                      text="Directions"
+                                      to="/document?entitee=direction&acces=multiple"
                                       active={
                                         location.pathname === "/document" &&
                                         new URLSearchParams(
                                           location.search,
-                                        ).get("entitee") === "un"
-                                      }
-                                      suffix={
-                                        <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full ml-2">
-                                          {ids.un.size}
-                                        </span>
+                                        ).get("entitee") === "direction"
                                       }
                                     />
                                   )}
 
-                                  {hasDeuxAccess && (
+                                  {hasSousDirectionAccess && (
                                     <SidebarLink
-                                      icon={Layers}
-                                      text={dynamicTitles.titre2 || "Niveau 2"}
-                                      to={`/document?entitee=deux&niveaux=deux`}
+                                      icon={Landmark}
+                                      text="Sous-directions"
+                                      to="/document?entitee=sousDirection&acces=multiple"
                                       active={
                                         location.pathname === "/document" &&
                                         new URLSearchParams(
                                           location.search,
-                                        ).get("entitee") === "deux"
-                                      }
-                                      suffix={
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full ml-2">
-                                          {ids.deux.size}
-                                        </span>
+                                        ).get("entitee") === "sousDirection"
                                       }
                                     />
                                   )}
 
-                                  {hasTroisAccess && (
+                                  {hasDivisionAccess && (
                                     <SidebarLink
-                                      icon={GitMerge}
-                                      text={dynamicTitles.titre3 || "Niveau 3"}
-                                      to={`/document?entitee=trois&niveaux=trois`}
+                                      icon={Split}
+                                      text="Divisions"
+                                      to="/document?entitee=division&acces=multiple"
                                       active={
                                         location.pathname === "/document" &&
                                         new URLSearchParams(
                                           location.search,
-                                        ).get("entitee") === "trois"
+                                        ).get("entitee") === "division"
                                       }
-                                      suffix={
-                                        <span className="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full ml-2">
-                                          {ids.trois.size}
-                                        </span>
+                                    />
+                                  )}
+
+                                  {hasSectionAccess && (
+                                    <SidebarLink
+                                      icon={TableOfContents}
+                                      text="Sections"
+                                      to="/document?entitee=section&acces=multiple"
+                                      active={
+                                        location.pathname === "/document" &&
+                                        new URLSearchParams(
+                                          location.search,
+                                        ).get("entitee") === "section"
                                       }
                                     />
                                   )}
                                 </>
                               );
                             }
-                            // Cas 2.2 : Aucun accès supplémentaire
+                            // Cas 2 : Aucun accès supplémentaire (uniquement la fonction)
                             else {
                               const fonctionEntityType =
                                 getUserFonctionEntityType(user);
@@ -609,6 +706,7 @@ export default function Sidebar({ children }: SidebarProps) {
                                 user,
                                 docTypes,
                               );
+
                               if (fonctionTypes.length === 0) {
                                 return (
                                   <div className="px-4 py-3 text-xs text-slate-400 italic bg-slate-50/50 rounded-lg mx-2 my-1">
@@ -629,23 +727,6 @@ export default function Sidebar({ children }: SidebarProps) {
                                     new URLSearchParams(location.search).get(
                                       "typeId",
                                     ) === String(typeDoc.id)
-                                  }
-                                  suffix={
-                                    <span
-                                      className={`text-xs ${
-                                        fonctionEntityType === "un"
-                                          ? "bg-blue-100 text-blue-700"
-                                          : fonctionEntityType === "deux"
-                                            ? "bg-purple-100 text-purple-700"
-                                            : "bg-emerald-100 text-emerald-700"
-                                      } px-1.5 py-0.5 rounded-full ml-2`}
-                                    >
-                                      {fonctionEntityType === "un"
-                                        ? "N1"
-                                        : fonctionEntityType === "deux"
-                                          ? "N2"
-                                          : "N3"}
-                                    </span>
                                   }
                                 />
                               ));
@@ -697,7 +778,6 @@ export default function Sidebar({ children }: SidebarProps) {
                       active={location.pathname.startsWith("/salle")}
                     />
                   )}
-
                   {can("site", "access") && (
                     <SidebarLink
                       icon={MapPinned}
@@ -741,6 +821,19 @@ export default function Sidebar({ children }: SidebarProps) {
                 </SidebarTree>
               )}
 
+              {can("fonction", "access") && (
+                <SidebarTree label="Paramétrage" icon={Settings2}>
+                  {can("fonction", "access") && (
+                    <SidebarLink
+                      icon={Briefcase}
+                      text="Fonction"
+                      to="/fonction"
+                      active={location.pathname.startsWith("/fonction")}
+                    />
+                  )}
+                </SidebarTree>
+              )}
+
               {can("document", "read") && (
                 <SidebarLink
                   icon={Search}
@@ -754,21 +847,20 @@ export default function Sidebar({ children }: SidebarProps) {
         </div>
 
         {/* Footer - Profil Utilisateur */}
-        <div className="p-4 bg-emerald-900/40 backdrop-blur-sm border-t border-emerald-800">
+        <div className="p-4 bg-orange-900/40 backdrop-blur-sm border-t border-orange-800">
           <div className="flex items-center gap-3">
             <div className="relative">
               {user?.photo_profil ? (
                 <img
                   src={`http://localhost:5000/uploads/profiles/${user.photo_profil}`}
                   alt="Profil"
-                  className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow-sm"
+                  className="w-12 h-12 rounded-xl object-cover ring-2 ring-orange-500/50 shadow-sm"
                 />
               ) : (
-                /* ✅ On utilise l'image 'profil' importée dans une balise img */
                 <img
                   src={profil}
                   alt="Par défaut"
-                  className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/50 shadow-sm"
+                  className="w-12 h-12 rounded-xl object-cover ring-2 ring-orange-500/50 shadow-sm"
                 />
               )}
             </div>
@@ -781,12 +873,12 @@ export default function Sidebar({ children }: SidebarProps) {
               <p className="text-sm font-bold text-white truncate uppercase tracking-wider">
                 {user?.prenom} {user?.nom}
               </p>
-              <p className="text-xs text-emerald-300 truncate">{user?.email}</p>
+              <p className="text-xs text-orange-300 truncate">{user?.email}</p>
             </div>
             {expended && (
               <MoreVertical
                 size={18}
-                className="text-emerald-400 cursor-pointer hover:text-white"
+                className="text-orange-400 cursor-pointer hover:text-white"
               />
             )}
           </div>
@@ -796,11 +888,10 @@ export default function Sidebar({ children }: SidebarProps) {
   );
 }
 
-function SidebarLink({ icon: Icon, text, to, active }: any) {
+function SidebarLink({ icon: Icon, text, to, active, suffix }: any) {
   const { expended } = useContext(SidebarContext);
 
   const handleClick = () => {
-    // Stocker dans localStorage ou sessionStorage que l'utilisateur a cliqué
     sessionStorage.setItem("sidebar_navigation", "true");
   };
 
@@ -810,8 +901,8 @@ function SidebarLink({ icon: Icon, text, to, active }: any) {
         className={`flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-200 relative
         ${
           active
-            ? "bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 scale-[1.02]"
-            : "text-emerald-200 hover:bg-emerald-800/60 hover:text-white"
+            ? "bg-orange-600 text-white shadow-lg shadow-orange-950/50 scale-[1.02]"
+            : "text-orange-200 hover:bg-orange-800/60 hover:text-white"
         }`}
       >
         <Icon
@@ -819,20 +910,22 @@ function SidebarLink({ icon: Icon, text, to, active }: any) {
           className={`flex-shrink-0 ${
             active
               ? "text-white"
-              : "text-emerald-400 group-hover:text-emerald-200"
+              : "text-orange-400 group-hover:text-orange-200"
           }`}
         />
 
         <span
-          className={`whitespace-nowrap transition-all duration-300 font-medium ${
+          className={`whitespace-nowrap transition-all duration-300 font-medium flex-1 ${
             expended ? "opacity-100 w-auto" : "opacity-0 w-0"
           }`}
         >
           {text}
         </span>
 
+        {suffix && expended && <span className="ml-auto">{suffix}</span>}
+
         {!expended && (
-          <div className="absolute left-full rounded-md px-3 py-1.5 ml-6 bg-emerald-700 text-white text-sm invisible opacity-0 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-xl border border-emerald-500">
+          <div className="absolute left-full rounded-md px-3 py-1.5 ml-6 bg-orange-700 text-white text-sm invisible opacity-0 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-xl border border-orange-500 whitespace-nowrap">
             {text}
           </div>
         )}
@@ -841,7 +934,7 @@ function SidebarLink({ icon: Icon, text, to, active }: any) {
   );
 }
 
-function SidebarTree({ label, icon: Icon, children }: any) {
+function SidebarTree({ label, icon: Icon, children, badge }: any) {
   const { expended, treeOpen, toggleTree } = useContext(SidebarContext);
   const open = treeOpen[label] || false;
 
@@ -849,17 +942,18 @@ function SidebarTree({ label, icon: Icon, children }: any) {
     <li className="list-none">
       <button
         onClick={() => toggleTree(label)}
-        className={`flex items-center w-full px-3 py-3 rounded-xl transition-all duration-200 text-emerald-200 hover:bg-emerald-800/40
+        className={`flex items-center w-full px-3 py-3 rounded-xl transition-all duration-200 text-orange-200 hover:bg-orange-800/40
           ${!expended && "justify-center"}
         `}
       >
-        <Icon size={22} className="flex-shrink-0 text-emerald-400" />
+        <Icon size={22} className="flex-shrink-0 text-orange-400" />
         {expended && (
           <>
-            <span className="ml-3 font-medium">{label}</span>
+            <span className="ml-3 font-medium flex-1 text-left">{label}</span>
+            {badge && <span className="mr-2">{badge}</span>}
             <span
-              className={`ml-auto transition-transform duration-300 ${
-                open ? "rotate-180 text-white" : "text-emerald-600"
+              className={`transition-transform duration-300 ${
+                open ? "rotate-180 text-white" : "text-orange-600"
               }`}
             >
               <ChevronDown size={16} />
@@ -869,7 +963,7 @@ function SidebarTree({ label, icon: Icon, children }: any) {
       </button>
 
       {open && expended && (
-        <ul className="ml-6 mt-1 space-y-1 border-l border-emerald-800/50 pl-2 animate-in fade-in slide-in-from-left-2 duration-300">
+        <ul className="ml-6 mt-1 space-y-1 border-l border-orange-800/50 pl-2 animate-in fade-in slide-in-from-left-2 duration-300">
           {children}
         </ul>
       )}

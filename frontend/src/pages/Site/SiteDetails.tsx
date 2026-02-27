@@ -40,7 +40,7 @@ export default function SiteDetails({
     >
       {site && (
         <div className="space-y-6 pt-2">
-          <div className="bg-gradient-to-br from-indigo-600 to-blue-700 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+          <div className="bg-gradient-to-br from-orange-700 to-orange-800 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-black mb-1">{site.nom}</h1>
               <div className="flex items-center gap-3 text-sm opacity-80">

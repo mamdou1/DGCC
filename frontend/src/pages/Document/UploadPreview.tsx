@@ -38,7 +38,7 @@ export default function UploadPreview({
             label="Confirmer l'envoi"
             icon={<FileText size={16} />}
             onClick={onConfirm}
-            className="bg-emerald-600 border-none px-6 py-2"
+            className="bg-orange-600 border-none px-6 py-2"
           />
         </div>
       }

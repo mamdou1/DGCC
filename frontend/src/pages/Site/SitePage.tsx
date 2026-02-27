@@ -127,7 +127,7 @@ export default function SitePage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -156,12 +156,12 @@ export default function SitePage() {
       {/* Header (inchangé) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
+          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
             <MapPinned size={28} />
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-              Sites d' <span className="text-emerald-600">Archivage</span>
+              Sites d' <span className="text-orange-600">Archivage</span>
             </h1>
             <p className="text-slate-500 font-medium font-sans">
               Organisation des espaces de stockage
@@ -171,7 +171,7 @@ export default function SitePage() {
         <Button
           label="Nouveau site"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all shadow-emerald-200"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all shadow-orange-200"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -183,11 +183,11 @@ export default function SitePage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex justify-between items-center">
         <div className="relative group max-w-md w-full">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
             size={20}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/20"
             placeholder="Rechercher un site..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -209,7 +209,7 @@ export default function SitePage() {
             {paginated.map((s) => (
               <tr
                 key={s.id}
-                className="cursor-pointer hover:bg-emerald-50/30 transition-all group"
+                className="cursor-pointer hover:bg-orange-50/30 transition-all group"
                 onClick={() => {
                   setSelected(s);
                   setDetailsVisible(true);
@@ -221,7 +221,7 @@ export default function SitePage() {
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg font-bold text-xs border border-emerald-100 flex items-center gap-1 w-fit">
+                  <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg font-bold text-xs border border-orange-100 flex items-center gap-1 w-fit">
                     <Hash size={12} /> {s.adresse}
                   </span>
                 </td>
@@ -242,7 +242,7 @@ export default function SitePage() {
                         setEditing(s);
                         setFormVisible(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                       title="Modifier"
                     >
                       <Pencil size={18} />

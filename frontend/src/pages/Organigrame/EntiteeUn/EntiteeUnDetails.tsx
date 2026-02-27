@@ -85,8 +85,8 @@ export default function EntiteeUnDetails({
     <Dialog
       header={
         <div className="flex items-center gap-2 text-slate-800 font-bold">
-          <div className="bg-emerald-100 p-2 rounded-lg">
-            <Bookmark size={18} className="text-emerald-600" />
+          <div className="bg-orange-100 p-2 rounded-lg">
+            <Bookmark size={18} className="text-orange-600" />
           </div>
           <span>Détails du {entiteeUn.titre}</span>
         </div>
@@ -108,7 +108,7 @@ export default function EntiteeUnDetails({
       <div className="pt-2 space-y-6">
         {/* Header EntiteeUn */}
         <div className="border-b border-slate-100 pb-4">
-          <p className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
+          <p className="text-orange-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
             {entiteeUn.titre}
           </p>
           <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
@@ -133,7 +133,7 @@ export default function EntiteeUnDetails({
                 setAjoutFonctionVisible(true);
                 e.stopPropagation();
               }}
-              className="flex items-center gap-2 px-3 py-2 text-emerald-600 font-bold bg-emerald-50 hover:text-white hover:bg-emerald-500 rounded-lg transition-all border-none"
+              className="flex items-center gap-2 px-3 py-2 text-orange-600 font-bold bg-orange-50 hover:text-white hover:bg-orange-500 rounded-lg transition-all border-none"
             >
               <PlusCircle size={15} />
               <span className="text-xs">Ajouter une fonction</span>
@@ -160,10 +160,10 @@ export default function EntiteeUnDetails({
                   {fonctions.map((f, index) => (
                     <tr
                       key={f.id}
-                      className="group hover:bg-emerald-50/30 transition-colors"
+                      className="group hover:bg-orange-50/30 transition-colors"
                     >
                       <td className="p-3">
-                        <span className="text-xs font-bold text-slate-400 group-hover:text-emerald-500">
+                        <span className="text-xs font-bold text-slate-400 group-hover:text-orange-500">
                           {String(index + 1).padStart(2, "0")}
                         </span>
                       </td>
@@ -171,7 +171,7 @@ export default function EntiteeUnDetails({
                         <div className="flex items-center gap-2">
                           <Briefcase
                             size={14}
-                            className="text-slate-300 group-hover:text-emerald-400"
+                            className="text-slate-300 group-hover:text-orange-400"
                           />
                           <span className="text-sm font-bold text-slate-700 group-hover:text-slate-900">
                             {f.libelle}
@@ -186,7 +186,7 @@ export default function EntiteeUnDetails({
                               setAjoutFonctionVisible(true);
                               e.stopPropagation();
                             }}
-                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                            className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                           >
                             <Pencil size={18} />
                           </button>

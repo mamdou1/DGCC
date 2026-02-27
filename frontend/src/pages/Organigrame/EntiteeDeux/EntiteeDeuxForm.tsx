@@ -68,7 +68,7 @@ export default function EntiteeDeuxForm({
     <Dialog
       header={
         <div className="flex items-center gap-2 font-bold text-slate-800">
-          <Layers className="text-emerald-500" size={20} />
+          <Layers className="text-orange-500" size={20} />
           {initial.id ? "Modifier" : "Nouveau"} {titreNiveau2}
         </div>
       }
@@ -80,7 +80,7 @@ export default function EntiteeDeuxForm({
       <div className="pt-4 space-y-5">
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Building2 size={16} className="text-emerald-500" />
+            <Building2 size={16} className="text-orange-500" />
             Sélectionner le {titreNiveau1}{" "}
             {/* Dynamique : ex "Sélectionner le Service" */}
           </label>
@@ -97,7 +97,7 @@ export default function EntiteeDeuxForm({
 
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Hash size={16} className="text-emerald-500" />
+            <Hash size={16} className="text-orange-500" />
             Code de la {titreNiveau2}{" "}
             {/* Dynamique : ex "Code de la Division" */}
           </label>
@@ -111,7 +111,7 @@ export default function EntiteeDeuxForm({
 
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Info size={16} className="text-emerald-500" />
+            <Info size={16} className="text-orange-500" />
             Libellé de la {titreNiveau2}
           </label>
           <InputText
@@ -133,7 +133,7 @@ export default function EntiteeDeuxForm({
             icon={<Save size={18} className="mr-2" />}
             onClick={handleSubmit}
             disabled={!libelle || !entitee_un_id}
-            className="bg-emerald-600 text-white px-8 py-3 rounded-xl shadow-lg"
+            className="bg-orange-700 hover:bg-orange-800 text-white px-8 py-3 rounded-xl shadow-lg"
           />
         </div>
       </div>

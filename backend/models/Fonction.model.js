@@ -25,6 +25,32 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "entitee_trois_id",
       as: "entitee_trois",
     });
+
+    // Fonction.belongsTo(models.EntiteeQuatre, {
+    //   foreignKey: "entitee_quatre_id",
+    //   as: "entitee_quatre",
+    // });
+
+    Fonction.belongsTo(models.Direction, {
+      foreignKey: "direction_id",
+      as: "direction",
+    });
+    Fonction.belongsTo(models.SousDirection, {
+      foreignKey: "sous_direction_id",
+      as: "sousDirection",
+    });
+    Fonction.belongsTo(models.Division, {
+      foreignKey: "division_id",
+      as: "division",
+    });
+    Fonction.belongsTo(models.Section, {
+      foreignKey: "section_id",
+      as: "section",
+    });
+    Fonction.belongsTo(models.Service, {
+      foreignKey: "service_id",
+      as: "service",
+    });
   };
   return Fonction;
 };

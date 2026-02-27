@@ -142,7 +142,7 @@ export default function BoxPage() {
       case "deux":
         return <Layers size={14} className="text-purple-500" />;
       case "trois":
-        return <GitMerge size={14} className="text-emerald-500" />;
+        return <GitMerge size={14} className="text-orange-500" />;
       default:
         return <Briefcase size={14} className="text-slate-400" />;
     }
@@ -167,7 +167,7 @@ export default function BoxPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -196,12 +196,12 @@ export default function BoxPage() {
       {/* Header (inchangé) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg">
+          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg">
             <Archive size={28} />
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-              Boxes d' <span className="text-emerald-600">Archivage</span>
+              Boxes d' <span className="text-orange-600">Archivage</span>
             </h1>
             <p className="text-slate-500 font-medium">
               Gestion de la capacité et du contenu
@@ -211,7 +211,7 @@ export default function BoxPage() {
         <Button
           label="Nouveau Box"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-xl shadow-emerald-200 shadow-lg"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-orange-200 shadow-lg"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -223,11 +223,11 @@ export default function BoxPage() {
       <div className="bg-white p-4 rounded-2xl border border-slate-100 mb-6">
         <div className="relative group max-w-md">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500"
             size={20}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
             placeholder="Rechercher un box..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -239,31 +239,31 @@ export default function BoxPage() {
       <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-emerald-50/30 border-b border-emerald-50">
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase tracking-widest w-24">
+            <tr className="bg-orange-50/30 border-b border-orange-50">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase tracking-widest w-24">
                 Code
               </th>
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase tracking-widest">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase tracking-widest">
                 Libellé
               </th>
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase tracking-widest">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase tracking-widest">
                 Structure
               </th>
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase tracking-widest">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase tracking-widest">
                 Type de document
               </th>
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase tracking-widest">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase tracking-widest">
                 Travée
               </th>
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase tracking-widest">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase tracking-widest">
                 Capacité
               </th>
-              <th className="p-5 text-[11px] font-black text-emerald-800 uppercase tracking-widest text-center">
+              <th className="p-5 text-[11px] font-black text-orange-800 uppercase tracking-widest text-center">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-emerald-50">
+          <tbody className="divide-y divide-orange-50">
             {paginated.length > 0 ? (
               paginated.map((box) => {
                 const ratio =
@@ -274,7 +274,7 @@ export default function BoxPage() {
                 return (
                   <tr
                     key={box.id}
-                    className="hover:bg-emerald-50/40 transition-colors group cursor-pointer"
+                    className="hover:bg-orange-50/40 transition-colors group cursor-pointer"
                     onClick={() => {
                       setSelected(box);
                       setDetailsVisible(true);
@@ -304,7 +304,7 @@ export default function BoxPage() {
                                   ? "bg-blue-100 text-blue-700"
                                   : entiteeType === "deux"
                                     ? "bg-purple-100 text-purple-700"
-                                    : "bg-emerald-100 text-emerald-700"
+                                    : "bg-orange-100 text-orange-700"
                               }`}
                             >
                               N
@@ -361,7 +361,7 @@ export default function BoxPage() {
                           ) : (
                             <CheckCircle
                               size={14}
-                              className="text-emerald-500"
+                              className="text-orange-500"
                             />
                           )}
                         </div>
@@ -372,7 +372,7 @@ export default function BoxPage() {
                                 ? "bg-red-500"
                                 : ratio > 80
                                   ? "bg-orange-400"
-                                  : "bg-emerald-500"
+                                  : "bg-orange-500"
                             }`}
                             style={{ width: `${Math.min(ratio, 100)}%` }}
                           />
@@ -389,7 +389,7 @@ export default function BoxPage() {
                             setSelected(box);
                             setDetailsVisible(true);
                           }}
-                          className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                          className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                           title="Voir le contenu"
                         >
                           <Eye size={18} />

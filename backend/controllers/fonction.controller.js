@@ -48,7 +48,35 @@ exports.getAllFonctions = async (req, res) => {
       query: req.query,
     });
 
-    const fonctions = await Fonction.findAll();
+    const fonctions = await Fonction.findAll({
+      include: [
+        {
+          model: require("../models").Direction,
+          as: "direction_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").SousDirection,
+          as: "sous_direction_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").Division,
+          as: "division_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").Section,
+          as: "section_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").Service,
+          as: "service_id",
+          attributes: ["id", "libelle", "code"],
+        },
+      ],
+    });
 
     logger.info("✅ Fonctions récupérées", {
       count: fonctions.length,
@@ -88,6 +116,50 @@ exports.getAllFonctions = async (req, res) => {
     res
       .status(500)
       .json({ message: "Erreur récupération fonctions", error: err.message });
+  }
+};
+
+exports.getFonctionById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const fonctions = await Fonction.findAll({
+      include: [
+        {
+          model: require("../models").Direction,
+          as: "direction_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").SousDirection,
+          as: "sous_direction_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").Division,
+          as: "division_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").Section,
+          as: "section_id",
+          attributes: ["id", "libelle", "code"],
+        },
+        {
+          model: require("../models").Service,
+          as: "service_id",
+          attributes: ["id", "libelle", "code"],
+        },
+      ],
+    });
+
+    if (!fonction) {
+      return res.status(404).json({ message: "Fonction non trouvée" });
+    }
+
+    res.json(fonction);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 

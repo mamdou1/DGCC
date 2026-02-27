@@ -1,9 +1,9 @@
+// UserForm.tsx (mis à jour)
 import React, { useState, useEffect, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-// import { Toast } from "primereact/toast";
 import {
   UserPlus,
   Save,
@@ -16,21 +16,33 @@ import {
   User as UserIcon,
   Fingerprint,
   Camera,
+  Split,
+  TableOfContents,
 } from "lucide-react";
 import type {
-  EntiteeTrois,
-  EntiteeDeux,
-  EntiteeUn,
+  Direction,
+  Service,
+  SousDirection,
+  Division,
+  Section,
   Fonction,
   Droit,
   User,
 } from "../../interfaces";
-import { getAllEntiteeUn } from "../../api/entiteeUn";
-import { getEntiteeDeuxByEntiteeUn } from "../../api/entiteeDeux";
-import { getEntiteeTroisByEntiteeDeux } from "../../api/entiteeTrois";
-import { getFunctionsByEntiteeUn } from "../../api/entiteeUn";
-import { getFunctionsByEntiteeDeux } from "../../api/entiteeDeux";
-import { getFunctionsByEntiteeTrois } from "../../api/entiteeTrois";
+
+// API imports pour les nouvelles entités
+import { getDirections } from "../../api/direction";
+import { getServicesByDirection } from "../../api/service";
+import { getSousDirectionsByDirection } from "../../api/sousDirection";
+import { getDivisionsBySousDirection } from "../../api/division";
+import { getSectionsByDivision } from "../../api/section";
+
+// API imports pour les fonctions (à adapter selon votre structure)
+import { getFunctionsByDirection } from "../../api/direction";
+import { getFunctionsByService } from "../../api/service";
+import { getFunctionsBySousDirection } from "../../api/sousDirection";
+import { getFunctionsByDivision } from "../../api/division";
+import { getFunctionsBySection } from "../../api/section";
 
 type Props = {
   visible: boolean;
@@ -42,8 +54,6 @@ type Props = {
   droits: Droit[];
 };
 
-// const roleOptions: Role[] = ["ADMIN", "MEMBRE", "MEMBRE_AUTHORIZE"];
-
 export default function UserForm({
   visible,
   onHide,
@@ -53,47 +63,56 @@ export default function UserForm({
   title = "Fiche Agent",
   droits,
 }: Props) {
-  // --- États des champs (Indépendants comme LiquidationForm) ---
+  // --- États des champs de base ---
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
   const [numMatricule, setNumMatricule] = useState("");
-
-  // const [droitId, setDroitId] = useState<number | undefined>(
-  //   initial.droit_id ??
-  //     (typeof initial.droit === "object" ? initial.droit.id : droits[0]?.id),
-  // );
-
   const [droit, setDroit] = useState<Droit | string>(
     initial.droit || droits[0]?.id || "",
   );
 
-  // États d'affectation
-  const [entitee_un_id, setEntitee_un_id] = useState<number | undefined>();
-  const [entitee_deux_id, setEntitee_deux_id] = useState<number | undefined>();
-  const [entitee_trois_id, setEntitee_trois_id] = useState<
+  // --- États pour le chemin d'affectation ---
+  const [selectedPath, setSelectedPath] = useState<
+    "direction-service" | "sousdirection-division-section" | null
+  >(null);
+
+  // IDs sélectionnés
+  const [direction_id, setDirection_id] = useState<number | undefined>();
+  const [service_id, setService_id] = useState<number | undefined>();
+  const [sous_direction_id, setSous_direction_id] = useState<
     number | undefined
   >();
+  const [division_id, setDivision_id] = useState<number | undefined>();
+  const [section_id, setSection_id] = useState<number | undefined>();
+
+  // Listes déroulantes
+  const [allDirections, setAllDirections] = useState<Direction[]>([]);
+  const [allServices, setAllServices] = useState<Service[]>([]);
+  const [allSousDirections, setAllSousDirections] = useState<SousDirection[]>(
+    [],
+  );
+  const [allDivisions, setAllDivisions] = useState<Division[]>([]);
+  const [allSections, setAllSections] = useState<Section[]>([]);
+
+  // Fonctions disponibles
+  const [fonctions, setFonctions] = useState<Fonction[]>([]);
   const [fonctionId, setFonctionId] = useState<number | undefined>();
 
-  // États des listes et UI
+  // Photo
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [allEntiteeUn, setAllEntiteeUn] = useState<EntiteeUn[]>([]);
-  const [allEntiteeDeux, setAllEntiteeDeux] = useState<EntiteeDeux[]>([]);
-  const [allEntiteeTrois, setAllEntiteeTrois] = useState<EntiteeTrois[]>([]);
-  const [fonctions, setFonctions] = useState<Fonction[]>([]);
-  // const toast = useRef<Toast>(null);
 
-  // --- Initialisation au montage/ouverture ---
+  // --- Chargement initial ---
   useEffect(() => {
     const fetchInitialData = async () => {
-      const srvs = await getAllEntiteeUn();
-      setAllEntiteeUn(Array.isArray(srvs) ? srvs : []);
+      const dirs = await getDirections();
+      setAllDirections(Array.isArray(dirs) ? dirs : []);
     };
     fetchInitialData();
   }, []);
 
+  // --- Chargement des données d'édition ---
   useEffect(() => {
     if (visible) {
       setNom(initial.nom || "");
@@ -102,92 +121,138 @@ export default function UserForm({
       setTelephone(initial.telephone || "");
       setNumMatricule(initial.num_matricule || "");
       setPhotoFile(null);
-
-      // Gestion ID Droit
       setDroit(initial.droit || droits[0]?.id || "");
 
-      // Gestion ID Fonction
-      const initFonction =
-        initial.fonction_details && typeof initial.fonction_details === "object"
-          ? (initial.fonction_details as any).id
-          : initial.fonction_details;
-
-      //console.log(initFonction);
-
-      setFonctionId(
-        typeof initFonction === "number" ? initFonction : undefined,
-      );
+      // Logique d'édition pour l'affectation
+      if (initial.direction_id) {
+        setDirection_id(initial.direction_id);
+        setSelectedPath("direction-service");
+        loadDirectionData(initial.direction_id);
+      }
+      if (initial.service_id) {
+        setService_id(initial.service_id);
+      }
+      if (initial.sous_direction_id) {
+        setSous_direction_id(initial.sous_direction_id);
+        setSelectedPath("sousdirection-division-section");
+        loadSousDirectionData(initial.sous_direction_id);
+      }
+      if (initial.division_id) {
+        setDivision_id(initial.division_id);
+        loadDivisionData(initial.division_id);
+      }
+      if (initial.section_id) {
+        setSection_id(initial.section_id);
+        loadSectionData(initial.section_id);
+      }
+      if (initial.fonction) {
+        setFonctionId(initial.fonction);
+      }
+    } else {
+      // Reset
+      setDirection_id(undefined);
+      setService_id(undefined);
+      setSous_direction_id(undefined);
+      setDivision_id(undefined);
+      setSection_id(undefined);
+      setSelectedPath(null);
+      setAllServices([]);
+      setAllSousDirections([]);
+      setAllDivisions([]);
+      setAllSections([]);
+      setFonctions([]);
+      setFonctionId(undefined);
     }
   }, [visible, droits]);
 
-  // --- Handlers de changement (Logique de cascade) ---
-  const handleEntiteeUnChange = async (id: number) => {
-    setEntitee_un_id(id);
-    setEntitee_deux_id(undefined);
-    setEntitee_trois_id(undefined);
-    setFonctionId(undefined);
-
-    const [divs, funcs] = await Promise.all([
-      getEntiteeDeuxByEntiteeUn(id),
-      getFunctionsByEntiteeUn(id),
+  // --- Fonctions de chargement des données ---
+  const loadDirectionData = async (id: number) => {
+    const [services, sousDirections, funcs] = await Promise.all([
+      getServicesByDirection(id),
+      getSousDirectionsByDirection(id),
+      getFunctionsByDirection(id),
     ]);
-    setAllEntiteeDeux(Array.isArray(divs) ? divs : []);
-    setFonctions(Array.isArray(funcs) ? funcs : []);
-    setAllEntiteeTrois([]);
-  };
-
-  const handleEntiteeDeuxChange = async (id: number) => {
-    setEntitee_deux_id(id);
-    setEntitee_trois_id(undefined);
-    setFonctionId(undefined);
-
-    const [secs, funcs] = await Promise.all([
-      getEntiteeTroisByEntiteeDeux(id),
-      getFunctionsByEntiteeDeux(id),
-    ]);
-    setAllEntiteeTrois(Array.isArray(secs) ? secs : []);
+    setAllServices(Array.isArray(services) ? services : []);
+    setAllSousDirections(Array.isArray(sousDirections) ? sousDirections : []);
     setFonctions(Array.isArray(funcs) ? funcs : []);
   };
 
-  const handleEntiteeTroisChange = async (id: number) => {
-    setEntitee_trois_id(id);
-    setFonctionId(undefined);
-    const funcs = await getFunctionsByEntiteeTrois(id);
-    setFonctions(funcs);
+  const loadSousDirectionData = async (id: number) => {
+    const [divisions, funcs] = await Promise.all([
+      getDivisionsBySousDirection(id),
+      getFunctionsBySousDirection(id),
+    ]);
+    setAllDivisions(Array.isArray(divisions) ? divisions : []);
+    setFonctions(Array.isArray(funcs) ? funcs : []);
   };
 
-  const titreUn = allEntiteeUn[0]?.titre || "Entité 1";
-  const titreDeux = allEntiteeDeux[0]?.titre || "Entité 2";
-  const titreTrois = allEntiteeTrois[0]?.titre || "Entité 3";
+  const loadDivisionData = async (id: number) => {
+    const [sections, funcs] = await Promise.all([
+      getSectionsByDivision(id),
+      getFunctionsByDivision(id),
+    ]);
+    setAllSections(Array.isArray(sections) ? sections : []);
+    setFonctions(Array.isArray(funcs) ? funcs : []);
+  };
+
+  const loadSectionData = async (id: number) => {
+    const funcs = await getFunctionsBySection(id);
+    setFonctions(Array.isArray(funcs) ? funcs : []);
+  };
+
+  // --- Handlers pour le chemin Direction → Service ---
+  const handleDirectionChange = async (id: number) => {
+    setDirection_id(id);
+    setService_id(undefined);
+    setSelectedPath("direction-service");
+
+    // Réinitialiser l'autre chemin
+    setSous_direction_id(undefined);
+    setDivision_id(undefined);
+    setSection_id(undefined);
+    setAllDivisions([]);
+    setAllSections([]);
+
+    await loadDirectionData(id);
+  };
+
+  const handleServiceChange = async (id: number) => {
+    setService_id(id);
+    const funcs = await getFunctionsByService(id);
+    setFonctions(Array.isArray(funcs) ? funcs : []);
+  };
+
+  // --- Handlers pour le chemin Sous-direction → Division → Section ---
+  const handleSousDirectionChange = async (id: number) => {
+    setSous_direction_id(id);
+    setDivision_id(undefined);
+    setSection_id(undefined);
+    setSelectedPath("sousdirection-division-section");
+
+    // Réinitialiser l'autre chemin
+    setDirection_id(undefined);
+    setService_id(undefined);
+    setAllServices([]);
+    setAllSousDirections([]);
+
+    await loadSousDirectionData(id);
+  };
+
+  const handleDivisionChange = async (id: number) => {
+    setDivision_id(id);
+    setSection_id(undefined);
+    await loadDivisionData(id);
+  };
+
+  const handleSectionChange = async (id: number) => {
+    setSection_id(id);
+    await loadSectionData(id);
+  };
 
   // --- Soumission ---
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   const payload: Partial<User> = {
-  //     nom,
-  //     prenom,
-  //     email,
-  //     telephone,
-  //     num_matricule: numMatricule,
-  //     role,
-  //     droit,
-
-  //     fonction: fonctionId,
-  //     // @ts-ignore (Si vous gérez les IDs d'affectation dans votre interface User)
-
-  //     entitee_un_id: entitee_un_id,
-  //     entitee_deux_id: entitee_deux_id,
-  //     entitee_trois_id: entitee_trois_id,
-  //   };
-
-  //   await onSubmit(payload, photoFile || undefined);
-  //   ////onHide();
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // On ne garde que ce qui est défini dans l'interface User
     const payload: Partial<User> = {
       nom,
       prenom,
@@ -195,25 +260,34 @@ export default function UserForm({
       telephone,
       num_matricule: numMatricule,
       droit: typeof droit === "object" ? (droit as any).id : droit,
-      fonction: fonctionId, // C'est cet ID qui lie l'utilisateur aux entités via la table Fonction
     };
 
-    // --- LOGS DE DEBUG ---
-    console.log("🚀 Tentative de création d'agent...");
-    console.table(payload);
+    // Ajouter les IDs d'affectation selon le chemin choisi
+    if (selectedPath === "direction-service") {
+      payload.direction_id = direction_id;
+      payload.service_id = service_id;
+    } else if (selectedPath === "sousdirection-division-section") {
+      payload.sous_direction_id = sous_direction_id;
+      payload.division_id = division_id;
+      payload.section_id = section_id;
+    }
+
+    // Ajouter la fonction si sélectionnée
+    if (fonctionId) {
+      payload.fonction = fonctionId;
+    }
+
+    console.log("🚀 Création d'agent avec payload:", payload);
     console.log("📸 Photo :", photoFile ? photoFile.name : "Aucune");
 
     try {
-      // On envoie le payload propre au onSubmit
       await onSubmit(payload, photoFile || undefined);
       console.log("✅ Agent créé avec succès !");
       refresh();
     } catch (error: any) {
-      console.error("❌ ÉCHEC de la création :");
+      console.error("❌ ÉCHEC de la création :", error);
       if (error.response) {
         console.log("Détails du serveur :", error.response.data);
-      } else {
-        console.log("Message d'erreur :", error.message);
       }
     }
   };
@@ -221,15 +295,13 @@ export default function UserForm({
   const labelClass =
     "flex items-center gap-2 text-sm font-bold text-slate-700 mb-2";
   const inputClass =
-    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-emerald-900 font-medium";
-  // const iconStyle =
-  //   "text-slate-400 group-focus-within:text-emerald-500 transition-colors";
+    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none text-orange-900 font-medium";
 
   return (
     <Dialog
       header={
-        <div className="flex items-center gap-2 text-emerald-900 font-bold">
-          <UserPlus size={20} className="text-emerald-500" />
+        <div className="flex items-center gap-2 text-orange-900 font-bold">
+          <UserPlus size={20} className="text-orange-500" />
           <span>{title}</span>
         </div>
       }
@@ -255,6 +327,7 @@ export default function UserForm({
                 value={nom}
                 onChange={(e) => setNom(e.target.value)}
                 className={inputClass}
+                required
               />
             </div>
             <div className="group">
@@ -265,6 +338,7 @@ export default function UserForm({
                 value={prenom}
                 onChange={(e) => setPrenom(e.target.value)}
                 className={inputClass}
+                required
               />
             </div>
           </div>
@@ -277,6 +351,7 @@ export default function UserForm({
               value={numMatricule}
               onChange={(e) => setNumMatricule(e.target.value)}
               className={inputClass}
+              required
             />
           </div>
 
@@ -301,6 +376,8 @@ export default function UserForm({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={inputClass}
+              type="email"
+              required
             />
           </div>
 
@@ -313,30 +390,20 @@ export default function UserForm({
                 value={telephone}
                 onChange={(e) => setTelephone(e.target.value)}
                 className={inputClass}
+                required
               />
             </div>
-            {/* <div>
-              <label className={labelClass}>
-                Rôle <span className="text-red-500">*</span>
-              </label>
-              <Dropdown
-                value={role}
-                options={roleOptions}
-                onChange={(e) => setRole(e.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl"
-              />
-            </div> */}
           </div>
 
           <div>
             <label className={labelClass}>Photo de profil</label>
-            <div className="flex items-center gap-3 p-4 bg-emerald-50/50 border-2 border-dashed border-emerald-200 rounded-xl">
-              <Camera className="text-emerald-500" size={24} />
+            <div className="flex items-center gap-3 p-4 bg-orange-50/50 border-2 border-dashed border-orange-200 rounded-xl">
+              <Camera className="text-orange-500" size={24} />
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
-                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-500 file:text-white cursor-pointer"
+                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-orange-500 file:text-white cursor-pointer"
               />
             </div>
           </div>
@@ -344,62 +411,111 @@ export default function UserForm({
 
         {/* Colonne Droite: Affectation */}
         <div className="space-y-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
-          <h3 className="text-xs font-black uppercase text-emerald-500 tracking-widest border-b border-emerald-100 pb-2">
+          <h3 className="text-xs font-black uppercase text-orange-500 tracking-widest border-b border-orange-100 pb-2">
             Affectation
           </h3>
 
-          <div>
-            <label className={labelClass}>
-              <Building2 size={14} className="text-emerald-500" /> {titreUn}
-            </label>
-            <Dropdown
-              value={entitee_un_id}
-              options={allEntiteeUn}
-              optionLabel="libelle"
-              optionValue="id"
-              onChange={(e) => handleEntiteeUnChange(Number(e.value))}
-              placeholder={`Sélectionner ${titreUn}`}
-              className="w-full rounded-xl"
-              filter
-            />
+          {/* CHEMIN 1: Direction → Service */}
+          <div className="border rounded-xl p-3 hover:border-orange-200 transition-all">
+            <h4 className="text-xs font-bold mb-2 flex items-center gap-1">
+              <Building2 size={14} className="text-orange-600" />
+              Chemin 1 : Direction → Service
+            </h4>
+
+            <div className="space-y-2">
+              <Dropdown
+                value={direction_id}
+                options={allDirections}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => handleDirectionChange(e.value)}
+                placeholder="Choisir une direction"
+                className="w-full text-sm"
+                filter
+              />
+
+              <Dropdown
+                value={service_id}
+                options={allServices}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => handleServiceChange(e.value)}
+                placeholder="Service (optionnel)"
+                className="w-full text-sm"
+                disabled={!direction_id}
+                filter
+                showClear
+              />
+            </div>
           </div>
 
-          <div>
-            <label className={labelClass}>
-              <Layers size={14} className="text-emerald-500" /> {titreDeux}
-            </label>
-            <Dropdown
-              value={entitee_deux_id}
-              options={allEntiteeDeux}
-              optionLabel="libelle"
-              optionValue="id"
-              onChange={(e) => handleEntiteeDeuxChange(Number(e.value))}
-              placeholder={`Sélectionner ${titreDeux}`}
-              className="w-full rounded-xl"
-              disabled={!entitee_un_id}
-              filter
-            />
+          {/* Séparateur */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-slate-50 px-4 text-slate-400 font-bold">
+                OU
+              </span>
+            </div>
           </div>
 
-          <div>
-            <label className={labelClass}>
-              <GitMerge size={14} className="text-orange-500" /> {titreTrois}
-            </label>
-            <Dropdown
-              value={entitee_trois_id}
-              options={allEntiteeTrois}
-              optionLabel="libelle"
-              optionValue="id"
-              onChange={(e) => handleEntiteeTroisChange(Number(e.value))}
-              placeholder={`Sélectionner ${titreTrois}`}
-              className="w-full rounded-xl"
-              disabled={!entitee_deux_id}
-              filter
-            />
+          {/* CHEMIN 2: Sous-direction → Division → Section */}
+          <div className="border rounded-xl p-3 hover:border-orange-200 transition-all">
+            <h4 className="text-xs font-bold mb-2 flex items-center gap-1">
+              <Split size={14} className="text-blue-600" />
+              Chemin 2 : Sous-direction → Division → Section
+            </h4>
+
+            <div className="space-y-2">
+              <Dropdown
+                value={sous_direction_id}
+                options={allSousDirections}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => handleSousDirectionChange(e.value)}
+                placeholder={
+                  direction_id
+                    ? "Choisir une sous-direction"
+                    : "Sélectionnez d'abord une direction"
+                }
+                className="w-full text-sm"
+                disabled={!direction_id}
+                filter
+              />
+
+              <Dropdown
+                value={division_id}
+                options={allDivisions}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => handleDivisionChange(e.value)}
+                placeholder="Choisir une division"
+                className="w-full text-sm"
+                disabled={!sous_direction_id}
+                filter
+                showClear
+              />
+
+              <Dropdown
+                value={section_id}
+                options={allSections}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => handleSectionChange(e.value)}
+                placeholder="Section (optionnel)"
+                className="w-full text-sm"
+                disabled={!division_id}
+                filter
+                showClear
+              />
+            </div>
           </div>
 
+          {/* Fonction */}
           <div>
-            <label className={labelClass}>
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
               <Briefcase size={14} className="text-purple-500" /> Fonction /
               Poste
             </label>
@@ -408,16 +524,69 @@ export default function UserForm({
               options={fonctions}
               optionLabel="libelle"
               optionValue="id"
-              onChange={(e) => setFonctionId(Number(e.value))}
+              onChange={(e) => setFonctionId(e.value)}
               placeholder="Attribuer une fonction"
-              className="w-full rounded-xl border-emerald-500 border-2"
-              disabled={!entitee_un_id}
+              className="w-full rounded-xl"
+              disabled={!direction_id && !sous_direction_id}
               filter
             />
+            {!direction_id && !sous_direction_id && (
+              <p className="text-[10px] text-slate-400 mt-1 italic">
+                Sélectionnez d'abord une entité
+              </p>
+            )}
           </div>
+
+          {/* Récapitulatif */}
+          {selectedPath && (
+            <div className="mt-3 p-2 bg-white rounded-lg border border-slate-200">
+              <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+                Récapitulatif
+              </p>
+              <p className="text-[11px] text-slate-600">
+                {selectedPath === "direction-service" ? (
+                  <>
+                    <span className="font-bold">Direction :</span>{" "}
+                    {allDirections.find((d) => d.id === direction_id)
+                      ?.libelle || "Non sélectionnée"}
+                    {service_id && (
+                      <>
+                        {" "}
+                        → <span className="font-bold">Service :</span>{" "}
+                        {allServices.find((s) => s.id === service_id)?.libelle}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold">Sous-direction :</span>{" "}
+                    {allSousDirections.find((sd) => sd.id === sous_direction_id)
+                      ?.libelle || "Non sélectionnée"}
+                    {division_id && (
+                      <>
+                        {" "}
+                        → <span className="font-bold">Division :</span>{" "}
+                        {
+                          allDivisions.find((d) => d.id === division_id)
+                            ?.libelle
+                        }
+                      </>
+                    )}
+                    {section_id && (
+                      <>
+                        {" "}
+                        → <span className="font-bold">Section :</span>{" "}
+                        {allSections.find((s) => s.id === section_id)?.libelle}
+                      </>
+                    )}
+                  </>
+                )}
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Footer Navigation */}
+        {/* Footer */}
         <div className="col-span-2 flex justify-end gap-3 pt-6 mt-4 border-t border-slate-100">
           <Button
             type="button"
@@ -429,7 +598,7 @@ export default function UserForm({
             type="submit"
             label="Enregistrer l'agent"
             icon={<Save size={18} className="mr-2" />}
-            className="bg-emerald-600 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all"
+            className="bg-orange-600 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all"
           />
         </div>
       </form>

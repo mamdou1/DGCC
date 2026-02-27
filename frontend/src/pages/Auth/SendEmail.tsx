@@ -73,19 +73,19 @@ export default function SendEmail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 flex items-center justify-center p-4">
       <Toast ref={toast} position="top-center" />
 
       <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-700 to-emerald-900 p-8 text-white">
+        <div className="bg-gradient-to-r from-orange-700 to-orange-900 p-8 text-white">
           <div className="flex items-center gap-4">
             <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
               <Lock size={28} />
             </div>
             <div>
               <h1 className="text-2xl font-black">Mot de passe oublié ?</h1>
-              <p className="text-emerald-100 text-sm mt-1">
+              <p className="text-orange-100 text-sm mt-1">
                 Recevez un code de réinitialisation
               </p>
             </div>
@@ -102,8 +102,8 @@ export default function SendEmail() {
           )}
 
           <div className="space-y-2">
-            <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-2">
-              <Mail size={14} className="text-emerald-500" />
+            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider flex items-center gap-2">
+              <Mail size={14} className="text-orange-500" />
               Adresse email
             </label>
             <div className="relative">
@@ -116,7 +116,7 @@ export default function SendEmail() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="exemple@domaine.com"
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 outline-none transition-all"
               />
             </div>
             <p className="text-xs text-slate-500 mt-1">
@@ -130,14 +130,14 @@ export default function SendEmail() {
             icon={<ArrowRight size={18} className="mr-2" />}
             loading={loading}
             disabled={loading}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white border-none py-4 rounded-xl shadow-lg shadow-emerald-200 transition-all font-bold"
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white border-none py-4 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
           />
 
           <div className="text-center">
             <button
               type="button"
               onClick={() => navigate("/connexion")}
-              className="text-sm text-emerald-600 hover:text-emerald-800 font-medium transition-colors"
+              className="text-sm text-orange-600 hover:text-orange-800 font-medium transition-colors"
             >
               Retour à la connexion
             </button>

@@ -5,6 +5,11 @@ const {
   EntiteeUn,
   EntiteeDeux,
   EntiteeTrois,
+  Direction,
+  SousDirection,
+  Service,
+  Division,
+  Section,
 } = require("../models");
 const logger = require("../config/logger.config");
 const HistoriqueService = require("../services/historique.service");
@@ -46,25 +51,38 @@ exports.grant = async (req, res) => {
         });
       }
 
-      if (!p.entitee_un_id && !p.entitee_deux_id && !p.entitee_trois_id) {
+      // ✅ MISE À JOUR : Vérifier les nouvelles entités
+      if (
+        !p.direction_id &&
+        !p.sous_direction_id &&
+        !p.division_id &&
+        !p.section_id &&
+        !p.service_id
+      ) {
         logger.warn("⚠️ Aucune entité spécifiée", {
           payload: p,
           userId: req.user?.id,
         });
         return res.status(400).json({
           message:
-            "Au moins une entité (UN, DEUX, TROIS) est requise par accès",
+            "Au moins une entité (direction, sous-direction, division, section, service) est requise par accès",
         });
       }
     }
 
-    // Insertion en masse
+    // ✅ MISE À JOUR : Insertion en masse avec les nouvelles colonnes
     const results = await AgentEntiteeAccess.bulkCreate(
       payloads.map((p) => ({
         agent_id: p.agent_id,
-        entitee_un_id: p.entitee_un_id || null,
-        entitee_deux_id: p.entitee_deux_id || null,
-        entitee_trois_id: p.entitee_trois_id || null,
+        direction_id: p.direction_id || null,
+        sous_direction_id: p.sous_direction_id || null,
+        division_id: p.division_id || null,
+        section_id: p.section_id || null,
+        service_id: p.service_id || null,
+        // Garder les anciennes pour compatibilité (optionnel)
+        entitee_un_id: null,
+        entitee_deux_id: null,
+        entitee_trois_id: null,
       })),
       {
         returning: true,
@@ -72,27 +90,52 @@ exports.grant = async (req, res) => {
       },
     );
 
-    // Recharger avec les associations pour avoir les libellés
+    // ✅ MISE À JOUR : Recharger avec les nouvelles associations
     const created = await AgentEntiteeAccess.findAll({
       where: { id: results.map((r) => r.id) },
       include: [
-        { model: EntiteeUn, as: "entitee_un" },
+        { model: Direction, as: "direction", required: false },
         {
-          model: EntiteeDeux,
-          as: "entitee_deux",
-          include: [{ model: EntiteeUn, as: "entitee_un" }],
+          model: SousDirection,
+          as: "sousDirection",
+          include: [{ model: Direction, as: "direction" }],
+          required: false,
         },
         {
-          model: EntiteeTrois,
-          as: "entitee_trois",
+          model: Division,
+          as: "division",
           include: [
             {
-              model: EntiteeDeux,
-              as: "entitee_deux",
-              include: [{ model: EntiteeUn, as: "entitee_un" }],
+              model: SousDirection,
+              as: "sousDirection",
+              include: [{ model: Direction, as: "direction" }],
             },
           ],
+          required: false,
         },
+        {
+          model: Section,
+          as: "section",
+          include: [
+            {
+              model: Division,
+              as: "division",
+              include: [
+                {
+                  model: SousDirection,
+                  as: "sousDirection",
+                  include: [{ model: Direction, as: "direction" }],
+                },
+              ],
+            },
+          ],
+          required: false,
+        },
+        { model: Service, as: "service", required: false },
+        // Garder les anciennes pour compatibilité
+        { model: EntiteeUn, as: "entitee_un", required: false },
+        { model: EntiteeDeux, as: "entitee_deux", required: false },
+        { model: EntiteeTrois, as: "entitee_trois", required: false },
       ],
     });
 
@@ -122,7 +165,7 @@ exports.grant = async (req, res) => {
   }
 };
 
-// Récupérer les accès d'un agent
+// Récupérer les accès d'un agent (MIS À JOUR)
 exports.agentAccesById = async (req, res) => {
   const startTime = Date.now();
   const { agentId } = req.params;
@@ -136,25 +179,48 @@ exports.agentAccesById = async (req, res) => {
     const rows = await AgentEntiteeAccess.findAll({
       where: { agent_id: agentId },
       include: [
-        { model: EntiteeUn, as: "entitee_un", required: false },
+        { model: Direction, as: "direction", required: false },
         {
-          model: EntiteeDeux,
-          as: "entitee_deux",
-          include: [{ model: EntiteeUn, as: "entitee_un" }],
+          model: SousDirection,
+          as: "sousDirection",
+          include: [{ model: Direction, as: "direction" }],
           required: false,
         },
         {
-          model: EntiteeTrois,
-          as: "entitee_trois",
+          model: Division,
+          as: "division",
           include: [
             {
-              model: EntiteeDeux,
-              as: "entitee_deux",
-              include: [{ model: EntiteeUn, as: "entitee_un" }],
+              model: SousDirection,
+              as: "sousDirection",
+              include: [{ model: Direction, as: "direction" }],
             },
           ],
           required: false,
         },
+        {
+          model: Section,
+          as: "section",
+          include: [
+            {
+              model: Division,
+              as: "division",
+              include: [
+                {
+                  model: SousDirection,
+                  as: "sousDirection",
+                  include: [{ model: Direction, as: "direction" }],
+                },
+              ],
+            },
+          ],
+          required: false,
+        },
+        { model: Service, as: "service", required: false },
+        // Garder les anciennes pour compatibilité
+        { model: EntiteeUn, as: "entitee_un", required: false },
+        { model: EntiteeDeux, as: "entitee_deux", required: false },
+        { model: EntiteeTrois, as: "entitee_trois", required: false },
       ],
     });
 
@@ -178,7 +244,7 @@ exports.agentAccesById = async (req, res) => {
   }
 };
 
-// Révoquer un accès
+// Révoquer un accès (inchangé)
 exports.revoke = async (req, res) => {
   const startTime = Date.now();
   const { id } = req.params;
@@ -260,7 +326,7 @@ exports.revoke = async (req, res) => {
   }
 };
 
-// Mettre à jour un accès
+// Mettre à jour un accès (MIS À JOUR)
 exports.update = async (req, res) => {
   const startTime = Date.now();
   const { id } = req.params;
@@ -282,22 +348,31 @@ exports.update = async (req, res) => {
     }
 
     const oldCopy = oldAccess.toJSON();
-    const { agent_id, entitee_un_id, entitee_deux_id, entitee_trois_id } =
-      req.body;
+    const {
+      agent_id,
+      direction_id,
+      sous_direction_id,
+      division_id,
+      section_id,
+      service_id,
+    } = req.body;
 
-    // Mise à jour
+    // Mise à jour avec les nouvelles entités
     if (agent_id !== undefined) oldAccess.agent_id = agent_id;
-    if (entitee_un_id !== undefined) oldAccess.entitee_un_id = entitee_un_id;
-    if (entitee_deux_id !== undefined)
-      oldAccess.entitee_deux_id = entitee_deux_id;
-    if (entitee_trois_id !== undefined)
-      oldAccess.entitee_trois_id = entitee_trois_id;
+    if (direction_id !== undefined) oldAccess.direction_id = direction_id;
+    if (sous_direction_id !== undefined)
+      oldAccess.sous_direction_id = sous_direction_id;
+    if (division_id !== undefined) oldAccess.division_id = division_id;
+    if (section_id !== undefined) oldAccess.section_id = section_id;
+    if (service_id !== undefined) oldAccess.service_id = service_id;
 
     // Validation: au moins une entité
     if (
-      !oldAccess.entitee_un_id &&
-      !oldAccess.entitee_deux_id &&
-      !oldAccess.entitee_trois_id
+      !oldAccess.direction_id &&
+      !oldAccess.sous_direction_id &&
+      !oldAccess.division_id &&
+      !oldAccess.section_id &&
+      !oldAccess.service_id
     ) {
       logger.warn("⚠️ Aucune entité spécifiée pour mise à jour", {
         accessId: id,
@@ -313,23 +388,44 @@ exports.update = async (req, res) => {
     // Recharger avec les associations
     const updated = await AgentEntiteeAccess.findByPk(id, {
       include: [
-        { model: EntiteeUn, as: "entitee_un" },
+        { model: Direction, as: "direction", required: false },
         {
-          model: EntiteeDeux,
-          as: "entitee_deux",
-          include: [{ model: EntiteeUn, as: "entitee_un" }],
+          model: SousDirection,
+          as: "sousDirection",
+          include: [{ model: Direction, as: "direction" }],
+          required: false,
         },
         {
-          model: EntiteeTrois,
-          as: "entitee_trois",
+          model: Division,
+          as: "division",
           include: [
             {
-              model: EntiteeDeux,
-              as: "entitee_deux",
-              include: [{ model: EntiteeUn, as: "entitee_un" }],
+              model: SousDirection,
+              as: "sousDirection",
+              include: [{ model: Direction, as: "direction" }],
             },
           ],
+          required: false,
         },
+        {
+          model: Section,
+          as: "section",
+          include: [
+            {
+              model: Division,
+              as: "division",
+              include: [
+                {
+                  model: SousDirection,
+                  as: "sousDirection",
+                  include: [{ model: Direction, as: "direction" }],
+                },
+              ],
+            },
+          ],
+          required: false,
+        },
+        { model: Service, as: "service", required: false },
       ],
     });
 
@@ -360,7 +456,7 @@ exports.update = async (req, res) => {
   }
 };
 
-// Lister tous les accès
+// Lister tous les accès (MIS À JOUR)
 exports.list = async (req, res) => {
   const startTime = Date.now();
 
@@ -373,23 +469,44 @@ exports.list = async (req, res) => {
     const data = await AgentEntiteeAccess.findAll({
       include: [
         { model: Agent, as: "agent" },
-        { model: EntiteeUn, as: "entitee_un" },
+        { model: Direction, as: "direction", required: false },
         {
-          model: EntiteeDeux,
-          as: "entitee_deux",
-          include: [{ model: EntiteeUn, as: "entitee_un" }],
+          model: SousDirection,
+          as: "sousDirection",
+          include: [{ model: Direction, as: "direction" }],
+          required: false,
         },
         {
-          model: EntiteeTrois,
-          as: "entitee_trois",
+          model: Division,
+          as: "division",
           include: [
             {
-              model: EntiteeDeux,
-              as: "entitee_deux",
-              include: [{ model: EntiteeUn, as: "entitee_un" }],
+              model: SousDirection,
+              as: "sousDirection",
+              include: [{ model: Direction, as: "direction" }],
             },
           ],
+          required: false,
         },
+        {
+          model: Section,
+          as: "section",
+          include: [
+            {
+              model: Division,
+              as: "division",
+              include: [
+                {
+                  model: SousDirection,
+                  as: "sousDirection",
+                  include: [{ model: Direction, as: "direction" }],
+                },
+              ],
+            },
+          ],
+          required: false,
+        },
+        { model: Service, as: "service", required: false },
       ],
     });
 

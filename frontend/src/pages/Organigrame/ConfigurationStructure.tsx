@@ -111,19 +111,19 @@ export default function ConfigurationStructure() {
   const cards = [
     {
       title: titles.entitee1,
-      icon: <LayoutGrid className="text-emerald-500" />,
+      icon: <LayoutGrid className="text-orange-500" />,
       desc: `Définissez vos ${titles.entitee1}.`,
       action: () => setForm1Visible(true),
     },
     {
       title: titles.entitee2,
-      icon: <Layers className="text-emerald-600" />,
+      icon: <Layers className="text-orange-600" />,
       desc: `Structurez les ${titles.entitee2}.`,
       action: () => setForm2Visible(true),
     },
     {
       title: titles.entitee3,
-      icon: <Database className="text-emerald-700" />,
+      icon: <Database className="text-orange-700" />,
       desc: `Gérez les ${titles.entitee3}.`,
       action: () => setForm3Visible(true),
     },
@@ -132,11 +132,11 @@ export default function ConfigurationStructure() {
   const hierarchy = [
     {
       title: titles.entitee1,
-      icon: <LayoutGrid size={24} className="text-emerald-500" />,
+      icon: <LayoutGrid size={24} className="text-orange-500" />,
       desc: `Niveau stratégique : Définissez vos ${titles.entitee1}.`,
       action: () => setForm1Visible(true),
-      color: "border-emerald-500",
-      bg: "bg-emerald-50",
+      color: "border-orange-500",
+      bg: "bg-orange-50",
       level: "Niveau 1",
     },
     {
@@ -166,7 +166,7 @@ export default function ConfigurationStructure() {
         {/* HEADER */}
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
           <div className="flex items-center gap-4">
-            <div className="p-4 bg-emerald-900 text-white rounded-3xl shadow-xl">
+            <div className="p-4 bg-orange-900 text-white rounded-3xl shadow-xl">
               <Pyramid size={28} />
             </div>
             <div>
@@ -223,7 +223,7 @@ export default function ConfigurationStructure() {
                 {/* Action Button */}
                 <button
                   onClick={item.action}
-                  className="shrink-0 flex items-center gap-3 px-6 py-4 bg-slate-900 hover:bg-emerald-600 text-white rounded-2xl transition-colors font-bold group"
+                  className="shrink-0 flex items-center gap-3 px-6 py-4 bg-slate-900 hover:bg-orange-600 text-white rounded-2xl transition-colors font-bold group"
                 >
                   <PlusCircle size={20} />
                   <span>Nouveau {item.title}</span>

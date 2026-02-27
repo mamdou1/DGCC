@@ -53,7 +53,7 @@ export default function EntiteeUnForm({
     <Dialog
       header={
         <div className="flex items-center gap-2 text-slate-800 font-bold">
-          <Briefcase size={20} className="text-emerald-500" />
+          <Briefcase size={20} className="text-orange-700" />
           <span>{title}</span>
         </div>
       }
@@ -77,13 +77,13 @@ export default function EntiteeUnForm({
           </div>
 
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Info size={16} className="text-emerald-500" /> Libellé{" "}
+            <Info size={16} className="text-orange-700" /> Libellé{" "}
             <span className="text-red-500">*</span>
           </label>
           <InputText
             value={libelle}
             onChange={(e) => setLibelle(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 outline-none"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
             placeholder="Ex: Direction des Ressources Humaines"
           />
         </div>
@@ -99,7 +99,7 @@ export default function EntiteeUnForm({
             icon={!loading && <Save size={18} className="mr-2" />}
             onClick={handleSubmit}
             disabled={!libelle || loading}
-            className="bg-emerald-600 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-emerald-700 transition-all"
+            className="bg-orange-700 text-white px-8 py-3 rounded-xl shadow-lg hover:bg-orange-800 transition-all"
           />
         </div>
       </div>

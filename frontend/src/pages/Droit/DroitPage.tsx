@@ -142,7 +142,7 @@ export default function DroitPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
         </div>
       </Layout>
     );
@@ -172,10 +172,10 @@ export default function DroitPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <div className="bg-emerald-800 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
+            <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
               <Boxes size={26} />
             </div>
-            <h1 className="text-3xl font-extrabold text-emerald-900 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-orange-900 tracking-tight">
               Profils
             </h1>
           </div>
@@ -189,7 +189,7 @@ export default function DroitPage() {
             setEditing(null);
             setFormVisible(true);
           }}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-6 py-3 rounded-2xl shadow-lg shadow-emerald-200 transition-all flex items-center gap-2 group"
+          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-2xl shadow-lg shadow-orange-200 transition-all flex items-center gap-2 group"
         >
           <Plus
             size={20}
@@ -207,7 +207,7 @@ export default function DroitPage() {
             size={18}
           />
           <input
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none text-sm"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all outline-none text-sm"
             placeholder="Rechercher un type d'autorisation..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -240,11 +240,11 @@ export default function DroitPage() {
                     setSelected(dr);
                     setDetailsVisible(true);
                   }}
-                  className=" hover:bg-emerald-50/30 transition-colors group cursor-pointer"
+                  className=" hover:bg-orange-50/30 transition-colors group cursor-pointer"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                      <div className="p-2 bg-orange-100 text-orange-600 rounded-lg group-hover:bg-orange-600 group-hover:text-white transition-colors">
                         <CalendarDays size={18} />
                       </div>
                       <span className="font-bold text-slate-700 text-lg">
@@ -264,7 +264,7 @@ export default function DroitPage() {
                           setSelected(dr);
                           setDetailsVisible(true);
                         }}
-                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all"
+                        className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all"
                         title="Voir détails"
                       >
                         <Eye size={20} />

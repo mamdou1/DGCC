@@ -203,29 +203,29 @@ export default function ChangePassword() {
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="p-3 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all group"
+            className="p-3 bg-orange-50 hover:bg-orange-100 rounded-xl transition-all group"
             title="Retour"
           >
             <ArrowLeft
               size={20}
-              className="text-emerald-700 group-hover:-translate-x-1 transition-transform"
+              className="text-orange-700 group-hover:-translate-x-1 transition-transform"
             />
           </button>
           <div>
-            <h1 className="text-3xl font-black text-emerald-950 flex items-center gap-3">
-              <div className="p-3 bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-200">
+            <h1 className="text-3xl font-black text-orange-950 flex items-center gap-3">
+              <div className="p-3 bg-orange-600 text-white rounded-2xl shadow-lg shadow-orange-200">
                 <Lock size={24} />
               </div>
               Modifier mon profil
             </h1>
-            <p className="text-emerald-600/70 text-sm mt-1 ml-16">
+            <p className="text-orange-600/70 text-sm mt-1 ml-16">
               Mettez à jour vos informations de connexion
             </p>
           </div>
         </div>
 
         {/* Formulaire */}
-        <div className="bg-white rounded-3xl shadow-xl border border-emerald-100 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
           <div className="p-8 space-y-6">
             {/* Message d'erreur général */}
             {errors.general && (
@@ -239,15 +239,15 @@ export default function ChangePassword() {
 
             {/* SECTION INFORMATIONS DU COMPTE */}
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-emerald-800 flex items-center gap-2 border-b border-emerald-100 pb-2">
-                <UserRound size={20} className="text-emerald-600" />
+              <h2 className="text-lg font-bold text-orange-800 flex items-center gap-2 border-b border-orange-100 pb-2">
+                <UserRound size={20} className="text-orange-600" />
                 Informations du compte
               </h2>
 
               {/* Nom d'utilisateur (modifiable) */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-2">
-                  <UserRound size={14} className="text-emerald-500" />
+                <label className="text-xs font-bold text-orange-700 uppercase tracking-wider flex items-center gap-2">
+                  <UserRound size={14} className="text-orange-500" />
                   Nom d'utilisateur
                 </label>
                 <div className="relative">
@@ -263,8 +263,8 @@ export default function ChangePassword() {
                       usernameError
                         ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100"
                         : username !== user?.username
-                          ? "border-amber-400 bg-amber-50/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                          : "border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+                          ? "border-amber-400 bg-amber-50/50 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                          : "border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
                     }`}
                   />
                 </div>
@@ -281,8 +281,8 @@ export default function ChangePassword() {
 
             {/* SECTION CHANGEMENT DE MOT DE PASSE */}
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-emerald-800 flex items-center gap-2 border-b border-emerald-100 pb-2">
-                <Lock size={20} className="text-emerald-600" />
+              <h2 className="text-lg font-bold text-orange-800 flex items-center gap-2 border-b border-orange-100 pb-2">
+                <Lock size={20} className="text-orange-600" />
                 Changer le mot de passe
               </h2>
               <p className="text-xs text-slate-500 mb-2">
@@ -292,8 +292,8 @@ export default function ChangePassword() {
 
               {/* Ancien mot de passe */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-2">
-                  <Key size={14} className="text-emerald-500" />
+                <label className="text-xs font-bold text-orange-700 uppercase tracking-wider flex items-center gap-2">
+                  <Key size={14} className="text-orange-500" />
                   Ancien mot de passe
                 </label>
                 <div className="relative">
@@ -310,14 +310,14 @@ export default function ChangePassword() {
                       errors.oldPassword
                         ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100"
                         : oldPassword
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                          : "border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+                          ? "border-orange-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                          : "border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowOldPassword(!showOldPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-600 transition-colors"
                   >
                     {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -332,8 +332,8 @@ export default function ChangePassword() {
 
               {/* Nouveau mot de passe */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-2">
-                  <Shield size={14} className="text-emerald-500" />
+                <label className="text-xs font-bold text-orange-700 uppercase tracking-wider flex items-center gap-2">
+                  <Shield size={14} className="text-orange-500" />
                   Nouveau mot de passe
                 </label>
                 <div className="relative">
@@ -350,14 +350,14 @@ export default function ChangePassword() {
                       errors.newPassword
                         ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100"
                         : newPassword
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                          : "border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+                          ? "border-orange-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                          : "border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-600 transition-colors"
                   >
                     {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -376,7 +376,7 @@ export default function ChangePassword() {
                             ? "bg-red-100 text-red-700"
                             : passwordStrength.score === 2
                               ? "bg-yellow-100 text-yellow-700"
-                              : "bg-emerald-100 text-emerald-700"
+                              : "bg-orange-100 text-orange-700"
                         }`}
                       >
                         {passwordStrength.message}
@@ -403,8 +403,8 @@ export default function ChangePassword() {
 
               {/* Confirmation du nouveau mot de passe */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-500" />
+                <label className="text-xs font-bold text-orange-700 uppercase tracking-wider flex items-center gap-2">
+                  <CheckCircle2 size={14} className="text-orange-500" />
                   Confirmer le mot de passe
                 </label>
                 <div className="relative">
@@ -421,16 +421,16 @@ export default function ChangePassword() {
                       errors.confirmPassword
                         ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100"
                         : passwordsMatch && confirmPassword
-                          ? "border-emerald-500 bg-emerald-50/50"
+                          ? "border-orange-500 bg-orange-50/50"
                           : confirmPassword
-                            ? "border-amber-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                            : "border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+                            ? "border-amber-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                            : "border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-600 transition-colors"
                   >
                     {showConfirmPassword ? (
                       <EyeOff size={18} />
@@ -445,8 +445,8 @@ export default function ChangePassword() {
                   <div className="flex items-center gap-2 mt-2">
                     {passwordsMatch ? (
                       <>
-                        <CheckCircle2 size={14} className="text-emerald-500" />
-                        <span className="text-xs text-emerald-600 font-medium">
+                        <CheckCircle2 size={14} className="text-orange-500" />
+                        <span className="text-xs text-orange-600 font-medium">
                           Les mots de passe correspondent
                         </span>
                       </>
@@ -472,8 +472,8 @@ export default function ChangePassword() {
 
             {/* Conseils de sécurité */}
             {newPassword && (
-              <div className="mt-6 p-5 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                <p className="text-[10px] font-black text-emerald-700 uppercase tracking-wider mb-3">
+              <div className="mt-6 p-5 bg-orange-50/50 rounded-xl border border-orange-100">
+                <p className="text-[10px] font-black text-orange-700 uppercase tracking-wider mb-3">
                   Conseils de sécurité
                 </p>
                 <ul className="space-y-2 text-xs text-slate-600">
@@ -481,7 +481,7 @@ export default function ChangePassword() {
                     <div
                       className={`w-2 h-2 rounded-full ${
                         newPassword.length >= 8
-                          ? "bg-emerald-500"
+                          ? "bg-orange-500"
                           : "bg-slate-300"
                       }`}
                     />
@@ -491,7 +491,7 @@ export default function ChangePassword() {
                     <div
                       className={`w-2 h-2 rounded-full ${
                         /[A-Z]/.test(newPassword)
-                          ? "bg-emerald-500"
+                          ? "bg-orange-500"
                           : "bg-slate-300"
                       }`}
                     />
@@ -501,7 +501,7 @@ export default function ChangePassword() {
                     <div
                       className={`w-2 h-2 rounded-full ${
                         /[a-z]/.test(newPassword)
-                          ? "bg-emerald-500"
+                          ? "bg-orange-500"
                           : "bg-slate-300"
                       }`}
                     />
@@ -511,7 +511,7 @@ export default function ChangePassword() {
                     <div
                       className={`w-2 h-2 rounded-full ${
                         /\d/.test(newPassword)
-                          ? "bg-emerald-500"
+                          ? "bg-orange-500"
                           : "bg-slate-300"
                       }`}
                     />
@@ -521,7 +521,7 @@ export default function ChangePassword() {
                     <div
                       className={`w-2 h-2 rounded-full ${
                         /[!@#$%^&*(),.?":{}|<>]/.test(newPassword)
-                          ? "bg-emerald-500"
+                          ? "bg-orange-500"
                           : "bg-slate-300"
                       }`}
                     />
@@ -533,7 +533,7 @@ export default function ChangePassword() {
           </div>
 
           {/* Boutons d'action */}
-          <div className="flex justify-end gap-3 p-6 bg-slate-50/50 border-t border-emerald-100">
+          <div className="flex justify-end gap-3 p-6 bg-slate-50/50 border-t border-orange-100">
             <Button
               label="Annuler"
               icon={<ArrowLeft size={16} className="mr-2" />}
@@ -547,7 +547,7 @@ export default function ChangePassword() {
               onClick={handleSubmit}
               loading={loading}
               disabled={loading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-emerald-200 transition-all font-bold"
+              className="bg-orange-600 hover:bg-orange-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
             />
           </div>
         </div>

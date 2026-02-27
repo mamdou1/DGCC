@@ -96,17 +96,12 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="flex justify-between items-center h-20 px-8 bg-white border-b border-emerald-100 sticky top-0 z-40 shadow-sm">
+    <header className="flex justify-between items-center h-20 px-8 bg-orange-800 border-b border-orange-100 sticky top-0 z-40 shadow-sm">
       {/* Côté Gauche */}
       <div className="flex flex-col">
-        <h1 className="text-xl font-bold text-emerald-950 tracking-tight">
-          {getPageTitle()}
-        </h1>
-        <p className="text-xs text-emerald-600 font-medium">
-          Bienvenue,{" "}
-          <span className="text-emerald-900 font-bold">
-            {user?.prenom || "Utilisateur"}
-          </span>
+        <h1 className="text-3xl font-bold text-white tracking-tight">DGCC</h1>
+        <p className="text-xs text-orange-300 font-medium">
+          Direction Général du Commerce et de la Concurrence ,{" "}
         </p>
       </div>
 
@@ -132,7 +127,7 @@ export default function Header() {
           </button> */}
           <button
             onClick={() => navigate("/change-password")}
-            className="p-2.5 text-emerald-700 hover:bg-emerald-50 rounded-xl transition-all"
+            className="p-2.5 text-orange-50 hover:bg-orange-100 rounded-xl transition-all"
             title="Changer le mot de passe"
           >
             <Settings size={20} />

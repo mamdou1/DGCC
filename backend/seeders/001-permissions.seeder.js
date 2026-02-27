@@ -70,6 +70,46 @@ module.exports = async () => {
     { resource: "entiteeTrois", action: "update" },
     { resource: "entiteeTrois", action: "delete" },
 
+    // { resource: "entiteeQuatre", action: "access" },
+    // { resource: "entiteeQuatre", action: "create" },
+    // { resource: "entiteeQuatre", action: "read" },
+    // { resource: "entiteeQuatre", action: "update" },
+    // { resource: "entiteeQuatre", action: "delete" },
+
+    { resource: "direction", action: "access" },
+    { resource: "direction", action: "create" },
+    { resource: "direction", action: "read" },
+    { resource: "direction", action: "update" },
+    { resource: "direction", action: "delete" },
+
+    // Sous-directions
+    { resource: "sousDirection", action: "access" },
+    { resource: "sousDirection", action: "create" },
+    { resource: "sousDirection", action: "read" },
+    { resource: "sousDirection", action: "update" },
+    { resource: "sousDirection", action: "delete" },
+
+    // Divisions
+    { resource: "division", action: "access" },
+    { resource: "division", action: "create" },
+    { resource: "division", action: "read" },
+    { resource: "division", action: "update" },
+    { resource: "division", action: "delete" },
+
+    // Sections
+    { resource: "section", action: "access" },
+    { resource: "section", action: "create" },
+    { resource: "section", action: "read" },
+    { resource: "section", action: "update" },
+    { resource: "section", action: "delete" },
+
+    // Services
+    { resource: "service", action: "access" },
+    { resource: "service", action: "create" },
+    { resource: "service", action: "read" },
+    { resource: "service", action: "update" },
+    { resource: "service", action: "delete" },
+
     { resource: "salle", action: "access" },
     { resource: "salle", action: "create" },
     { resource: "salle", action: "read" },

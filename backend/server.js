@@ -73,6 +73,13 @@ app.use("/api/box", require("./routes/box.routes"));
 app.use("/api/entiteeUn", require("./routes/entiteeUn.routes"));
 app.use("/api/entiteeDeux", require("./routes/entiteeDeux.routes"));
 app.use("/api/entiteeTrois", require("./routes/entiteeTrois.routes"));
+// app.use("/api/entiteeQuatre", require("./routes/entiteeQuatre.routes"));
+
+app.use("/api/directions", require("./routes/direction.routes"));
+app.use("/api/sous-directions", require("./routes/sousDirection.routes"));
+app.use("/api/divisions", require("./routes/division.routes"));
+app.use("/api/sections", require("./routes/section.routes"));
+app.use("/api/services", require("./routes/service.routes"));
 
 app.use("/api/agent-access", require("./routes/agentAccess.routes"));
 app.use("/api", require("./routes/pieceMetaField.routes"));

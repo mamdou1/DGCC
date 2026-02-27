@@ -39,6 +39,11 @@ export interface PermissionLabels {
   box: ResourceLabels;
   trave: ResourceLabels;
   site: ResourceLabels;
+  direction: ResourceLabels;
+  sousDirection: ResourceLabels;
+  division: ResourceLabels;
+  section: ResourceLabels;
+  service: ResourceLabels;
 }
 
 // Interface pour stocker les titres dynamiques
@@ -206,5 +211,40 @@ export const getPermissionLabels = (
     read: "Consulter les sites",
     update: "Modifier un site",
     delete: "Supprimer un site",
+  },
+  direction: {
+    access: "Accès aux directions",
+    create: "Créer une direction",
+    read: "Consulter les directions",
+    update: "Modifier une direction",
+    delete: "Supprimer une direction",
+  },
+  sousDirection: {
+    access: "Accès aux sous directions",
+    create: "Créer une sous direction",
+    read: "Consulter les sous directions",
+    update: "Modifier une sous direction",
+    delete: "Supprimer une sous direction",
+  },
+  division: {
+    access: "Accès aux divisions",
+    create: "Créer une division",
+    read: "Consulter les divisions",
+    update: "Modifier une division",
+    delete: "Supprimer une division",
+  },
+  section: {
+    access: "Accès aux sections",
+    create: "Créer une section",
+    read: "Consulter les sections",
+    update: "Modifier une section",
+    delete: "Supprimer une section",
+  },
+  service: {
+    access: "Accès aux services",
+    create: "Créer un service",
+    read: "Consulter les services",
+    update: "Modifier un service",
+    delete: "Supprimer un service",
   },
 });

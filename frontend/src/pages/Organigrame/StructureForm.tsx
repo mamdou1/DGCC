@@ -40,7 +40,7 @@ export default function StructureForm({
     >
       <div className="relative">
         {/* HEADER DU FORMULAIRE */}
-        <div className="bg-gradient-to-br from-emerald-600 to-emerald-900 p-8 text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-orange-600 to-orange-900 p-8 text-white relative overflow-hidden">
           {/* Motif décoratif en arrière-plan */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
 
@@ -53,9 +53,9 @@ export default function StructureForm({
 
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-white/20 backdrop-blur-md rounded-lg">
-              <Type size={20} className="text-emerald-100" />
+              <Type size={20} className="text-orange-100" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-200">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-200">
               Configuration
             </span>
           </div>
@@ -66,9 +66,9 @@ export default function StructureForm({
 
         {/* CORPS DU FORMULAIRE */}
         <div className="p-8 space-y-6">
-          <div className="flex items-start gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 mb-2">
-            <Info size={18} className="text-emerald-600 mt-0.5 shrink-0" />
-            <p className="text-[11px] text-emerald-800 font-medium leading-relaxed">
+          <div className="flex items-start gap-3 p-4 bg-orange-50 rounded-2xl border border-orange-100 mb-2">
+            <Info size={18} className="text-orange-600 mt-0.5 shrink-0" />
+            <p className="text-[11px] text-orange-800 font-medium leading-relaxed">
               Modifiez ici les noms qui apparaîtront sur vos cartes de gestion
               et dans les formulaires d'ajout.
             </p>
@@ -88,7 +88,7 @@ export default function StructureForm({
                     handleInputChange("entitee1", e.target.value)
                   }
                   placeholder="Ex: Direction..."
-                  className="w-full pl-4 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none font-bold text-slate-700 transition-all shadow-sm"
+                  className="w-full pl-4 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:bg-white outline-none font-bold text-slate-700 transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function StructureForm({
                 value={titles.entitee2}
                 onChange={(e) => handleInputChange("entitee2", e.target.value)}
                 placeholder="Ex: Division..."
-                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none font-bold text-slate-700 transition-all shadow-sm"
+                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:bg-white outline-none font-bold text-slate-700 transition-all shadow-sm"
               />
             </div>
 
@@ -117,7 +117,7 @@ export default function StructureForm({
                 value={titles.entitee3}
                 onChange={(e) => handleInputChange("entitee3", e.target.value)}
                 placeholder="Ex: Service..."
-                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none font-bold text-slate-700 transition-all shadow-sm"
+                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:bg-white outline-none font-bold text-slate-700 transition-all shadow-sm"
               />
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function StructureForm({
                 if (onSave) onSave();
                 onHide();
               }}
-              className="flex-3 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl border-none shadow-lg shadow-emerald-200 transition-all outline-none"
+              className="flex-3 py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-2xl border-none shadow-lg shadow-orange-200 transition-all outline-none"
             >
               <div className="flex items-center justify-center gap-2 w-full">
                 <Save size={18} />
@@ -158,7 +158,7 @@ export default function StructureForm({
                 onHide();
               }}
               loading={loading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-emerald-200 transition-all font-bold"
+              className="bg-orange-600 hover:bg-orange-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
             />
           </div>
         </div>

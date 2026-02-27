@@ -18,13 +18,19 @@ import {
   Building,
   Layers,
   FolderTree,
+  Split,
+  TableOfContents,
+  GitMerge,
+  Map,
 } from "lucide-react";
 import {
   User,
   AgentEntiteeAccess,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
 } from "../../interfaces";
 import person from "../../assets/person-96.png";
 import { revokeAccess } from "../../api/agentEntiteeAccess";
@@ -47,7 +53,9 @@ export default function UserDetails({
   onEditAccess,
   onRefresh,
 }: Props) {
-  const [expandedGroups, setExpandedGroups] = useState<number[]>([0, 1, 2]); // ✅ Tous dépliés par défaut
+  const [expandedGroups, setExpandedGroups] = useState<number[]>([
+    0, 1, 2, 3, 4,
+  ]); // ✅ Tous dépliés par défaut
   const [accesses, setAccesses] = useState<AgentEntiteeAccess[]>([]);
   const [loading, setLoading] = useState(false);
   const toast = useRef<Toast>(null);
@@ -87,34 +95,41 @@ export default function UserDetails({
 
   const isOnline = user?.is_on_line === true;
 
-  // ✅ GROUPER PAR NIVEAU (UN, DEUX, TROIS)
-  const groupedByNiveau = useMemo(() => {
+  // ✅ GROUPER PAR TYPE D'ENTITÉ (Direction, SousDirection, Division, Section, Service)
+  const groupedByEntityType = useMemo(() => {
     const groups = {
-      UN: [] as AgentEntiteeAccess[],
-      DEUX: [] as AgentEntiteeAccess[],
-      TROIS: [] as AgentEntiteeAccess[],
+      DIRECTION: [] as AgentEntiteeAccess[],
+      SOUSDIRECTION: [] as AgentEntiteeAccess[],
+      DIVISION: [] as AgentEntiteeAccess[],
+      SECTION: [] as AgentEntiteeAccess[],
+      SERVICE: [] as AgentEntiteeAccess[],
     };
 
     accesses.forEach((access: AgentEntiteeAccess) => {
-      if (access.entitee_un) {
-        groups.UN.push(access);
-      } else if (access.entitee_deux) {
-        groups.DEUX.push(access);
-      } else if (access.entitee_trois) {
-        groups.TROIS.push(access);
+      if (access.direction) {
+        groups.DIRECTION.push(access);
+      } else if (access.sousDirection) {
+        groups.SOUSDIRECTION.push(access);
+      } else if (access.division) {
+        groups.DIVISION.push(access);
+      } else if (access.section) {
+        groups.SECTION.push(access);
+      } else if (access.service) {
+        groups.SERVICE.push(access);
       }
     });
 
-    console.log("📊 Accès par niveau:", {
-      UN: groups.UN.length,
-      DEUX: groups.DEUX.length,
-      TROIS: groups.TROIS.length,
+    console.log("📊 Accès par type d'entité:", {
+      DIRECTION: groups.DIRECTION.length,
+      SOUSDIRECTION: groups.SOUSDIRECTION.length,
+      DIVISION: groups.DIVISION.length,
+      SECTION: groups.SECTION.length,
+      SERVICE: groups.SERVICE.length,
     });
 
     return groups;
   }, [accesses]);
 
-  // UserDetails.tsx - AJOUTEZ PLUS DE LOGS
   const handleRevoke = async (id: number) => {
     confirmDialog({
       message: `Voulez-vous révoquer définitivement cet accès ? Cette action est irréversible.`,
@@ -137,7 +152,6 @@ export default function UserDetails({
         } catch (err: any) {
           console.error(`❌ Erreur lors de la révocation #${id}:`, err);
 
-          // Afficher une notification d'erreur
           toast.current?.show({
             severity: "error",
             summary: "Erreur",
@@ -152,14 +166,14 @@ export default function UserDetails({
 
   const InfoRow = ({ icon: Icon, label, value }: any) => (
     <div className="flex items-start gap-3 p-2">
-      <div className="mt-1 bg-emerald-50 p-2 rounded-lg text-emerald-500">
+      <div className="mt-1 bg-orange-50 p-2 rounded-lg text-orange-500">
         <Icon size={16} />
       </div>
       <div>
         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
           {label}
         </span>
-        <p className="text-sm font-semibold text-emerald-900">
+        <p className="text-sm font-semibold text-orange-900">
           {value || "Non renseigné"}
         </p>
       </div>
@@ -168,80 +182,83 @@ export default function UserDetails({
 
   if (!user) return null;
 
-  const titreN1 =
-    groupedByNiveau.UN[0]?.entitee_un?.titre ||
-    "Ministères / Directions Générales";
-  const titreN2 =
-    groupedByNiveau.DEUX[0]?.entitee_deux?.titre || "Directions / Services";
-  const titreN3 =
-    groupedByNiveau.TROIS[0]?.entitee_trois?.titre ||
-    "Divisions / Sous-services";
-
+  // Déterminer l'affectation principale (priorité aux nouvelles entités)
   const libelleEntitee =
+    user.fonction_details?.direction?.libelle ||
+    user.fonction_details?.sousDirection?.libelle ||
+    user.fonction_details?.division?.libelle ||
+    user.fonction_details?.section?.libelle ||
+    user.fonction_details?.service?.libelle ||
     user.fonction_details?.entitee_trois?.libelle ||
     user.fonction_details?.entitee_deux?.libelle ||
     user.fonction_details?.entitee_un?.libelle ||
     "Aucune affectation";
 
-  // Fonction pour obtenir l'icône selon le niveau
-  const getNiveauIcon = (niveau: string) => {
-    switch (niveau) {
-      case "UN":
-        return <Building size={16} className="text-blue-500" />;
-      case "DEUX":
-        return <FolderTree size={16} className="text-purple-500" />;
-      case "TROIS":
-        return <Layers size={16} className="text-emerald-500" />;
-      default:
-        return <Building2 size={16} />;
-    }
-  };
-
-  // Fonction pour obtenir le libellé du niveau
-  const getNiveauLabel = (niveau: string) => {
-    switch (niveau) {
-      case "UN":
-        return "Ministères / Directions Générales";
-      case "DEUX":
-        return "Directions / Services";
-      case "TROIS":
-        return "Divisions / Sous-services";
-      default:
-        return niveau;
-    }
-  };
-
-  // Configuration des niveaux pour l'affichage
-  const niveauConfig = [
+  // Configuration des types d'entités pour l'affichage
+  const entityTypeConfig = [
     {
-      type: "UN" as const,
-      label: "Ministères / Directions Générales",
+      type: "DIRECTION" as const,
+      label: "Directions",
       icon: <Building size={18} />,
       bgColor: "bg-blue-100",
       textColor: "text-blue-700",
       iconColor: "text-blue-600",
       lightBg: "bg-blue-50",
       lightText: "text-blue-500",
+      getEntity: (access: AgentEntiteeAccess) => access.direction,
+      getParentInfo: (access: AgentEntiteeAccess) => null,
     },
     {
-      type: "DEUX" as const,
-      label: "Directions / Services",
-      icon: <FolderTree size={18} />,
+      type: "SOUSDIRECTION" as const,
+      label: "Sous-directions",
+      icon: <Split size={18} />,
       bgColor: "bg-purple-100",
       textColor: "text-purple-700",
       iconColor: "text-purple-600",
       lightBg: "bg-purple-50",
       lightText: "text-purple-500",
+      getEntity: (access: AgentEntiteeAccess) => access.sousDirection,
+      getParentInfo: (access: AgentEntiteeAccess) =>
+        access.sousDirection?.direction?.libelle,
     },
     {
-      type: "TROIS" as const,
-      label: "Divisions / Sous-services",
-      icon: <Layers size={18} />,
+      type: "DIVISION" as const,
+      label: "Divisions",
+      icon: <TableOfContents size={18} />,
+      bgColor: "bg-indigo-100",
+      textColor: "text-indigo-700",
+      iconColor: "text-indigo-600",
+      lightBg: "bg-indigo-50",
+      lightText: "text-indigo-500",
+      getEntity: (access: AgentEntiteeAccess) => access.division,
+      getParentInfo: (access: AgentEntiteeAccess) =>
+        `${access.division?.sousDirection?.libelle || ""} • ${access.division?.sousDirection?.direction?.libelle || ""}`,
+    },
+    {
+      type: "SECTION" as const,
+      label: "Sections",
+      icon: <GitMerge size={18} />,
+      bgColor: "bg-orange-100",
+      textColor: "text-orange-700",
+      iconColor: "text-orange-600",
+      lightBg: "bg-orange-50",
+      lightText: "text-orange-500",
+      getEntity: (access: AgentEntiteeAccess) => access.section,
+      getParentInfo: (access: AgentEntiteeAccess) =>
+        `${access.section?.division?.libelle || ""} • ${access.section?.division?.sousDirection?.libelle || ""}`,
+    },
+    {
+      type: "SERVICE" as const,
+      label: "Services",
+      icon: <Map size={18} />,
       bgColor: "bg-emerald-100",
       textColor: "text-emerald-700",
       iconColor: "text-emerald-600",
       lightBg: "bg-emerald-50",
       lightText: "text-emerald-500",
+      getEntity: (access: AgentEntiteeAccess) => access.service,
+      getParentInfo: (access: AgentEntiteeAccess) =>
+        access.service?.direction?.libelle,
     },
   ];
 
@@ -250,13 +267,13 @@ export default function UserDetails({
       <Toast ref={toast} />
       <Dialog
         header={
-          <div className="flex items-center gap-2 text-emerald-900 font-bold">
-            <UserIcon size={20} className="text-emerald-500" />
+          <div className="flex items-center gap-2 text-orange-900 font-bold">
+            <UserIcon size={20} className="text-orange-500" />
             <span>Détails du compte</span>
           </div>
         }
         visible={visible}
-        style={{ width: "780px" }}
+        style={{ width: "850px" }}
         onHide={onHide}
         draggable={false}
         footer={
@@ -270,7 +287,7 @@ export default function UserDetails({
           </div>
         }
       >
-        <div className="space-y-6 pt-2">
+        <div className="space-y-6 pt-2 max-h-[70vh] overflow-y-auto pr-1 custom-scrollbar">
           {/* Section Profil Header */}
           <div className="flex flex-col items-center pb-4 border-b border-slate-100">
             <div className="relative">
@@ -291,16 +308,15 @@ export default function UserDetails({
                 <span className="w-2 h-2 block bg-white rounded-full"></span>
               </div>
             </div>
-            <h2 className="mt-3 text-lg font-bold text-emerald-900 uppercase tracking-tight">
+            <h2 className="mt-3 text-lg font-bold text-orange-900 uppercase tracking-tight">
               {user.prenom} {user.nom}
             </h2>
-            <span className="text-[10px] font-black bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase mt-1">
+            <span className="text-[10px] font-black bg-orange-100 text-orange-700 px-3 py-1 rounded-full uppercase mt-1">
               {typeof user.droit === "string"
                 ? user.droit
                 : user.droit?.libelle}
             </span>
             <div className="flex flex-col items-center mt-2 gap-1">
-              {/* Statut */}
               <span
                 className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase ${
                   isOnline
@@ -310,8 +326,6 @@ export default function UserDetails({
               >
                 ● {isOnline ? "En ligne" : "Hors ligne"}
               </span>
-
-              {/* Dernière activité */}
               <span className="text-[10px] text-slate-400 font-medium">
                 Dernière activité : {formatLastActivity(user.last_activity)}
               </span>
@@ -356,7 +370,7 @@ export default function UserDetails({
             />
           </div>
 
-          {/* Section des accès en Accordéon - 3 NIVEAUX */}
+          {/* Section des accès en Accordéon - 5 TYPES D'ENTITÉS */}
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <h3 className="text-xs font-black text-slate-800 uppercase flex items-center gap-2">
@@ -370,7 +384,7 @@ export default function UserDetails({
 
             {loading ? (
               <div className="text-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
                 <p className="text-xs text-slate-400 mt-2">
                   Chargement des accès...
                 </p>
@@ -382,260 +396,101 @@ export default function UserDetails({
                 multiple
                 className="custom-accordion"
               >
-                {/* NIVEAU 1 - UN */}
-                <AccordionTab
-                  key="niveau-un"
-                  header={
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
-                          <Building size={18} />
-                        </div>
-                        <div className="text-left">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-800">
-                              {titreN1}
-                            </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-100 text-blue-700">
-                              Niveau 1
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-500 font-medium">
-                            {groupedByNiveau.UN.length} accès • Accès direct aux{" "}
-                            {titreN1.toLowerCase()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                >
-                  <div className="space-y-2 p-1">
-                    {groupedByNiveau.UN.map((acc: AgentEntiteeAccess) => (
-                      <div
-                        key={acc.id}
-                        className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:shadow-sm transition-all"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                            <Building size={16} />
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-slate-700">
-                                {acc.entitee_un?.libelle}
-                              </span>
-                              {acc.entitee_un?.code && (
-                                <span className="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
-                                  {acc.entitee_un.code}
+                {entityTypeConfig.map((config, index) => {
+                  const groupAccesses = groupedByEntityType[config.type];
+                  if (groupAccesses.length === 0) return null;
+
+                  return (
+                    <AccordionTab
+                      key={config.type}
+                      header={
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`p-2 rounded-lg ${config.bgColor} ${config.iconColor}`}
+                            >
+                              {config.icon}
+                            </div>
+                            <div className="text-left">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-800">
+                                  {config.label}
                                 </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1 text-[10px] font-medium text-slate-500">
-                              <span>Ministère</span>
-                              <ArrowRight size={8} />
-                              <span className="text-blue-600">
-                                Lecture & Gestion
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-1">
-                          <Button
-                            icon={<Edit2 size={14} />}
-                            className="p-button-text p-button-success p-button-sm p-0 w-8 h-8"
-                            onClick={() => onEditAccess(acc)}
-                            tooltip="Modifier"
-                          />
-                          <Button
-                            icon={<Trash2 size={14} />}
-                            className="p-button-text p-button-danger p-button-sm p-0 w-8 h-8"
-                            onClick={() => handleRevoke(acc.id!)}
-                            tooltip="Révoquer"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                    {groupedByNiveau.UN.length === 0 && (
-                      <div className="text-center p-4 text-slate-400 text-xs italic">
-                        Aucun accès aux ministères
-                      </div>
-                    )}
-                  </div>
-                </AccordionTab>
-
-                {/* NIVEAU 2 - DEUX */}
-                <AccordionTab
-                  key="niveau-deux"
-                  header={
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
-                          <FolderTree size={18} />
-                        </div>
-                        <div className="text-left">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-800">
-                              {titreN2}
-                            </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 text-purple-700">
-                              Niveau 2
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-500 font-medium">
-                            {groupedByNiveau.DEUX.length} accès • Accès aux{" "}
-                            {titreN2.toLowerCase()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                >
-                  <div className="space-y-2 p-1">
-                    {groupedByNiveau.DEUX.map((acc: AgentEntiteeAccess) => (
-                      <div
-                        key={acc.id}
-                        className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-purple-200 hover:shadow-sm transition-all"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500">
-                            <FolderTree size={16} />
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-slate-700">
-                                {acc.entitee_deux?.libelle}
-                              </span>
-                              {acc.entitee_deux?.code && (
-                                <span className="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
-                                  {acc.entitee_deux.code}
+                                <span
+                                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${config.bgColor} ${config.textColor}`}
+                                >
+                                  {config.type}
                                 </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1 text-[10px] font-medium text-slate-500">
-                              <span>
-                                {acc.entitee_deux?.entitee_un?.libelle ||
-                                  "Ministère"}
-                              </span>
-                              <ArrowRight size={8} />
-                              <span className="text-purple-600">
-                                Lecture & Gestion
-                              </span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 font-medium">
+                                {groupAccesses.length} accès • Accès aux{" "}
+                                {config.label.toLowerCase()}
+                              </p>
                             </div>
                           </div>
                         </div>
+                      }
+                    >
+                      <div className="space-y-2 p-1">
+                        {groupAccesses.map((acc: AgentEntiteeAccess) => {
+                          const entity = config.getEntity(acc);
+                          const parentInfo = config.getParentInfo(acc);
 
-                        <div className="flex gap-1">
-                          <Button
-                            icon={<Edit2 size={14} />}
-                            className="p-button-text p-button-success p-button-sm p-0 w-8 h-8"
-                            onClick={() => onEditAccess(acc)}
-                            tooltip="Modifier"
-                          />
-                          <Button
-                            icon={<Trash2 size={14} />}
-                            className="p-button-text p-button-danger p-button-sm p-0 w-8 h-8"
-                            onClick={() => handleRevoke(acc.id!)}
-                            tooltip="Révoquer"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                    {groupedByNiveau.DEUX.length === 0 && (
-                      <div className="text-center p-4 text-slate-400 text-xs italic">
-                        Aucun accès aux services
-                      </div>
-                    )}
-                  </div>
-                </AccordionTab>
+                          return (
+                            <div
+                              key={acc.id}
+                              className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-orange-200 hover:shadow-sm transition-all"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-8 h-8 rounded-lg ${config.lightBg} flex items-center justify-center ${config.lightText}`}
+                                >
+                                  {config.icon}
+                                </div>
+                                <div className="flex flex-col">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-bold text-slate-700">
+                                      {entity?.libelle}
+                                    </span>
+                                    {entity?.code && (
+                                      <span className="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                                        {entity.code}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {parentInfo && (
+                                    <div className="flex items-center gap-1 text-[10px] font-medium text-slate-500">
+                                      <span>{parentInfo}</span>
+                                      <ArrowRight size={8} />
+                                      <span className={config.textColor}>
+                                        Lecture & Gestion
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
 
-                {/* NIVEAU 3 - TROIS */}
-                <AccordionTab
-                  key="niveau-trois"
-                  header={
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600">
-                          <Layers size={18} />
-                        </div>
-                        <div className="text-left">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-800">
-                              {titreN3}
-                            </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-700">
-                              Niveau 3
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-500 font-medium">
-                            {groupedByNiveau.TROIS.length} accès • Accès aux{" "}
-                            {titreN3.toLowerCase()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                >
-                  <div className="space-y-2 p-1">
-                    {groupedByNiveau.TROIS.map((acc: AgentEntiteeAccess) => (
-                      <div
-                        key={acc.id}
-                        className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-200 hover:shadow-sm transition-all"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500">
-                            <Layers size={16} />
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-slate-700">
-                                {acc.entitee_trois?.libelle}
-                              </span>
-                              {acc.entitee_trois?.code && (
-                                <span className="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
-                                  {acc.entitee_trois.code}
-                                </span>
-                              )}
+                              <div className="flex gap-1">
+                                <Button
+                                  icon={<Edit2 size={14} />}
+                                  className="p-button-text p-button-success p-button-sm p-0 w-8 h-8"
+                                  onClick={() => onEditAccess(acc)}
+                                  title="Modifier"
+                                />
+                                <Button
+                                  icon={<Trash2 size={14} />}
+                                  className="p-button-text p-button-danger p-button-sm p-0 w-8 h-8"
+                                  onClick={() => handleRevoke(acc.id!)}
+                                  title="Révoquer"
+                                />
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1 text-[10px] font-medium text-slate-500">
-                              <span>
-                                {acc.entitee_trois?.entitee_deux?.libelle} •{" "}
-                                {
-                                  acc.entitee_trois?.entitee_deux?.entitee_un
-                                    ?.libelle
-                                }
-                              </span>
-                              <ArrowRight size={8} />
-                              <span className="text-emerald-600">
-                                Lecture & Gestion
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-1">
-                          <Button
-                            icon={<Edit2 size={14} />}
-                            className="p-button-text p-button-success p-button-sm p-0 w-8 h-8"
-                            onClick={() => onEditAccess(acc)}
-                            tooltip="Modifier"
-                          />
-                          <Button
-                            icon={<Trash2 size={14} />}
-                            className="p-button-text p-button-danger p-button-sm p-0 w-8 h-8"
-                            onClick={() => handleRevoke(acc.id!)}
-                            tooltip="Révoquer"
-                          />
-                        </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                    {groupedByNiveau.TROIS.length === 0 && (
-                      <div className="text-center p-4 text-slate-400 text-xs italic">
-                        Aucun accès aux divisions
-                      </div>
-                    )}
-                  </div>
-                </AccordionTab>
+                    </AccordionTab>
+                  );
+                })}
               </Accordion>
             ) : (
               <div className="text-center p-8 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
@@ -663,8 +518,8 @@ export default function UserDetails({
           text-decoration: none !important;
         }
         .custom-accordion .p-accordion-header-link:hover {
-          border-color: #10b981 !important;
-          background: #f0fdf4 !important;
+          border-color: #f97316 !important;
+          background: #fff7ed !important;
         }
         .custom-accordion .p-accordion-content {
           background: #f8fafc !important;
@@ -673,6 +528,20 @@ export default function UserDetails({
           border-bottom-left-radius: 16px !important;
           border-bottom-right-radius: 16px !important;
           padding: 16px !important;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
         }
       `}</style>
       </Dialog>

@@ -58,23 +58,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-emerald-100 font-sans relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-100 font-sans relative overflow-hidden">
       <Toast ref={toast} position="top-center" />
 
-      {/* Éléments décoratifs de fond - Palette emerald */}
+      {/* Éléments décoratifs de fond - Palette orange */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Container Principal avec effet de verre - AJOUTER flex ET h-[700px] */}
       <div className="relative w-full max-w-[1200px] h-[700px] flex bg-white/80 backdrop-blur-xl rounded-[3rem] shadow-2xl overflow-hidden m-4 border border-white/20">
-        {/* ===== Côté Gauche : Design Premium - Dégradé emerald ===== */}
-        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-emerald-800 via-emerald-700 to-emerald-950 p-12 flex-col justify-between relative overflow-hidden">
+        {/* ===== Côté Gauche : Design Premium - Dégradé orange ===== */}
+        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-orange-800 via-orange-700  to-ornage-950 p-12 flex-col justify-between relative overflow-hidden">
           {/* Effets de lumière */}
           <div className="absolute top-0 -left-40 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 -right-20 w-80 h-80 bg-emerald-400/30 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 -right-20 w-80 h-80 bg-orange-400/30 rounded-full blur-3xl"></div>
 
           {/* Pattern de points */}
           <div
@@ -96,11 +96,11 @@ export default function LoginPage() {
                   DIGIDOC
                 </span>{" "}
                 <br />
-                <span className="text-emerald-300  text-2xl text-italic">
+                <span className="text-orange-300  text-2xl text-italic">
                   MANAGER
                 </span>
                 <div className="flex items-center gap-1 mt-1">
-                  <Sparkles size={12} className="text-emerald-300" />
+                  <Sparkles size={12} className="text-orange-300" />
                   <span className="text-white/60 text-[10px] uppercase tracking-widest font-bold">
                     Solution de digitalisation documentaire
                   </span>
@@ -111,12 +111,12 @@ export default function LoginPage() {
             <div className="space-y-6 mb-10">
               <h2 className="text-3xl font-extrabold text-white leading-tight">
                 Bienvenue sur votre <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-200 to-orange-400">
                   Espace de Gestion Electronique des Documents (GED)
                 </span>
               </h2>
 
-              <p className="text-emerald-100/90 text-md font-medium max-w-md leading-relaxed">
+              <p className="text-orange-100/90 text-md font-medium max-w-md leading-relaxed">
                 Gérez vos documents, dossiers et archives en toute simplicité
                 avec une sécurité maximale.
               </p>
@@ -125,37 +125,37 @@ export default function LoginPage() {
             {/* Liste des fonctionnalités avec icônes */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-white/80">
-                <FileStack size={18} className="text-emerald-300" />
+                <FileStack size={18} className="text-orange-300" />
                 <span className="text-sm font-medium">
                   Gestion des types de documents
                 </span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
-                <Layers size={18} className="text-emerald-300" />
+                <Layers size={18} className="text-orange-300" />
                 <span className="text-sm font-medium">
                   Organisation par structures
                 </span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
-                <CheckCircle2 size={18} className="text-emerald-300" />
+                <CheckCircle2 size={18} className="text-orange-300" />
                 <span className="text-sm font-medium">
                   Sécurité et traçabilité
                 </span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
-                <ListCheck size={18} className="text-emerald-300" />
+                <ListCheck size={18} className="text-orange-300" />
                 <span className="text-sm font-medium">
                   Numérisation et intexation
                 </span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
-                <Blend size={18} className="text-emerald-300" />
+                <Blend size={18} className="text-orange-300" />
                 <span className="text-sm font-medium">
                   Interfaçage avec les applications métier
                 </span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
-                <FileText size={18} className="text-emerald-300" />
+                <FileText size={18} className="text-orange-300" />
                 <span className="text-sm font-medium">
                   Archivage et recherche avancée
                 </span>
@@ -185,9 +185,9 @@ export default function LoginPage() {
         <div className="w-full md:w-1/2 p-12 md:p-16 flex flex-col justify-center bg-white/90 backdrop-blur-sm">
           {/* Header mobile (visible en dessous de md) */}
           <div className="md:hidden mb-8 text-center">
-            <div className="inline-flex items-center gap-3 bg-emerald-50 p-3 rounded-2xl mb-4">
-              <Folders className="text-emerald-600" size={24} />
-              <span className="font-black text-xl text-emerald-600">
+            <div className="inline-flex items-center gap-3 bg-orange-50 p-3 rounded-2xl mb-4">
+              <Folders className="text-orange-600" size={24} />
+              <span className="font-black text-xl text-orange-600">
                 DOCMANAGER
               </span>
             </div>
@@ -213,19 +213,19 @@ export default function LoginPage() {
             {/* Champ Téléphone */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1 tracking-wider flex items-center gap-2">
-                <span className="w-1 h-4 bg-emerald-600 rounded-full"></span>
+                <span className="w-1 h-4 bg-orange-600 rounded-full"></span>
                 Login
               </label>
               <div className="relative group">
                 <UserRound
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-600 transition-colors"
                   size={20}
                 />
                 <InputText
                   value={telephone}
                   onChange={(e) => setTelephone(e.target.value)}
                   placeholder="Ex: mahmoud41"
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 transition-all text-sm font-semibold placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-orange-600 focus:ring-4 focus:ring-orange-100 transition-all text-sm font-semibold placeholder:text-slate-300"
                   required
                 />
               </div>
@@ -235,13 +235,13 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-1 h-4 bg-emerald-700 rounded-full"></span>
+                  <span className="w-1 h-4 bg-orange-700 rounded-full"></span>
                   Mot de passe
                 </label>
                 <button
                   type="button"
                   onClick={() => nav("/send-code")}
-                  className="text-xs font-bold text-emerald-700 hover:text-emerald-900 transition-colors flex items-center gap-1"
+                  className="text-xs font-bold text-orange-700 hover:text-orange-900 transition-colors flex items-center gap-1"
                 >
                   Mot de passe oublié ?
                   <ArrowRight size={12} />
@@ -249,7 +249,7 @@ export default function LoginPage() {
               </div>
               <div className="relative group">
                 <Lock
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-600 transition-colors"
                   size={20}
                 />
                 <input
@@ -257,13 +257,13 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 outline-none transition-all text-sm font-semibold placeholder:text-slate-300"
+                  className="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-orange-600 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm font-semibold placeholder:text-slate-300"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShow(!show)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-600 transition-colors"
                 >
                   {show ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -275,7 +275,7 @@ export default function LoginPage() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  className="w-4 h-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                 />
                 <span className="text-xs font-medium text-slate-500">
                   Se souvenir de moi
@@ -283,13 +283,13 @@ export default function LoginPage() {
               </label>
             </div> */}
 
-            {/* Bouton de soumission - Style emerald */}
+            {/* Bouton de soumission - Style orange */}
             <div className="pt-4">
               <Button
                 label={isLoading ? "Connexion en cours..." : "Se connecter"}
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-black py-5 rounded-2xl shadow-xl shadow-emerald-200/50 transition-all transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed text-base tracking-wide"
+                className="w-full bg-orange-700 hover:bg-orange-800 text-white font-black py-5 rounded-2xl shadow-xl shadow-orange-200/50 transition-all transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed text-base tracking-wide"
               />
             </div>
           </form>
@@ -300,7 +300,7 @@ export default function LoginPage() {
               Vous n'avez pas de compte ?{" "}
               <button
                 onClick={() => nav("/register")}
-                className="font-bold text-emerald-700 hover:text-emerald-900 transition-colors ml-1"
+                className="font-bold text-orange-700 hover:text-orange-900 transition-colors ml-1"
               >
                 Créer un compte
               </button>
@@ -321,14 +321,14 @@ export default function LoginPage() {
             </div>
 
             {/* <div className="mt-6 flex justify-center gap-4">
-              <button className="p-3 bg-slate-50 rounded-xl hover:bg-emerald-50 transition-all border-2 border-slate-100 hover:border-emerald-200 group">
-                <i className="pi pi-google text-emerald-600 text-xl group-hover:scale-110 transition-transform" />
+              <button className="p-3 bg-slate-50 rounded-xl hover:bg-orange-50 transition-all border-2 border-slate-100 hover:border-orange-200 group">
+                <i className="pi pi-google text-orange-600 text-xl group-hover:scale-110 transition-transform" />
               </button>
-              <button className="p-3 bg-slate-50 rounded-xl hover:bg-emerald-50 transition-all border-2 border-slate-100 hover:border-emerald-200 group">
-                <i className="pi pi-facebook text-emerald-700 text-xl group-hover:scale-110 transition-transform" />
+              <button className="p-3 bg-slate-50 rounded-xl hover:bg-orange-50 transition-all border-2 border-slate-100 hover:border-orange-200 group">
+                <i className="pi pi-facebook text-orange-700 text-xl group-hover:scale-110 transition-transform" />
               </button>
-              <button className="p-3 bg-slate-50 rounded-xl hover:bg-emerald-50 transition-all border-2 border-slate-100 hover:border-emerald-200 group">
-                <i className="pi pi-twitter text-emerald-600 text-xl group-hover:scale-110 transition-transform" />
+              <button className="p-3 bg-slate-50 rounded-xl hover:bg-orange-50 transition-all border-2 border-slate-100 hover:border-orange-200 group">
+                <i className="pi pi-twitter text-orange-600 text-xl group-hover:scale-110 transition-transform" />
               </button>
             </div> */}
           </div>

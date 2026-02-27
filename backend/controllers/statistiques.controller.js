@@ -96,35 +96,36 @@ exports.getTotalDocuments = async (req, res) => {
 };
 
 // =============================================
-// 2. AGENTS PAR STRUCTURE
+// 2. AGENTS PAR STRUCTURE (NOUVELLES ENTITÉS)
 // =============================================
 
-// ➤ Agents par EntiteeUn (Niveau 1)
-exports.getAgentsByEntiteeUn = async (req, res) => {
+// ➤ Agents par Direction
+exports.getAgentsByDirection = async (req, res) => {
   const startTime = Date.now();
 
   try {
-    logger.debug("🔍 Récupération des agents par entité niveau 1", {
+    logger.debug("🔍 Récupération des agents par direction", {
       userId: req.user?.id,
     });
 
     const result = await sequelize.query(
       `
       SELECT 
-        e.id as entiteeId,
-        e.libelle as entiteeLibelle,
+        dir.id as entiteeId,
+        dir.libelle as entiteeLibelle,
+        dir.code as entiteeCode,
         COUNT(a.id) as nombre
       FROM agent a
       LEFT JOIN fonctions f ON f.id = a.fonction_id
-      LEFT JOIN entitee_un e ON e.id = f.entitee_un_id
-      WHERE f.entitee_un_id IS NOT NULL
-      GROUP BY e.id, e.libelle
+      LEFT JOIN directions dir ON dir.id = f.direction_id
+      WHERE f.direction_id IS NOT NULL
+      GROUP BY dir.id, dir.libelle, dir.code
       ORDER BY nombre DESC
     `,
       { type: sequelize.QueryTypes.SELECT },
     );
 
-    logger.info("✅ Agents par entité niveau 1 récupérés", {
+    logger.info("✅ Agents par direction récupérés", {
       count: result.length,
       userId: req.user?.id,
       duration: Date.now() - startTime,
@@ -132,7 +133,7 @@ exports.getAgentsByEntiteeUn = async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    logger.error("❌ Erreur getAgentsByEntiteeUn:", {
+    logger.error("❌ Erreur getAgentsByDirection:", {
       error: error.message,
       stack: error.stack,
       userId: req.user?.id,
@@ -142,32 +143,35 @@ exports.getAgentsByEntiteeUn = async (req, res) => {
   }
 };
 
-// ➤ Agents par EntiteeDeux (Niveau 2)
-exports.getAgentsByEntiteeDeux = async (req, res) => {
+// ➤ Agents par Sous-direction
+exports.getAgentsBySousDirection = async (req, res) => {
   const startTime = Date.now();
 
   try {
-    logger.debug("🔍 Récupération des agents par entité niveau 2", {
+    logger.debug("🔍 Récupération des agents par sous-direction", {
       userId: req.user?.id,
     });
 
     const result = await sequelize.query(
       `
       SELECT 
-        e.id as entiteeId,
-        e.libelle as entiteeLibelle,
+        sd.id as entiteeId,
+        sd.libelle as entiteeLibelle,
+        sd.code as entiteeCode,
+        dir.libelle as directionLibelle,
         COUNT(a.id) as nombre
       FROM agent a
       LEFT JOIN fonctions f ON f.id = a.fonction_id
-      LEFT JOIN entitee_deux e ON e.id = f.entitee_deux_id
-      WHERE f.entitee_deux_id IS NOT NULL
-      GROUP BY e.id, e.libelle
+      LEFT JOIN sous_directions sd ON sd.id = f.sous_direction_id
+      LEFT JOIN directions dir ON dir.id = sd.direction_id
+      WHERE f.sous_direction_id IS NOT NULL
+      GROUP BY sd.id, sd.libelle, sd.code, dir.libelle
       ORDER BY nombre DESC
     `,
       { type: sequelize.QueryTypes.SELECT },
     );
 
-    logger.info("✅ Agents par entité niveau 2 récupérés", {
+    logger.info("✅ Agents par sous-direction récupérés", {
       count: result.length,
       userId: req.user?.id,
       duration: Date.now() - startTime,
@@ -175,7 +179,7 @@ exports.getAgentsByEntiteeDeux = async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    logger.error("❌ Erreur getAgentsByEntiteeDeux:", {
+    logger.error("❌ Erreur getAgentsBySousDirection:", {
       error: error.message,
       stack: error.stack,
       userId: req.user?.id,
@@ -185,32 +189,35 @@ exports.getAgentsByEntiteeDeux = async (req, res) => {
   }
 };
 
-// ➤ Agents par EntiteeTrois (Niveau 3)
-exports.getAgentsByEntiteeTrois = async (req, res) => {
+// ➤ Agents par Service
+exports.getAgentsByService = async (req, res) => {
   const startTime = Date.now();
 
   try {
-    logger.debug("🔍 Récupération des agents par entité niveau 3", {
+    logger.debug("🔍 Récupération des agents par service", {
       userId: req.user?.id,
     });
 
     const result = await sequelize.query(
       `
       SELECT 
-        e.id as entiteeId,
-        e.libelle as entiteeLibelle,
+        serv.id as entiteeId,
+        serv.libelle as entiteeLibelle,
+        serv.code as entiteeCode,
+        dir.libelle as directionLibelle,
         COUNT(a.id) as nombre
       FROM agent a
       LEFT JOIN fonctions f ON f.id = a.fonction_id
-      LEFT JOIN entitee_trois e ON e.id = f.entitee_trois_id
-      WHERE f.entitee_trois_id IS NOT NULL
-      GROUP BY e.id, e.libelle
+      LEFT JOIN services serv ON serv.id = f.service_id
+      LEFT JOIN directions dir ON dir.id = serv.direction_id
+      WHERE f.service_id IS NOT NULL
+      GROUP BY serv.id, serv.libelle, serv.code, dir.libelle
       ORDER BY nombre DESC
     `,
       { type: sequelize.QueryTypes.SELECT },
     );
 
-    logger.info("✅ Agents par entité niveau 3 récupérés", {
+    logger.info("✅ Agents par service récupérés", {
       count: result.length,
       userId: req.user?.id,
       duration: Date.now() - startTime,
@@ -218,7 +225,7 @@ exports.getAgentsByEntiteeTrois = async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    logger.error("❌ Erreur getAgentsByEntiteeTrois:", {
+    logger.error("❌ Erreur getAgentsByService:", {
       error: error.message,
       stack: error.stack,
       userId: req.user?.id,
@@ -228,7 +235,105 @@ exports.getAgentsByEntiteeTrois = async (req, res) => {
   }
 };
 
-// ➤ Agents par structure (tous niveaux confondus)
+// ➤ Agents par Division
+exports.getAgentsByDivision = async (req, res) => {
+  const startTime = Date.now();
+
+  try {
+    logger.debug("🔍 Récupération des agents par division", {
+      userId: req.user?.id,
+    });
+
+    const result = await sequelize.query(
+      `
+      SELECT 
+        dvs.id as entiteeId,
+        dvs.libelle as entiteeLibelle,
+        dvs.code as entiteeCode,
+        sd.libelle as sousDirectionLibelle,
+        dir.libelle as directionLibelle,
+        COUNT(a.id) as nombre
+      FROM agent a
+      LEFT JOIN fonctions f ON f.id = a.fonction_id
+      LEFT JOIN divisions dvs ON dvs.id = f.division_id
+      LEFT JOIN sous_directions sd ON sd.id = dvs.sous_direction_id
+      LEFT JOIN directions dir ON dir.id = sd.direction_id
+      WHERE f.division_id IS NOT NULL
+      GROUP BY dvs.id, dvs.libelle, dvs.code, sd.libelle, dir.libelle
+      ORDER BY nombre DESC
+    `,
+      { type: sequelize.QueryTypes.SELECT },
+    );
+
+    logger.info("✅ Agents par division récupérés", {
+      count: result.length,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+
+    res.json(result);
+  } catch (error) {
+    logger.error("❌ Erreur getAgentsByDivision:", {
+      error: error.message,
+      stack: error.stack,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
+// ➤ Agents par Section (CORRIGÉ)
+exports.getAgentsBySection = async (req, res) => {
+  const startTime = Date.now();
+
+  try {
+    logger.debug("🔍 Récupération des agents par section", {
+      userId: req.user?.id,
+    });
+
+    const result = await sequelize.query(
+      `
+      SELECT 
+        sct.id as entiteeId,
+        sct.libelle as entiteeLibelle,
+        sct.code as entiteeCode,
+        dvs.libelle as divisionLibelle,
+        sd.libelle as sousDirectionLibelle,
+        dir.libelle as directionLibelle,
+        COUNT(a.id) as nombre
+      FROM agent a
+      LEFT JOIN fonctions f ON f.id = a.fonction_id
+      LEFT JOIN sections sct ON sct.id = f.section_id
+      LEFT JOIN divisions dvs ON dvs.id = sct.division_id
+      LEFT JOIN sous_directions sd ON sd.id = dvs.sous_direction_id
+      LEFT JOIN directions dir ON dir.id = sd.direction_id
+      WHERE f.section_id IS NOT NULL
+      GROUP BY sct.id, sct.libelle, sct.code, dvs.libelle, sd.libelle, dir.libelle
+      ORDER BY nombre DESC
+    `,
+      { type: sequelize.QueryTypes.SELECT },
+    );
+
+    logger.info("✅ Agents par section récupérés", {
+      count: result.length,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+
+    res.json(result);
+  } catch (error) {
+    logger.error("❌ Erreur getAgentsBySection:", {
+      error: error.message,
+      stack: error.stack,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
+// ➤ Agents par structure (tous niveaux confondus) - CORRIGÉ
 exports.getAgentsByStructure = async (req, res) => {
   const startTime = Date.now();
 
@@ -240,15 +345,40 @@ exports.getAgentsByStructure = async (req, res) => {
     const result = await sequelize.query(
       `
       SELECT 
-        COALESCE(e3.libelle, e2.libelle, e1.libelle, 'Non assigné') as structureLibelle,
-        COALESCE(e3.titre, e2.titre, e1.titre, 'Sans structure') as structureTitre,
+        COALESCE(
+          sct.libelle, 
+          dvs.libelle, 
+          sd.libelle, 
+          dir.libelle, 
+          serv.libelle,
+          e3.libelle, 
+          e2.libelle, 
+          e1.libelle, 
+          'Non assigné'
+        ) as structureLibelle,
+        CASE
+          WHEN sct.id IS NOT NULL THEN 'Section'
+          WHEN dvs.id IS NOT NULL THEN 'Division'
+          WHEN sd.id IS NOT NULL THEN 'Sous-direction'
+          WHEN dir.id IS NOT NULL THEN 'Direction'
+          WHEN serv.id IS NOT NULL THEN 'Service'
+          WHEN e3.id IS NOT NULL THEN 'Niveau 3'
+          WHEN e2.id IS NOT NULL THEN 'Niveau 2'
+          WHEN e1.id IS NOT NULL THEN 'Niveau 1'
+          ELSE 'Sans structure'
+        END as typeStructure,
         COUNT(a.id) as nombre
       FROM agent a
       LEFT JOIN fonctions f ON f.id = a.fonction_id
+      LEFT JOIN sections sct ON sct.id = f.section_id
+      LEFT JOIN divisions dvs ON dvs.id = f.division_id
+      LEFT JOIN sous_directions sd ON sd.id = f.sous_direction_id
+      LEFT JOIN directions dir ON dir.id = f.direction_id
+      LEFT JOIN services serv ON serv.id = f.service_id
       LEFT JOIN entitee_trois e3 ON e3.id = f.entitee_trois_id
       LEFT JOIN entitee_deux e2 ON e2.id = f.entitee_deux_id
       LEFT JOIN entitee_un e1 ON e1.id = f.entitee_un_id
-      GROUP BY structureLibelle, structureTitre
+      GROUP BY structureLibelle, typeStructure
       ORDER BY nombre DESC
     `,
       { type: sequelize.QueryTypes.SELECT },
@@ -263,6 +393,86 @@ exports.getAgentsByStructure = async (req, res) => {
     res.json(result);
   } catch (error) {
     logger.error("❌ Erreur getAgentsByStructure:", {
+      error: error.message,
+      stack: error.stack,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
+// ➤ Documents par structure (CORRIGÉ)
+exports.getDocumentsByStructure = async (req, res) => {
+  const startTime = Date.now();
+
+  try {
+    logger.debug("🔍 Récupération des documents par structure", {
+      userId: req.user?.id,
+    });
+
+    const result = await sequelize.query(
+      `
+      SELECT 
+        COALESCE(
+          td.section_id,
+          td.division_id,
+          td.sous_direction_id,
+          td.direction_id,
+          td.service_id,
+          td.entitee_trois_id,
+          td.entitee_deux_id,
+          td.entitee_un_id,
+          0
+        ) as entiteeId,
+        COALESCE(
+          sct.libelle,
+          dvs.libelle,
+          sd.libelle,
+          dir.libelle,
+          serv.libelle,
+          e3.libelle,
+          e2.libelle,
+          e1.libelle,
+          'Non assigné'
+        ) as structureLibelle,
+        CASE
+          WHEN td.section_id IS NOT NULL THEN 'Section'
+          WHEN td.division_id IS NOT NULL THEN 'Division'
+          WHEN td.sous_direction_id IS NOT NULL THEN 'Sous-direction'
+          WHEN td.direction_id IS NOT NULL THEN 'Direction'
+          WHEN td.service_id IS NOT NULL THEN 'Service'
+          WHEN td.entitee_trois_id IS NOT NULL THEN 'Niveau 3'
+          WHEN td.entitee_deux_id IS NOT NULL THEN 'Niveau 2'
+          WHEN td.entitee_un_id IS NOT NULL THEN 'Niveau 1'
+          ELSE 'Sans structure'
+        END as typeStructure,
+        COUNT(d.id) as nombre
+      FROM documents d
+      LEFT JOIN typedocuments td ON td.id = d.type_document_id
+      LEFT JOIN sections sct ON sct.id = td.section_id
+      LEFT JOIN divisions dvs ON dvs.id = td.division_id
+      LEFT JOIN sous_directions sd ON sd.id = td.sous_direction_id
+      LEFT JOIN directions dir ON dir.id = td.direction_id
+      LEFT JOIN services serv ON serv.id = td.service_id
+      LEFT JOIN entitee_trois e3 ON e3.id = td.entitee_trois_id
+      LEFT JOIN entitee_deux e2 ON e2.id = td.entitee_deux_id
+      LEFT JOIN entitee_un e1 ON e1.id = td.entitee_un_id
+      GROUP BY entiteeId, structureLibelle, typeStructure
+      ORDER BY nombre DESC
+    `,
+      { type: sequelize.QueryTypes.SELECT },
+    );
+
+    logger.info("✅ Documents par structure récupérés", {
+      count: result.length,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+
+    res.json(result);
+  } catch (error) {
+    logger.error("❌ Erreur getDocumentsByStructure:", {
       error: error.message,
       stack: error.stack,
       userId: req.user?.id,
@@ -349,51 +559,6 @@ exports.getDocumentsByMonth = async (req, res) => {
     res.json(result);
   } catch (error) {
     logger.error("❌ Erreur getDocumentsByMonth:", {
-      error: error.message,
-      stack: error.stack,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
-    res.status(500).json({ error: "Erreur serveur" });
-  }
-};
-
-// ➤ Documents par structure (entité)
-exports.getDocumentsByStructure = async (req, res) => {
-  const startTime = Date.now();
-
-  try {
-    logger.debug("🔍 Récupération des documents par structure", {
-      userId: req.user?.id,
-    });
-
-    const result = await sequelize.query(
-      `
-      SELECT 
-        COALESCE(td.entitee_trois_id, td.entitee_deux_id, td.entitee_un_id, 0) as entiteeId,
-        COALESCE(e3.libelle, e2.libelle, e1.libelle, 'Non assigné') as structureLibelle,
-        COALESCE(e3.titre, e2.titre, e1.titre, 'Sans structure') as structureTitre,
-        COUNT(d.id) as nombre
-      FROM documents d
-      LEFT JOIN typedocuments td ON td.id = d.type_document_id
-      LEFT JOIN entitee_trois e3 ON e3.id = td.entitee_trois_id
-      LEFT JOIN entitee_deux e2 ON e2.id = td.entitee_deux_id
-      LEFT JOIN entitee_un e1 ON e1.id = td.entitee_un_id
-      GROUP BY entiteeId, structureLibelle, structureTitre
-      ORDER BY nombre DESC
-    `,
-      { type: sequelize.QueryTypes.SELECT },
-    );
-
-    logger.info("✅ Documents par structure récupérés", {
-      count: result.length,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
-
-    res.json(result);
-  } catch (error) {
-    logger.error("❌ Erreur getDocumentsByStructure:", {
       error: error.message,
       stack: error.stack,
       userId: req.user?.id,

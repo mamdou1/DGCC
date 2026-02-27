@@ -14,6 +14,21 @@ import {
   Edit3,
   AlertCircle,
   CheckCircle,
+  ArrowRight,
+  XCircle,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  Key,
+  Mail,
+  Phone,
+  Hash,
+  Building2,
+  Briefcase,
+  Lock,
+  Globe,
+  Package,
+  FileText,
 } from "lucide-react";
 import type { HistoriqueLog } from "../../interfaces";
 import { useState } from "react";
@@ -45,6 +60,11 @@ const formatResource = (resource: string) => {
     entiteeUn: "Entité niveau 1",
     entiteeDeux: "Entité niveau 2",
     entiteeTrois: "Entité niveau 3",
+    direction: "Direction",
+    sousDirection: "Sous-direction",
+    division: "Division",
+    section: "Section",
+    service: "Service",
     salle: "Salle",
     rayon: "Rayon",
     trave: "Travée",
@@ -63,6 +83,7 @@ const getActionColor = (action: string) => {
         text: "text-green-700",
         icon: PlusCircle,
         border: "border-green-200",
+        lightBg: "bg-green-50",
       };
     case "update":
       return {
@@ -70,6 +91,7 @@ const getActionColor = (action: string) => {
         text: "text-blue-700",
         icon: Edit3,
         border: "border-blue-200",
+        lightBg: "bg-blue-50",
       };
     case "delete":
       return {
@@ -77,20 +99,32 @@ const getActionColor = (action: string) => {
         text: "text-red-700",
         icon: Trash2,
         border: "border-red-200",
+        lightBg: "bg-red-50",
       };
     case "read":
       return {
         bg: "bg-purple-100",
         text: "text-purple-700",
-        icon: Activity,
+        icon: Eye,
         border: "border-purple-200",
+        lightBg: "bg-purple-50",
       };
     case "access":
       return {
         bg: "bg-yellow-100",
         text: "text-yellow-700",
-        icon: User,
+        icon: Key,
         border: "border-yellow-200",
+        lightBg: "bg-yellow-50",
+      };
+    case "login":
+    case "logout":
+      return {
+        bg: "bg-indigo-100",
+        text: "text-indigo-700",
+        icon: User,
+        border: "border-indigo-200",
+        lightBg: "bg-indigo-50",
       };
     default:
       return {
@@ -98,6 +132,7 @@ const getActionColor = (action: string) => {
         text: "text-slate-700",
         icon: AlertCircle,
         border: "border-slate-200",
+        lightBg: "bg-slate-50",
       };
   }
 };
@@ -111,10 +146,10 @@ const getMethodStyle = (method: string) => {
       return "bg-amber-500/20 text-amber-200 border-amber-500/30";
     case "DELETE":
       return "bg-red-500/20 text-red-200 border-red-500/30";
-    case "access":
-      return "bg-yellow-500/20 text-yellow-200 border-yellow-500/30";
+    case "GET":
+      return "bg-purple-500/20 text-purple-200 border-purple-500/30";
     default:
-      return "bg-emerald-500/20 text-emerald-200 border-emerald-500/30";
+      return "bg-slate-500/20 text-slate-200 border-slate-500/30";
   }
 };
 
@@ -123,6 +158,47 @@ const formatDate = (date: string) => {
     dateStyle: "long",
     timeStyle: "medium",
   });
+};
+
+// ✅ Fonction pour parser les données qui pourraient être des strings JSON
+const parseData = (data: any): any => {
+  if (!data) return data;
+
+  // Si c'est déjà un objet, le retourner
+  if (typeof data === "object" && data !== null) return data;
+
+  // Si c'est une string, essayer de parser
+  if (typeof data === "string") {
+    try {
+      // Vérifier si ça ressemble à du JSON
+      if (data.trim().startsWith("{") || data.trim().startsWith("[")) {
+        return JSON.parse(data);
+      }
+    } catch (e) {
+      // Si le parsing échoue, retourner la string originale
+      console.log("Erreur parsing JSON:", e);
+    }
+  }
+
+  return data;
+};
+
+const formatValue = (value: any): string => {
+  if (value === null || value === undefined) return "—";
+  if (typeof value === "boolean") return value ? "Oui" : "Non";
+  if (value instanceof Date) return formatDate(value.toISOString());
+  if (typeof value === "object") {
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch (e) {
+      return String(value);
+    }
+  }
+  return String(value);
+};
+
+const isComplexObject = (value: any): boolean => {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 };
 
 interface Props {
@@ -136,118 +212,265 @@ export default function HistoriqueDetails({ visible, onHide, log }: Props) {
 
   if (!log) return null;
 
-  const agent = log.agent || null;
-  const actionFr = formatAction(log.action);
-  const resourceFr = formatResource(log.resource);
-  const actionStyle = getActionColor(log.action);
+  // ✅ Parser les données JSON si nécessaire
+  const parsedLog = {
+    ...log,
+    old_data: parseData(log.old_data),
+    new_data: parseData(log.new_data),
+    deleted_data: parseData(log.deleted_data),
+    data: parseData(log.data),
+  };
+
+  const agent = parsedLog.agent || null;
+  const actionFr = formatAction(parsedLog.action);
+  const resourceFr = formatResource(parsedLog.resource);
+  const actionStyle = getActionColor(parsedLog.action);
   const ActionIcon = actionStyle.icon;
 
-  const renderChanges = () => {
-    if (log.action === "update" && log.old_data && log.new_data) {
-      const changes = [];
-      const excludedFields = [
-        "id",
-        "createdAt",
-        "updatedAt",
-        "created_at",
-        "updated_at",
-      ];
+  // Fonction pour comparer deux objets et retourner les différences
+  const getCompactChanges = (oldData: any, newData: any) => {
+    // Si ce sont des objets, on compare leurs clés
+    if (
+      typeof oldData === "object" &&
+      oldData !== null &&
+      typeof newData === "object" &&
+      newData !== null
+    ) {
+      const changes: any[] = [];
+      const allKeys = new Set([
+        ...Object.keys(oldData || {}),
+        ...Object.keys(newData || {}),
+      ]);
 
-      for (const key in log.new_data) {
-        if (excludedFields.includes(key)) continue;
+      for (const key of Array.from(allKeys).sort()) {
+        if (
+          [
+            "id",
+            "createdAt",
+            "updatedAt",
+            "created_at",
+            "updated_at",
+            "__v",
+            "_id",
+          ].includes(key)
+        )
+          continue;
 
-        const oldVal = log.old_data[key];
-        const newVal = log.new_data[key];
+        const oldVal = oldData?.[key];
+        const newVal = newData?.[key];
 
         if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
-          changes.push(
-            <div
-              key={key}
-              className="bg-slate-50 p-4 rounded-xl border border-slate-200"
-            >
-              <div className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">
-                {key}
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="flex-1 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200">
-                  <div className="text-[10px] font-bold mb-1">AVANT</div>
-                  <div className="text-sm font-mono break-words">
-                    {oldVal !== null && oldVal !== undefined
-                      ? String(oldVal)
-                      : "vide"}
-                  </div>
-                </div>
-                <div className="flex items-center justify-center">
-                  <GitCompare
-                    size={20}
-                    className="text-slate-400 rotate-90 md:rotate-0"
-                  />
-                </div>
-                <div className="flex-1 p-3 bg-green-50 text-green-700 rounded-lg border border-green-200">
-                  <div className="text-[10px] font-bold mb-1">APRÈS</div>
-                  <div className="text-sm font-mono break-words">
-                    {newVal !== null && newVal !== undefined
-                      ? String(newVal)
-                      : "vide"}
-                  </div>
-                </div>
-              </div>
-            </div>,
-          );
+          changes.push({
+            key,
+            old: oldVal,
+            new: newVal,
+          });
         }
       }
+      return changes;
+    }
 
-      return changes.length > 0 ? (
-        <div className="space-y-3">
+    // Si ce sont des valeurs simples, on compare directement
+    if (oldData !== newData) {
+      return [
+        {
+          key: "valeur",
+          old: oldData,
+          new: newData,
+        },
+      ];
+    }
+
+    return [];
+  };
+
+  const renderChanges = () => {
+    if (
+      parsedLog.action === "update" &&
+      parsedLog.old_data &&
+      parsedLog.new_data
+    ) {
+      const changes = getCompactChanges(parsedLog.old_data, parsedLog.new_data);
+
+      if (changes.length === 0) {
+        return (
+          <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 text-center">
+            <CheckCircle size={32} className="mx-auto text-slate-400 mb-3" />
+            <p className="text-sm text-slate-500 font-medium">
+              Aucun changement détecté
+            </p>
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-4">
           <div className="flex items-center gap-2 px-1">
-            <GitCompare size={14} className="text-blue-500" />
-            <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">
-              Modifications détectées ({changes.length})
+            <GitCompare size={16} className="text-blue-600" />
+            <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">
+              Modifications ({changes.length})
             </span>
           </div>
-          {changes}
-        </div>
-      ) : (
-        <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
-          <CheckCircle size={24} className="mx-auto text-slate-400 mb-2" />
-          <p className="text-sm text-slate-500 italic">
-            Aucun changement détecté
-          </p>
+
+          {/* Affichage unique pour les objets JSON complets */}
+          {changes.length === 1 && changes[0].key === "valeur" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-red-50 p-4 rounded-xl border border-red-200">
+                <p className="text-[10px] font-bold text-red-600 uppercase mb-2">
+                  Avant
+                </p>
+                <pre className="text-xs text-red-700 whitespace-pre-wrap font-mono max-h-96 overflow-y-auto">
+                  {JSON.stringify(parsedLog.old_data, null, 2)}
+                </pre>
+              </div>
+              <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+                <p className="text-[10px] font-bold text-green-600 uppercase mb-2">
+                  Après
+                </p>
+                <pre className="text-xs text-green-700 whitespace-pre-wrap font-mono max-h-96 overflow-y-auto">
+                  {JSON.stringify(parsedLog.new_data, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {/* Tableau comparatif pour les changements par champ */}
+          {changes.length > 0 && changes[0].key !== "valeur" && (
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="p-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider w-1/4">
+                      Champ
+                    </th>
+                    <th className="p-3 text-left text-[10px] font-bold text-red-500 uppercase tracking-wider w-[35%]">
+                      Avant
+                    </th>
+                    <th className="p-3 text-left text-[10px] font-bold text-green-500 uppercase tracking-wider w-[35%]">
+                      Après
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {changes.map(({ key, old, new: newVal }) => (
+                    <tr
+                      key={key}
+                      className="hover:bg-slate-50/50 transition-colors"
+                    >
+                      <td className="p-3 font-medium text-slate-700 capitalize">
+                        {key.replace(/_/g, " ")}
+                      </td>
+                      <td className="p-3">
+                        {old !== null && old !== undefined ? (
+                          isComplexObject(old) ? (
+                            <div className="bg-red-50 p-2 rounded-lg border border-red-100">
+                              <pre className="text-[10px] text-red-700 whitespace-pre-wrap font-mono max-h-32 overflow-y-auto">
+                                {JSON.stringify(old, null, 2)}
+                              </pre>
+                            </div>
+                          ) : (
+                            <span className="text-red-700 font-medium break-all">
+                              {formatValue(old)}
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-slate-400 italic">—</span>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        {newVal !== null && newVal !== undefined ? (
+                          isComplexObject(newVal) ? (
+                            <div className="bg-green-50 p-2 rounded-lg border border-green-100">
+                              <pre className="text-[10px] text-green-700 whitespace-pre-wrap font-mono max-h-32 overflow-y-auto">
+                                {JSON.stringify(newVal, null, 2)}
+                              </pre>
+                            </div>
+                          ) : (
+                            <span className="text-green-700 font-medium break-all">
+                              {formatValue(newVal)}
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-slate-400 italic">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       );
     }
 
-    if (log.action === "delete" && log.deleted_data) {
+    if (parsedLog.action === "delete" && parsedLog.deleted_data) {
       return (
         <div className="space-y-3">
           <div className="flex items-center gap-2 px-1">
-            <Trash2 size={14} className="text-red-500" />
-            <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
+            <Trash2 size={16} className="text-red-600" />
+            <span className="text-xs font-bold text-red-600 uppercase tracking-widest">
               Élément supprimé
             </span>
           </div>
-          <div className="bg-red-50 p-4 rounded-xl border border-red-200">
-            <pre className="text-xs text-red-700 whitespace-pre-wrap font-mono">
-              {JSON.stringify(log.deleted_data, null, 2)}
-            </pre>
+          <div className="bg-red-50 p-5 rounded-xl border border-red-200">
+            {isComplexObject(parsedLog.deleted_data) ? (
+              <pre className="text-xs text-red-700 whitespace-pre-wrap font-mono max-h-96 overflow-y-auto">
+                {JSON.stringify(parsedLog.deleted_data, null, 2)}
+              </pre>
+            ) : (
+              <p className="text-sm text-red-800">
+                {formatValue(parsedLog.deleted_data)}
+              </p>
+            )}
           </div>
         </div>
       );
     }
 
-    if (log.action === "create" && log.new_data) {
+    if (parsedLog.action === "create" && parsedLog.new_data) {
       return (
         <div className="space-y-3">
           <div className="flex items-center gap-2 px-1">
-            <PlusCircle size={14} className="text-green-500" />
-            <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest">
-              Élément créé
+            <PlusCircle size={16} className="text-green-600" />
+            <span className="text-xs font-bold text-green-600 uppercase tracking-widest">
+              Nouvel élément créé
             </span>
           </div>
-          <div className="bg-green-50 p-4 rounded-xl border border-green-200">
-            <pre className="text-xs text-green-700 whitespace-pre-wrap font-mono">
-              {JSON.stringify(log.new_data, null, 2)}
-            </pre>
+          <div className="bg-green-50 p-5 rounded-xl border border-green-200">
+            {isComplexObject(parsedLog.new_data) ? (
+              <pre className="text-xs text-green-700 whitespace-pre-wrap font-mono max-h-96 overflow-y-auto">
+                {JSON.stringify(parsedLog.new_data, null, 2)}
+              </pre>
+            ) : (
+              <p className="text-sm text-green-800">
+                {formatValue(parsedLog.new_data)}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (parsedLog.action === "read" && parsedLog.data) {
+      return (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-1">
+            <Eye size={16} className="text-purple-600" />
+            <span className="text-xs font-bold text-purple-600 uppercase tracking-widest">
+              Données consultées
+            </span>
+          </div>
+          <div className="bg-purple-50 p-5 rounded-xl border border-purple-200">
+            {isComplexObject(parsedLog.data) ? (
+              <pre className="text-xs text-purple-700 whitespace-pre-wrap font-mono max-h-96 overflow-y-auto">
+                {JSON.stringify(parsedLog.data, null, 2)}
+              </pre>
+            ) : (
+              <p className="text-sm text-purple-800">
+                {formatValue(parsedLog.data)}
+              </p>
+            )}
           </div>
         </div>
       );
@@ -261,188 +484,220 @@ export default function HistoriqueDetails({ visible, onHide, log }: Props) {
       header={
         <div className="flex items-center gap-3">
           <div
-            className={`p-2 ${actionStyle.bg} rounded-lg ${actionStyle.text}`}
+            className={`p-2.5 ${actionStyle.bg} rounded-xl ${actionStyle.text} shadow-sm`}
           >
             <ActionIcon size={20} />
           </div>
           <div>
-            <h3 className="text-slate-900 font-bold leading-none">
+            <h3 className="text-lg font-black text-slate-900 leading-tight">
               Journal d'Audit
             </h3>
-            <p className="text-[11px] text-slate-500 font-medium mt-1 uppercase tracking-widest">
-              {actionFr} • {resourceFr}
-            </p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                {actionFr}
+              </span>
+              <ArrowRight size={12} className="text-slate-400" />
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                {resourceFr}
+              </span>
+            </div>
           </div>
         </div>
       }
       visible={visible}
-      style={{ width: "95vw", maxWidth: "700px" }}
+      style={{ width: "95vw", maxWidth: "900px" }}
       onHide={onHide}
       draggable={false}
       blockScroll
+      className="historique-details-dialog"
       footer={
-        <div className="flex justify-end gap-2 p-2">
+        <div className="flex justify-end gap-2 p-4 border-t border-slate-100">
           <Button
             label="Fermer"
             onClick={onHide}
-            className="bg-slate-100 text-slate-600 font-bold px-8 py-2.5 rounded-xl hover:bg-slate-200 border-none transition-all text-sm"
+            className="bg-slate-100 text-slate-700 font-bold px-8 py-2.5 rounded-xl hover:bg-slate-200 border-none transition-all text-sm"
           />
         </div>
       }
     >
-      <div className="space-y-4 pt-2 font-sans max-h-[70vh] overflow-y-auto pr-1">
-        {/* Banner principal */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-6 rounded-3xl text-white shadow-xl">
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`text-[10px] font-black px-2 py-0.5 rounded border backdrop-blur-md ${getMethodStyle(log.method)}`}
-                >
-                  {log.method}
-                </span>
-                <span className="text-slate-400 text-xs font-medium tracking-wider">
-                  ID: #{log.id}
-                </span>
+      <div className="space-y-4 pt-2 font-sans max-h-[70vh] overflow-y-auto pr-1 custom-scrollbar">
+        {/* En-tête avec agent et métadonnées */}
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl text-white shadow-xl">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center font-black text-lg">
+                {agent?.nom?.charAt(0)}
+                {agent?.prenom?.charAt(0)}
               </div>
-              {log.status < 400 ? (
-                <span className="text-[10px] bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full border border-green-500/30">
-                  Succès
+              <div>
+                <p className="text-sm font-bold text-white">
+                  {agent
+                    ? `${agent.prenom} ${agent.nom}`
+                    : "Système Automatique"}
+                </p>
+                <p className="text-xs text-slate-300 mt-1">
+                  {typeof agent?.droit === "object"
+                    ? agent.droit.libelle
+                    : agent?.droit || "Utilisateur système"}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <span
+                className={`text-[10px] font-black px-2 py-1 rounded border ${getMethodStyle(parsedLog.method)}`}
+              >
+                {parsedLog.method}
+              </span>
+              {parsedLog.status < 400 ? (
+                <span className="text-[10px] bg-green-500/20 text-green-300 px-2 py-1 rounded-full border border-green-500/30 flex items-center gap-1">
+                  <CheckCircle size={10} /> Succès
                 </span>
               ) : (
-                <span className="text-[10px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30">
-                  Erreur {log.status}
+                <span className="text-[10px] bg-red-500/20 text-red-300 px-2 py-1 rounded-full border border-red-500/30 flex items-center gap-1">
+                  <XCircle size={10} /> Erreur {parsedLog.status}
                 </span>
               )}
             </div>
-
-            <h2 className="text-2xl font-black leading-tight mb-4 drop-shadow-sm">
-              {log.description || `${actionFr} de ${resourceFr}`}
-            </h2>
-
-            {log.resource_identifier && (
-              <div className="mb-4 p-3 bg-white/10 rounded-xl border border-white/20">
-                <p className="text-xs text-slate-300 mb-1">Élément concerné</p>
-                <p className="text-sm font-bold text-white">
-                  {log.resource_identifier}
-                </p>
-              </div>
-            )}
-
-            <div className="flex flex-wrap items-center gap-3 mt-4 pt-4 border-t border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center font-black text-sm">
-                  {agent?.nom?.charAt(0)}
-                  {agent?.prenom?.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-sm font-bold leading-none text-white">
-                    {agent
-                      ? `${agent.prenom} ${agent.nom}`
-                      : "Système Automatique"}
-                  </p>
-                  <p className="text-[10px] text-slate-300 mt-1 uppercase font-bold tracking-widest">
-                    {typeof agent?.droit === "object"
-                      ? agent.droit.libelle
-                      : agent?.droit || "Utilisateur"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <Activity className="absolute -right-6 -bottom-6 text-white/10 w-40 h-40" />
-        </div>
-
-        {/* Informations de base - Sans InfoCard */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Date et Heure */}
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
-            <div className="p-2 bg-white rounded-xl shadow-sm text-emerald-600">
-              <Calendar size={18} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter mb-0.5">
-                Date et Heure
-              </p>
-              <p className="text-emerald-900 font-bold text-sm leading-tight break-words">
-                {formatDate(log.createdAt)}
-              </p>
-            </div>
           </div>
 
-          {/* Ressource */}
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
-            <div className="p-2 bg-white rounded-xl shadow-sm text-emerald-600">
-              <Database size={18} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter mb-0.5">
-                Ressource
+          <p className="text-lg font-bold text-white mb-3">
+            {parsedLog.description || `${actionFr} de ${resourceFr}`}
+          </p>
+
+          {parsedLog.resource_identifier && (
+            <div className="mb-3 p-3 bg-white/10 rounded-xl border border-white/20">
+              <p className="text-xs text-slate-300 mb-1">Élément concerné</p>
+              <p className="text-sm font-bold text-white">
+                {parsedLog.resource_identifier}
               </p>
-              <p className="text-emerald-900 font-bold text-sm leading-tight break-words">
-                {`${log.resource}${log.resource_id ? ` #${log.resource_id}` : ""}`}
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/10">
+            <div>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+                Date
+              </p>
+              <p className="text-sm font-medium text-white">
+                {formatDate(parsedLog.createdAt)}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+                IP / Appareil
+              </p>
+              <p className="text-sm font-medium text-white break-all">
+                {parsedLog.ip || "—"}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Action */}
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
-            <div className="p-2 bg-white rounded-xl shadow-sm text-blue-600">
-              <Activity size={18} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter mb-0.5">
-                Action
-              </p>
-              <p className="text-emerald-900 font-bold text-sm leading-tight break-words">
-                {actionFr}
-              </p>
-            </div>
+        {/* Carte des métadonnées */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+              ID Journal
+            </p>
+            <p className="text-sm font-bold text-slate-800">#{parsedLog.id}</p>
           </div>
-
-          {/* Méthode HTTP */}
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
-            <div className="p-2 bg-white rounded-xl shadow-sm text-purple-600">
-              <Tag size={18} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter mb-0.5">
-                Méthode HTTP
-              </p>
-              <p className="text-emerald-900 font-bold text-sm leading-tight break-words">
-                {log.method}
-              </p>
-            </div>
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+              Ressource
+            </p>
+            <p className="text-sm font-bold text-slate-800">
+              {parsedLog.resource}
+              {parsedLog.resource_id && (
+                <span className="text-xs text-slate-500 ml-1">
+                  #{parsedLog.resource_id}
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+              Action
+            </p>
+            <p className="text-sm font-bold text-slate-800">{actionFr}</p>
+          </div>
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+              Statut
+            </p>
+            <p
+              className={`text-sm font-bold ${
+                parsedLog.status < 400 ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {parsedLog.status}
+            </p>
           </div>
         </div>
 
-        {/* Données JSON brutes (optionnel) */}
-        {log.data && (
-          <div className="space-y-2">
+        {/* Détails des changements */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="p-4 border-b border-slate-100 bg-slate-50">
+            <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider">
+              Détails de l'opération
+            </h4>
+          </div>
+          <div className="p-4">{renderChanges()}</div>
+        </div>
+
+        {/* Données JSON brutes */}
+        {parsedLog.data && (
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <button
               onClick={() => setShowRawJson(!showRawJson)}
-              className="flex items-center gap-2 px-1 py-2 w-full"
+              className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors"
             >
-              <FileJson size={14} className="text-slate-400" />
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                {showRawJson ? "Masquer" : "Afficher"} les données brutes
-              </span>
+              <div className="flex items-center gap-2">
+                <FileJson size={16} className="text-slate-500" />
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Données brutes
+                </span>
+              </div>
+              {showRawJson ? (
+                <ChevronUp size={18} className="text-slate-400" />
+              ) : (
+                <ChevronDown size={18} className="text-slate-400" />
+              )}
             </button>
 
             {showRawJson && (
-              <div className="relative rounded-3xl bg-slate-950 p-1.5 shadow-inner border border-slate-800">
-                <div className="bg-[#0a192f] rounded-2xl p-5 max-h-[250px] overflow-y-auto custom-scrollbar border border-white/5">
-                  <pre className="text-[11px] font-mono text-cyan-400/90 leading-relaxed">
-                    {JSON.stringify(log.data, null, 2)}
-                  </pre>
-                </div>
+              <div className="p-4 border-t border-slate-100 bg-slate-900">
+                <pre className="text-xs text-green-400 whitespace-pre-wrap font-mono overflow-x-auto max-h-96">
+                  {JSON.stringify(parsedLog.data, null, 2)}
+                </pre>
               </div>
             )}
           </div>
         )}
       </div>
+
+      <style>{`
+        .historique-details-dialog .p-dialog-header {
+          border-bottom: 1px solid #e2e8f0;
+          padding: 1.5rem;
+        }
+        .historique-details-dialog .p-dialog-content {
+          padding: 1.5rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
     </Dialog>
   );
 }
