@@ -7,7 +7,6 @@ import { getMetaById } from "../../api/metaField";
 import { Toast } from "primereact/toast";
 import { uploadDocumentFile } from "../../api/ulpoald";
 
-// ✅ Définir le type correctement pour correspondre au backend
 interface DocumentPayload {
   type_document_id: number | null;
   values: Record<string, string>; // ✅ Changé : objet avec meta_field_id comme clé

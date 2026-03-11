@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
     });
     DocumentValue.hasOne(models.DocumentFile, {
       foreignKey: "document_value_id",
+      as: "files",
+    });
+
+    DocumentValue.hasOne(models.DocumentFichier, {
+      foreignKey: "document_value_id",
       as: "file",
     });
   };

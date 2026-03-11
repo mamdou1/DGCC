@@ -2,8 +2,6 @@ import { useRef, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { FileText, Tag, Box, ArrowLeft, Eye } from "lucide-react";
 import { Button } from "primereact/button";
-import AddToBoxForm from "../Box/AddToBoxForm";
-import { retireDocumentFromBox } from "../../api/box";
 import { Toast } from "primereact/toast";
 import { useAuth } from "../../context/AuthContext";
 
@@ -23,28 +21,6 @@ export default function DocumentDetails({
   const handleClose = () => {
     setShowArchiveForm(false);
     onHide();
-  };
-
-  const handleRetire = async () => {
-    if (!doc.box_id) {
-      alert("Ce document n'est pas archivé dans un box.");
-      return;
-    }
-    try {
-      await retireDocumentFromBox(doc.box_id, doc.id);
-      if (onRefresh) onRefresh();
-      toast.current?.show({
-        severity: "success",
-        summary: "Ok",
-        detail: "Document retirer avec succès",
-      });
-    } catch (err) {
-      toast.current?.show({
-        severity: "error",
-        summary: "erreur",
-        detail: "Erreur lors du retrait du document",
-      });
-    }
   };
 
   return (
@@ -93,49 +69,6 @@ export default function DocumentDetails({
               </div>
             </div>
           </div>
-
-          {/* SECTION ARCHIVAGE DYNAMIQUE */}
-
-          {can("box", "create") && (
-            <div className="border-t border-b border-orange-50 py-4">
-              {doc.box_id ? (
-                // ✅ Si déjà archivé → bouton Retirer
-                <button
-                  onClick={handleRetire}
-                  className="w-full flex items-center justify-center gap-3 p-4 bg-red-50 text-red-700 rounded-2xl font-black hover:bg-red-100 transition-all border-2 border-dashed border-red-200"
-                >
-                  <Box size={20} />
-                  Retirer des archives
-                </button>
-              ) : !showArchiveForm ? (
-                // ✅ Si pas archivé → bouton Archiver
-                <button
-                  onClick={() => setShowArchiveForm(true)}
-                  className="w-full flex items-center justify-center gap-3 p-4 bg-orange-50 text-orange-700 rounded-2xl font-black hover:bg-orange-100 transition-all border-2 border-dashed border-orange-200"
-                >
-                  <Box size={20} />
-                  Archiver dans un Box
-                </button>
-              ) : (
-                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                  <button
-                    onClick={() => setShowArchiveForm(false)}
-                    className="flex items-center gap-2 text-[10px] font-black text-orange-600 uppercase tracking-widest hover:underline"
-                  >
-                    <ArrowLeft size={12} /> Annuler l'archivage
-                  </button>
-                  <AddToBoxForm
-                    documentId={doc.id}
-                    typeDocumentId={doc.type_document_id}
-                    onSuccess={() => {
-                      setShowArchiveForm(false);
-                      if (onRefresh) onRefresh();
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Métadonnées */}
           <div className="space-y-3">

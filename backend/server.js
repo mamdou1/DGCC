@@ -3,7 +3,12 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 
-dotenv.config();
+//dotenv.config();
+const envFile = process.env.NODE_ENV === "docker" ? ".env.docker" : ".env";
+
+require("dotenv").config({
+  path: envFile,
+});
 
 const sequelize = require("./config/database");
 //const historiqueLogger = require("./middlewares/historiqueLogger.middleware");
@@ -64,12 +69,6 @@ app.use("/api/types-documents", require("./routes/typeDocument.routes"));
 app.use("/api/meta-fields", require("./routes/metafield.routes"));
 app.use("/api/documents", require("./routes/document.routes"));
 
-app.use("/api/site", require("./routes/site.routes"));
-app.use("/api/salle", require("./routes/salle.routes"));
-app.use("/api/rayon", require("./routes/rayon.routes"));
-app.use("/api/trave", require("./routes/trave.routes"));
-app.use("/api/box", require("./routes/box.routes"));
-
 app.use("/api/entiteeUn", require("./routes/entiteeUn.routes"));
 app.use("/api/entiteeDeux", require("./routes/entiteeDeux.routes"));
 app.use("/api/entiteeTrois", require("./routes/entiteeTrois.routes"));
@@ -82,6 +81,10 @@ app.use("/api/sections", require("./routes/section.routes"));
 app.use("/api/services", require("./routes/service.routes"));
 
 app.use("/api/agent-access", require("./routes/agentAccess.routes"));
+
+app.use("/api/dgcc", require("./routes/dgcc.routes"));
+app.use("/api/import", require("./routes/import.routes"));
+
 app.use("/api", require("./routes/pieceMetaField.routes"));
 app.use("/api", require("./routes/pieceValue.routes"));
 
@@ -95,7 +98,7 @@ app.use((req, res) => {
 sequelize
   .authenticate()
   .then(async () => {
-    console.log("✅ Connexion MySQL réussie");
+    console.log("✅ Connexion avec l base MySQL de DGCC réussie");
 
     await sequelize.sync(); // ❌ PAS force / alter ici
 

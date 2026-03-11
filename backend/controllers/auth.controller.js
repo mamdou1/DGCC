@@ -29,7 +29,6 @@ exports.inscription = async (req, res) => {
     const user = await Agent.create({
       fonction,
       password: hash,
-      // role: "ADMIN",
       telephone,
       username,
       nom,

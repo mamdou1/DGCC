@@ -1,99 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { Bell, LogOut, Search, Settings } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
-import {
-  TypeDocument,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
-  User,
-} from "../../interfaces";
-import { getAllEntiteeUn, getEntiteeUnTitre } from "../../api/entiteeUn";
-import { getAllEntiteeDeux, getEntiteeDeuxTitre } from "../../api/entiteeDeux";
-import {
-  getAllEntiteeTrois,
-  getEntiteeTroisTitre,
-} from "../../api/entiteeTrois";
+import { LogOut, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   // États pour les dropdowns des entitees
-  const [entiteeUn, setEntiteeUn] = useState<EntiteeUn[]>([]);
-  const [entiteeDeux, setEntiteeDeux] = useState<EntiteeDeux[]>([]);
-  const [entiteeTrois, setEntiteeTrois] = useState<EntiteeTrois[]>([]);
 
-  const { logout, user } = useAuth();
-  const location = useLocation();
+  const { logout } = useAuth();
   const navigate = useNavigate();
-
-  // ✅ Fonction corrigée pour obtenir le titre de la page
-  const getPageTitle = () => {
-    // Cas spécial pour le dashboard
-    if (location.pathname === "/") {
-      return "Tableau de bord";
-    }
-
-    // Vérifier les chemins avec startsWith pour les pages d'entités
-    if (location.pathname.startsWith("/entiteeUn")) {
-      return titres.niveau1 || "Niveau 1";
-    }
-
-    if (location.pathname.startsWith("/entiteeDeux")) {
-      return titres.niveau2 || "Niveau 2";
-    }
-
-    if (location.pathname.startsWith("/entiteeTrois")) {
-      return titres.niveau3 || "Niveau 3";
-    }
-
-    // Pour les autres pages, on prend le dernier segment du chemin
-    const segments = location.pathname.split("/").filter(Boolean);
-    const lastSegment = segments[segments.length - 1] || "";
-
-    // Capitaliser la première lettre
-    return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
-  };
-
-  // Titres dynamiques
-  const [titres, setTitres] = useState<{
-    niveau1: string;
-    niveau2: string;
-    niveau3: string;
-  }>({
-    niveau1: "",
-    niveau2: "",
-    niveau3: "",
-  });
-
-  useEffect(() => {
-    const loadTitresEtEntites = async () => {
-      try {
-        const [t1, t2, t3, e1, e2, e3] = await Promise.all([
-          getEntiteeUnTitre(),
-          getEntiteeDeuxTitre(),
-          getEntiteeTroisTitre(),
-          getAllEntiteeUn(),
-          getAllEntiteeDeux(),
-          getAllEntiteeTrois(),
-        ]);
-
-        // ✅ Ne garder que les niveaux qui ont un titre
-        const newTitres = {
-          niveau1: t1.titre || "",
-          niveau2: t2.titre || "",
-          niveau3: t3.titre || "",
-        };
-        setTitres(newTitres);
-
-        setEntiteeUn(Array.isArray(e1) ? e1 : []);
-        setEntiteeDeux(Array.isArray(e2) ? e2 : []);
-        setEntiteeTrois(Array.isArray(e3) ? e3 : []);
-      } catch (error) {
-        console.error("❌ Erreur chargement titres:", error);
-      }
-    };
-    loadTitresEtEntites();
-  }, []);
 
   return (
     <header className="flex justify-between items-center h-20 px-8 bg-orange-800 border-b border-orange-100 sticky top-0 z-40 shadow-sm">

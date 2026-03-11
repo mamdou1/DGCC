@@ -7,9 +7,11 @@ import {
 } from "../../hooks/useFonctions";
 import {
   Fonction,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
 } from "../../interfaces";
 import { Toast } from "primereact/toast";
 import Layout from "../../components/layout/Layoutt";
@@ -24,6 +26,9 @@ import {
   GitMerge,
   Layers,
   Building2,
+  Split,
+  TableOfContents,
+  Map,
 } from "lucide-react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
@@ -36,23 +41,26 @@ import FonctionDetails from "./FonctionDetails";
 type FilterOption = {
   label: string;
   value: string | null;
+  type?: "direction" | "sousDirection" | "division" | "section" | "service";
 };
 
 export default function FonctionPage() {
   const toast = useRef<Toast>(null);
 
-  // Données initiales
+  // Données initiales (mise à jour avec les nouvelles entités)
   const {
     fonctions = [],
-    entiteeUn = [],
-    entiteeDeux = [],
-    entiteeTrois = [],
+    directions = [],
+    sousDirections = [],
+    divisions = [],
+    sections = [],
+    services = [],
     isLoading,
     error,
     refetch,
   } = useInitialData();
 
-  console.log("🔍 fonctions chargées:", fonctions); // ✅ DEBUG
+  console.log("🔍 fonctions chargées:", fonctions);
   console.log("🔍 isLoading:", isLoading);
   console.log("🔍 error:", error);
 
@@ -73,41 +81,71 @@ export default function FonctionPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 8;
 
+  // Fonction pour obtenir l'entité active d'une fonction
   const getActiveEntity = (fonction: Fonction) => {
-    if (fonction.entitee_trois) {
+    if (fonction.section) {
       return {
-        niveau: "entitee_trois",
-        libelle: fonction.entitee_trois.libelle,
-        code: fonction.entitee_trois.code,
-        titre: titres.entitee3,
+        niveau: "section",
+        libelle: fonction.section.libelle,
+        code: fonction.section.code,
+        type: "Section",
         couleur: "bg-purple-100 text-purple-700 border-purple-200",
         icone: <GitMerge size={14} className="text-purple-600" />,
-        parent: fonction.entitee_deux,
-        grandParent: fonction.entitee_un,
+        parent: fonction.division,
+        grandParent: fonction.sousDirection,
+        arriereGrandParent: fonction.direction,
       };
     }
-    if (fonction.entitee_deux) {
+    if (fonction.division) {
       return {
-        niveau: "entitee_deux",
-        libelle: fonction.entitee_deux.libelle,
-        code: fonction.entitee_deux.code,
-        titre: titres.entitee2,
+        niveau: "division",
+        libelle: fonction.division.libelle,
+        code: fonction.division.code,
+        type: "Division",
         couleur: "bg-blue-100 text-blue-700 border-blue-200",
-        icone: <Layers size={14} className="text-blue-600" />,
-        parent: fonction.entitee_un,
-        grandParent: null,
+        icone: <TableOfContents size={14} className="text-blue-600" />,
+        parent: fonction.sousDirection,
+        grandParent: fonction.direction,
+        arriereGrandParent: null,
       };
     }
-    if (fonction.entitee_un) {
+    if (fonction.sousDirection) {
       return {
-        niveau: "entitee_un",
-        libelle: fonction.entitee_un.libelle,
-        code: fonction.entitee_un.code,
-        titre: titres.entitee1,
-        couleur: "bg-orange-100 text-orange-700 border-orange-200",
-        icone: <Building2 size={14} className="text-orange-600" />,
+        niveau: "sousDirection",
+        libelle: fonction.sousDirection.libelle,
+        code: fonction.sousDirection.code,
+        type: "Sous-direction",
+        couleur: "bg-indigo-100 text-indigo-700 border-indigo-200",
+        icone: <Split size={14} className="text-indigo-600" />,
+        parent: fonction.direction,
+        grandParent: null,
+        arriereGrandParent: null,
+      };
+    }
+    if (fonction.direction) {
+      return {
+        niveau: "direction",
+        libelle: fonction.direction.libelle,
+        code: fonction.direction.code,
+        type: "Direction",
+        couleur: "bg-emearld-100 text-emearld-700 border-emearld-200",
+        icone: <Building2 size={14} className="text-emearld-600" />,
         parent: null,
         grandParent: null,
+        arriereGrandParent: null,
+      };
+    }
+    if (fonction.service) {
+      return {
+        niveau: "service",
+        libelle: fonction.service.libelle,
+        code: fonction.service.code,
+        type: "Service",
+        couleur: "bg-orange-100 text-orange-700 border-orange-200",
+        icone: <Map size={14} className="text-orange-600" />,
+        parent: fonction.direction,
+        grandParent: null,
+        arriereGrandParent: null,
       };
     }
     return null;
@@ -119,39 +157,48 @@ export default function FonctionPage() {
       { label: "Toutes les fonctions", value: null },
     ];
 
-    (entiteeUn || []).forEach((e: EntiteeUn) => {
+    directions.forEach((d: Direction) => {
       options.push({
-        label: `🏢 ${e.libelle}`,
-        value: `E1-${e.id}`,
+        label: `🏢 ${d.libelle}`,
+        value: `DIR-${d.id}`,
+        type: "direction",
       });
     });
 
-    (entiteeDeux || []).forEach((e: EntiteeDeux) => {
+    sousDirections.forEach((sd: SousDirection) => {
       options.push({
-        label: `📂 ${e.libelle}`,
-        value: `E2-${e.id}`,
+        label: `📂 ${sd.libelle}`,
+        value: `SD-${sd.id}`,
+        type: "sousDirection",
       });
     });
 
-    (entiteeTrois || []).forEach((e: EntiteeTrois) => {
+    divisions.forEach((d: Division) => {
       options.push({
-        label: `📄 ${e.libelle}`,
-        value: `E3-${e.id}`,
+        label: `📁 ${d.libelle}`,
+        value: `DIV-${d.id}`,
+        type: "division",
+      });
+    });
+
+    sections.forEach((s: Section) => {
+      options.push({
+        label: `📄 ${s.libelle}`,
+        value: `SEC-${s.id}`,
+        type: "section",
+      });
+    });
+
+    services.forEach((s: Service) => {
+      options.push({
+        label: `🛠️ ${s.libelle}`,
+        value: `SERV-${s.id}`,
+        type: "service",
       });
     });
 
     return options;
-  }, [entiteeUn, entiteeDeux, entiteeTrois]);
-
-  // Titres dynamiques
-  const titres = useMemo(
-    () => ({
-      entitee1: (entiteeUn[0] as EntiteeUn)?.titre || "Entité 1",
-      entitee2: (entiteeDeux[0] as EntiteeDeux)?.titre || "Entité 2",
-      entitee3: (entiteeTrois[0] as EntiteeTrois)?.titre || "Entité 3",
-    }),
-    [entiteeUn, entiteeDeux, entiteeTrois],
-  );
+  }, [directions, sousDirections, divisions, sections, services]);
 
   // Filtrage
   const filteredFonctions = useMemo<Fonction[]>(() => {
@@ -170,9 +217,11 @@ export default function FonctionPage() {
       const id = parseInt(idStr, 10);
 
       filtered = filtered.filter((f: Fonction) => {
-        if (prefix === "E1") return f.entitee_un_id === id;
-        if (prefix === "E2") return f.entitee_deux_id === id;
-        if (prefix === "E3") return f.entitee_trois_id === id;
+        if (prefix === "DIR") return f.direction_id === id;
+        if (prefix === "SD") return f.sous_direction_id === id;
+        if (prefix === "DIV") return f.division_id === id;
+        if (prefix === "SEC") return f.section_id === id;
+        if (prefix === "SERV") return f.service_id === id;
         return true;
       });
     }
@@ -229,7 +278,7 @@ export default function FonctionPage() {
 
   const handleDelete = (id: number): void => {
     confirmDialog({
-      message: "Voulez-vous supprimer cette définitivement ?",
+      message: "Voulez-vous supprimer cette fonction définitivement ?",
       header: "Confirmation",
       icon: "pi pi-info-circle",
       acceptLabel: "Supprimer",
@@ -321,6 +370,26 @@ export default function FonctionPage() {
           className="w-64 bg-slate-50 border-slate-200 rounded-xl"
           showClear
           filter
+          itemTemplate={(option) => (
+            <div className="flex items-center gap-2">
+              {option.type === "direction" && (
+                <Building2 size={14} className="text-emerald-600" />
+              )}
+              {option.type === "sousDirection" && (
+                <Split size={14} className="text-indigo-600" />
+              )}
+              {option.type === "division" && (
+                <TableOfContents size={14} className="text-blue-600" />
+              )}
+              {option.type === "section" && (
+                <GitMerge size={14} className="text-purple-600" />
+              )}
+              {option.type === "service" && (
+                <Map size={14} className="text-orange-600" />
+              )}
+              <span>{option.label}</span>
+            </div>
+          )}
         />
       </div>
 
@@ -378,9 +447,14 @@ export default function FonctionPage() {
                         >
                           {activeEntity.icone}
                           {activeEntity.libelle}
+                          {activeEntity.code && (
+                            <span className="ml-1 text-[8px] font-mono bg-white/50 px-1 rounded">
+                              {activeEntity.code}
+                            </span>
+                          )}
                         </span>
 
-                        {/* Hiérarchie (optionnel - en petit) */}
+                        {/* Hiérarchie */}
                         <div className="text-[9px] text-slate-400 mt-1">
                           {activeEntity.parent && (
                             <span className="mr-1">
@@ -388,9 +462,18 @@ export default function FonctionPage() {
                             </span>
                           )}
                           {activeEntity.grandParent && (
-                            <span className="mr-1">
-                              ← {activeEntity.grandParent.libelle}
-                            </span>
+                            <>
+                              <span className="mx-1">←</span>
+                              <span>{activeEntity.grandParent.libelle}</span>
+                            </>
+                          )}
+                          {activeEntity.arriereGrandParent && (
+                            <>
+                              <span className="mx-1">←</span>
+                              <span>
+                                {activeEntity.arriereGrandParent.libelle}
+                              </span>
+                            </>
                           )}
                         </div>
                       </div>
@@ -467,10 +550,11 @@ export default function FonctionPage() {
         }}
         onSubmit={editing ? handleUpdate : handleCreate}
         initial={editing}
-        entiteeUn={entiteeUn}
-        entiteeDeux={entiteeDeux}
-        entiteeTrois={entiteeTrois}
-        titres={titres}
+        directions={directions}
+        sousDirections={sousDirections}
+        divisions={divisions}
+        sections={sections}
+        services={services}
       />
 
       <FonctionDetails
@@ -480,7 +564,6 @@ export default function FonctionPage() {
           setSelectedFonction(null);
         }}
         fonction={selectedFonction}
-        titres={titres}
       />
     </Layout>
   );

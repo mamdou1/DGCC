@@ -17,13 +17,6 @@ import {
   Landmark,
   History,
   Database,
-  Pyramid,
-  Archive,
-  Warehouse,
-  WavesLadder,
-  LibraryBig,
-  MapPinned,
-  GitMerge,
   Building2,
   FileStack,
   Settings2,
@@ -38,14 +31,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SidebarProps, SidebarContextType } from "../../interfaces/composant";
 import { useAuth } from "../../context/AuthContext";
 import { getTypeDocuments } from "../../api/typeDocument";
-import {
-  TypeDocument,
-  User,
-  Direction,
-  SousDirection,
-  Division,
-  Section,
-} from "../../interfaces";
+import { TypeDocument, User } from "../../interfaces";
 
 // NOUVEAUX IMPORTS
 import { getDirections } from "../../api/direction";
@@ -735,56 +721,6 @@ export default function Sidebar({ children }: SidebarProps) {
                         </>
                       )}
                     </SidebarTree>
-                  )}
-                </SidebarTree>
-              )}
-
-              {/* ================= ARCHIVAGE ================= */}
-              {(can("box", "access") ||
-                can("trave", "access") ||
-                can("rayon", "access") ||
-                can("salle", "access") ||
-                can("site", "access")) && (
-                <SidebarTree label="Archivage" icon={Layers}>
-                  {can("box", "access") && (
-                    <SidebarLink
-                      icon={Archive}
-                      text="Box"
-                      to="/box"
-                      active={location.pathname.startsWith("/box")}
-                    />
-                  )}
-                  {can("trave", "access") && (
-                    <SidebarLink
-                      icon={LibraryBig}
-                      text="Travé"
-                      to="/trave"
-                      active={location.pathname.startsWith("/trave")}
-                    />
-                  )}
-                  {can("rayon", "access") && (
-                    <SidebarLink
-                      icon={WavesLadder}
-                      text="Rayon"
-                      to="/rayon"
-                      active={location.pathname.startsWith("/rayon")}
-                    />
-                  )}
-                  {can("salle", "access") && (
-                    <SidebarLink
-                      icon={Warehouse}
-                      text="Salle"
-                      to="/salle"
-                      active={location.pathname.startsWith("/salle")}
-                    />
-                  )}
-                  {can("site", "access") && (
-                    <SidebarLink
-                      icon={MapPinned}
-                      text="Site"
-                      to="/site"
-                      active={location.pathname.startsWith("/site")}
-                    />
                   )}
                 </SidebarTree>
               )}

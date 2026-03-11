@@ -4,8 +4,10 @@ import { Button } from "primereact/button";
 import {
   Briefcase,
   Building2,
-  Layers,
+  Split,
+  TableOfContents,
   GitMerge,
+  Map,
   Calendar,
   Hash,
 } from "lucide-react";
@@ -15,19 +17,9 @@ type Props = {
   visible: boolean;
   onHide: () => void;
   fonction: Fonction | null;
-  titres?: {
-    entitee1: string;
-    entitee2: string;
-    entitee3: string;
-  };
 };
 
-export default function FonctionDetails({
-  visible,
-  onHide,
-  fonction,
-  titres = { entitee1: "Entité 1", entitee2: "Entité 2", entitee3: "Entité 3" },
-}: Props) {
+export default function FonctionDetails({ visible, onHide, fonction }: Props) {
   if (!fonction) return null;
 
   const formatDate = (date?: string) => {
@@ -39,6 +31,42 @@ export default function FonctionDetails({
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  // Fonction pour obtenir l'icône selon le type d'entité
+  const getEntityIcon = (type: string) => {
+    switch (type) {
+      case "direction":
+        return <Building2 size={16} className="text-emerald-600" />;
+      case "sousDirection":
+        return <Split size={16} className="text-indigo-600" />;
+      case "division":
+        return <TableOfContents size={16} className="text-blue-600" />;
+      case "section":
+        return <GitMerge size={16} className="text-purple-600" />;
+      case "service":
+        return <Map size={16} className="text-orange-600" />;
+      default:
+        return null;
+    }
+  };
+
+  // Fonction pour obtenir la couleur selon le type d'entité
+  const getEntityColor = (type: string) => {
+    switch (type) {
+      case "direction":
+        return "bg-orange-100 text-orange-700";
+      case "sousDirection":
+        return "bg-indigo-100 text-indigo-700";
+      case "division":
+        return "bg-blue-100 text-blue-700";
+      case "section":
+        return "bg-purple-100 text-purple-700";
+      case "service":
+        return "bg-orange-100 text-orange-700";
+      default:
+        return "bg-slate-100 text-slate-700";
+    }
   };
 
   return (
@@ -101,65 +129,128 @@ export default function FonctionDetails({
             Affectation
           </h3>
           <div className="space-y-3">
-            {/* Niveau 1 */}
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Building2 size={16} className="text-orange-600" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase">
-                  {titres.entitee1}
-                </p>
-                <p className="font-medium text-slate-700">
-                  {fonction.entitee_un?.libelle || "Non affecté"}
-                </p>
-                {fonction.entitee_un && (
-                  <p className="text-[10px] text-slate-400 mt-0.5">
-                    Code: {fonction.entitee_un.code}
+            {/* Direction */}
+            {fonction.direction && (
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-8 h-8 ${getEntityColor("direction")} rounded-lg flex items-center justify-center`}
+                >
+                  {getEntityIcon("direction")}
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">
+                    Direction
                   </p>
-                )}
+                  <p className="font-medium text-slate-700">
+                    {fonction.direction.libelle}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">
+                    Code: {fonction.direction.code}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Niveau 2 */}
-            {fonction.entitee_deux && (
+            {/* Sous-direction */}
+            {fonction.sousDirection && (
               <div className="flex items-center gap-3 ml-4">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Layers size={16} className="text-blue-600" />
+                <div
+                  className={`w-8 h-8 ${getEntityColor("sousDirection")} rounded-lg flex items-center justify-center`}
+                >
+                  {getEntityIcon("sousDirection")}
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase">
-                    {titres.entitee2}
+                    Sous-direction
                   </p>
                   <p className="font-medium text-slate-700">
-                    {fonction.entitee_deux.libelle}
+                    {fonction.sousDirection.libelle}
                   </p>
                   <p className="text-[10px] text-slate-400 mt-0.5">
-                    Code: {fonction.entitee_deux.code}
+                    Code: {fonction.sousDirection.code}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Niveau 3 */}
-            {fonction.entitee_trois && (
+            {/* Division */}
+            {fonction.division && (
               <div className="flex items-center gap-3 ml-8">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <GitMerge size={16} className="text-orange-600" />
+                <div
+                  className={`w-8 h-8 ${getEntityColor("division")} rounded-lg flex items-center justify-center`}
+                >
+                  {getEntityIcon("division")}
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase">
-                    {titres.entitee3}
+                    Division
                   </p>
                   <p className="font-medium text-slate-700">
-                    {fonction.entitee_trois.libelle}
+                    {fonction.division.libelle}
                   </p>
                   <p className="text-[10px] text-slate-400 mt-0.5">
-                    Code: {fonction.entitee_trois.code}
+                    Code: {fonction.division.code}
                   </p>
                 </div>
               </div>
             )}
+
+            {/* Section */}
+            {fonction.section && (
+              <div className="flex items-center gap-3 ml-12">
+                <div
+                  className={`w-8 h-8 ${getEntityColor("section")} rounded-lg flex items-center justify-center`}
+                >
+                  {getEntityIcon("section")}
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">
+                    Section
+                  </p>
+                  <p className="font-medium text-slate-700">
+                    {fonction.section.libelle}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">
+                    Code: {fonction.section.code}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Service */}
+            {fonction.service && (
+              <div className="flex items-center gap-3 ml-4">
+                <div
+                  className={`w-8 h-8 ${getEntityColor("service")} rounded-lg flex items-center justify-center`}
+                >
+                  {getEntityIcon("service")}
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">
+                    Service
+                  </p>
+                  <p className="font-medium text-slate-700">
+                    {fonction.service.libelle}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">
+                    Code: {fonction.service.code}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Aucune affectation */}
+            {!fonction.direction &&
+              !fonction.sousDirection &&
+              !fonction.division &&
+              !fonction.section &&
+              !fonction.service && (
+                <div className="text-center py-4">
+                  <p className="text-slate-400 text-sm italic">
+                    Aucune affectation
+                  </p>
+                </div>
+              )}
           </div>
         </div>
 

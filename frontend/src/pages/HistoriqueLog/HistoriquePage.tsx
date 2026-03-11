@@ -14,10 +14,6 @@ import {
   UserCheck,
   Layers,
 } from "lucide-react";
-import { getAllEntiteeUn } from "../../api/entiteeUn";
-import { getAllEntiteeDeux } from "../../api/entiteeDeux";
-import { getAllEntiteeTrois } from "../../api/entiteeTrois";
-import { EntiteeDeux, EntiteeUn, EntiteeTrois } from "../../interfaces";
 
 export default function HistoriquePage() {
   const [logs, setLogs] = useState<HistoriqueLog[]>([]);
@@ -33,45 +29,6 @@ export default function HistoriquePage() {
   const [dateTo, setDateTo] = useState<string>("");
   const [actionFilter, setActionFilter] = useState<string>("");
   const [resourceFilter, setResourceFilter] = useState<string>("");
-
-  const [allEntiteeTrois, setAllEntiteeTrois] = useState<EntiteeTrois[]>([]);
-  const [allEntiteeDeux, setAllEntiteeDeux] = useState<EntiteeDeux[]>([]);
-  const [allEntiteeUn, setAllEntiteeUn] = useState<EntiteeUn[]>([]);
-
-  const loadStats = async () => {
-    setLoading(true);
-    try {
-      // Totaux
-      const [ent1, ent2, ent3] = await Promise.all([
-        getAllEntiteeUn(),
-        getAllEntiteeDeux(),
-        getAllEntiteeTrois(),
-      ]);
-      setAllEntiteeUn(Array.isArray(ent1) ? ent1 : []);
-      setAllEntiteeDeux(Array.isArray(ent2) ? ent2 : []);
-      setAllEntiteeTrois(Array.isArray(ent3) ? ent3 : []);
-
-      // Agents par structure
-    } catch (error: any) {
-      toast?.current?.show({
-        severity: "error",
-        summary: "Erreur",
-        detail:
-          error?.response?.data?.message ||
-          "Erreur lors du chargement des statistiques",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  let titre1 = allEntiteeUn[0]?.titre || "Niveau 1";
-  let titre2 = allEntiteeDeux[0]?.titre || "Niveau 2";
-  let titre3 = allEntiteeTrois[0]?.titre || "Niveau 3";
 
   const [pagination, setPagination] = useState({
     total: 0,
@@ -172,9 +129,7 @@ export default function HistoriquePage() {
       pieces: "Pièce",
       document: "Document",
       documentType: "Type de document",
-      entiteeUn: `${titre1}`,
-      entiteeDeux: `${titre2}`,
-      entiteeTrois: `${titre3}`,
+
       salle: "Salle",
       rayon: "Rayon",
       trave: "Travée",

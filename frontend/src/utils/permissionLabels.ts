@@ -1,8 +1,4 @@
 // utils/permissionLabels.ts
-import { getAllEntiteeUn } from "../api/entiteeUn";
-import { getAllEntiteeDeux } from "../api/entiteeDeux";
-import { getAllEntiteeTrois } from "../api/entiteeTrois";
-
 export type PermissionAction =
   | "create"
   | "read"
@@ -19,7 +15,7 @@ export interface ResourceLabels {
   delete?: string;
 }
 
-// ✅ Interface avec index signature
+// ✅ Interface avec index signature (sans les entités 1,2,3)
 export interface PermissionLabels {
   [key: string]: ResourceLabels; // Index signature
   exercice: ResourceLabels;
@@ -31,9 +27,6 @@ export interface PermissionLabels {
   document: ResourceLabels;
   documentType: ResourceLabels;
   historique: ResourceLabels;
-  entiteeUn: ResourceLabels;
-  entiteeDeux: ResourceLabels;
-  entiteeTrois: ResourceLabels;
   salle: ResourceLabels;
   rayon: ResourceLabels;
   box: ResourceLabels;
@@ -46,57 +39,8 @@ export interface PermissionLabels {
   service: ResourceLabels;
 }
 
-// Interface pour stocker les titres dynamiques
-export interface EntityTitles {
-  entiteeUn: string;
-  entiteeDeux: string;
-  entiteeTrois: string;
-}
-
-// Valeurs par défaut
-export const DEFAULT_TITLES: EntityTitles = {
-  entiteeUn: "Entité 1",
-  entiteeDeux: "Entité 2",
-  entiteeTrois: "Entité 3",
-};
-
-// Fonction pour charger les titres des entités
-export const loadEntityTitles = async (): Promise<EntityTitles> => {
-  try {
-    const [un, deux, trois] = await Promise.all([
-      getAllEntiteeUn(),
-      getAllEntiteeDeux(),
-      getAllEntiteeTrois(),
-    ]);
-
-    const titreUn =
-      Array.isArray(un) && un.length > 0
-        ? un[0].titre
-        : DEFAULT_TITLES.entiteeUn;
-    const titreDeux =
-      Array.isArray(deux) && deux.length > 0
-        ? deux[0].titre
-        : DEFAULT_TITLES.entiteeDeux;
-    const titreTrois =
-      Array.isArray(trois) && trois.length > 0
-        ? trois[0].titre
-        : DEFAULT_TITLES.entiteeTrois;
-
-    return {
-      entiteeUn: titreUn,
-      entiteeDeux: titreDeux,
-      entiteeTrois: titreTrois,
-    };
-  } catch (error) {
-    console.error("Erreur chargement titres entités:", error);
-    return DEFAULT_TITLES;
-  }
-};
-
-// Fonction pour générer les labels avec les titres dynamiques
-export const getPermissionLabels = (
-  titles: EntityTitles = DEFAULT_TITLES,
-): PermissionLabels => ({
+// ✅ Fonction pour générer les labels (statiques, sans chargement d'API)
+export const getPermissionLabels = (): PermissionLabels => ({
   exercice: {
     access: "Accès au module exercice",
     create: "Créer un exercice",
@@ -156,27 +100,6 @@ export const getPermissionLabels = (
     access: "Accès à l'historique",
     read: "Consulter l'historique",
   },
-  entiteeUn: {
-    access: `Accès ${titles.entiteeUn}`,
-    create: `Créer ${titles.entiteeUn}`,
-    read: `Voir ${titles.entiteeUn}`,
-    update: `Modifier ${titles.entiteeUn}`,
-    delete: `Supprimer ${titles.entiteeUn}`,
-  },
-  entiteeDeux: {
-    access: `Accès ${titles.entiteeDeux}`,
-    create: `Créer ${titles.entiteeDeux}`,
-    read: `Voir ${titles.entiteeDeux}`,
-    update: `Modifier ${titles.entiteeDeux}`,
-    delete: `Supprimer ${titles.entiteeDeux}`,
-  },
-  entiteeTrois: {
-    access: `Accès ${titles.entiteeTrois}`,
-    create: `Créer ${titles.entiteeTrois}`,
-    read: `Voir ${titles.entiteeTrois}`,
-    update: `Modifier ${titles.entiteeTrois}`,
-    delete: `Supprimer ${titles.entiteeTrois}`,
-  },
   salle: {
     access: "Accès aux salles",
     create: "Créer une salle",
@@ -220,11 +143,11 @@ export const getPermissionLabels = (
     delete: "Supprimer une direction",
   },
   sousDirection: {
-    access: "Accès aux sous directions",
-    create: "Créer une sous direction",
-    read: "Consulter les sous directions",
-    update: "Modifier une sous direction",
-    delete: "Supprimer une sous direction",
+    access: "Accès aux sous-directions",
+    create: "Créer une sous-direction",
+    read: "Consulter les sous-directions",
+    update: "Modifier une sous-direction",
+    delete: "Supprimer une sous-direction",
   },
   division: {
     access: "Accès aux divisions",

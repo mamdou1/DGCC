@@ -27,16 +27,6 @@ db.DocumentValue = require("./DocumentValue.model")(sequelize, DataTypes);
 db.DocumentFile = require("./DocumentFIle.model")(sequelize, DataTypes);
 
 // =====================
-// 🔹 NOUVEAUX MODÈLES Archive
-// =====================
-
-db.Site = require("./Sites.model")(sequelize, DataTypes);
-db.Salle = require("./Salle.model")(sequelize, DataTypes);
-db.Rayon = require("./Rayon.model")(sequelize, DataTypes);
-db.Trave = require("./Trave.model")(sequelize, DataTypes);
-db.Box = require("./Box.model")(sequelize, DataTypes);
-
-// =====================
 // 🔹 NOUVEAUX MODÈLES DOC
 // =====================
 db.TypeDocumentPieces = require("./DocumentTypePiece.model")(
@@ -103,6 +93,7 @@ db.AgentEntiteeAccess = require("./AgentEntiteeAccess.model")(
 db.PiecesFile = require("./PicesFile.model")(sequelize, DataTypes);
 db.PieceValue = require("./PieceValue.model")(sequelize, DataTypes);
 db.PieceMetaField = require("./PieceMetaField.model")(sequelize, DataTypes);
+db.PiecesFichier = require("./PiecesFichier.model")(sequelize, DataTypes);
 
 // 🔹 Appel des associations
 Object.keys(db).forEach((modelName) => {

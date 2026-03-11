@@ -11,9 +11,7 @@ import {
   Search,
   ChevronDown,
   ChevronUp,
-  Filter,
   CheckCircle,
-  XCircle,
 } from "lucide-react";
 
 import {
@@ -31,13 +29,8 @@ import {
 
 import { Toast } from "primereact/toast";
 
-// ✅ Importer les fonctions pour les titres
-import {
-  loadEntityTitles,
-  getPermissionLabels,
-  DEFAULT_TITLES,
-  PermissionLabels,
-} from "../../utils/permissionLabels";
+// ✅ Importer les labels (statiques)
+import { getPermissionLabels } from "../../utils/permissionLabels";
 
 type Props = {
   visible: boolean;
@@ -56,9 +49,6 @@ export default function DroitPermissionForm({
     UIPermissionGroup[]
   >([]);
   const [assignedIds, setAssignedIds] = useState<number[]>([]);
-  const [permissionLabels, setPermissionLabels] = useState<PermissionLabels>(
-    getPermissionLabels(DEFAULT_TITLES),
-  );
   const [loading, setLoading] = useState(false);
   const [expandedResources, setExpandedResources] = useState<
     Record<string, boolean>
@@ -67,27 +57,15 @@ export default function DroitPermissionForm({
   const [filterType, setFilterType] = useState<FilterType>("all");
   const toast = useRef<Toast>(null);
 
+  // ✅ Labels statiques (plus besoin de charger les titres)
+  const permissionLabels = getPermissionLabels();
+
   // Options pour le dropdown de filtre
   const filterOptions = [
     { label: "Toutes les permissions", value: "all" },
     { label: "Permissions accordées", value: "granted" },
     { label: "Permissions non accordées", value: "ungranted" },
   ];
-
-  // ✅ Charger les titres des entités au montage du modal
-  useEffect(() => {
-    if (visible) {
-      const loadTitles = async () => {
-        try {
-          const titles = await loadEntityTitles();
-          setPermissionLabels(getPermissionLabels(titles));
-        } catch (error) {
-          console.error("Erreur chargement titres:", error);
-        }
-      };
-      loadTitles();
-    }
-  }, [visible]);
 
   useEffect(() => {
     if (!visible || !droitId) return;

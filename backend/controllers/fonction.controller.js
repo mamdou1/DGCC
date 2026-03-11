@@ -52,27 +52,27 @@ exports.getAllFonctions = async (req, res) => {
       include: [
         {
           model: require("../models").Direction,
-          as: "direction_id",
+          as: "direction",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").SousDirection,
-          as: "sous_direction_id",
+          as: "sousDirection",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").Division,
-          as: "division_id",
+          as: "division",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").Section,
-          as: "section_id",
+          as: "section",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").Service,
-          as: "service_id",
+          as: "service",
           attributes: ["id", "libelle", "code"],
         },
       ],
@@ -127,27 +127,27 @@ exports.getFonctionById = async (req, res) => {
       include: [
         {
           model: require("../models").Direction,
-          as: "direction_id",
+          as: "direction",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").SousDirection,
-          as: "sous_direction_id",
+          as: "sousDirection",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").Division,
-          as: "division_id",
+          as: "division",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").Section,
-          as: "section_id",
+          as: "section",
           attributes: ["id", "libelle", "code"],
         },
         {
           model: require("../models").Service,
-          as: "service_id",
+          as: "service",
           attributes: ["id", "libelle", "code"],
         },
       ],

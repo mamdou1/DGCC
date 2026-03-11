@@ -21,6 +21,20 @@ router.get(
   ctrl.getAll,
 );
 
+router.get(
+  "/full",
+  verifyToken,
+  authorizePermission("document", "read"),
+  ctrl.getAllDocumentsFull,
+);
+
+router.get(
+  "/:id/full",
+  verifyToken,
+  authorizePermission("document", "read"),
+  ctrl.getDocumentFullByID,
+);
+
 // =============================================
 // 1. ROUTES SPÉCIFIQUES (avec mots-clés) - EN PREMIER !
 // =============================================

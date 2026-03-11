@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "piece_id",
       as: "metaFields",
     });
+    Pieces.hasMany(models.PiecesFichier, {
+      foreignKey: "piece_id",
+      as: "piecesFichiers",
+    });
   };
 
   return Pieces;

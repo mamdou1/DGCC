@@ -11,15 +11,6 @@ import { useAuth } from "../context/AuthContext";
 import HistoriquePage from "../pages/HistoriqueLog/HistoriquePage";
 //import DocumentTypePage from "../pages/DomentType/DocumentTypePage";
 import DocumentPage from "../pages/Document/DocumentPage";
-import ConfigurationStructure from "../pages/Organigrame/ConfigurationStructure";
-import EntiteeUnPage from "../pages/Organigrame/EntiteeUn/EntiteeUnPage";
-import EntiteeDeuxPage from "../pages/Organigrame/EntiteeDeux/EntiteeDeuxPage";
-import EntiteeTroisPage from "../pages/Organigrame/EntiteeTrois/EntiteeTroisPage";
-import BoxPage from "../pages/Box/BoxPage";
-import RayonPage from "../pages/Rayon/RayonPage";
-import SallePage from "../pages/Salle/SallePage";
-import TravePage from "../pages/Trave/TravePage";
-import SitePage from "../pages/Site/SitePage";
 import DocumentTypeEntitee from "../pages/DomentType/DocumentTypeEntitee";
 import WelcomeLandingPage from "../pages/Dashboard/DashbordBis";
 import ChangePassword from "../pages/Auth/ChangePassword";
@@ -146,78 +137,6 @@ export default function AppRouter() {
         element={
           <PrivateRoute>
             <DocumentTypeEntitee />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/organigrame"
-        element={
-          <PrivateRoute>
-            <ConfigurationStructure />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/entiteeUn"
-        element={
-          <PrivateRoute>
-            <EntiteeUnPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/entiteeDeux"
-        element={
-          <PrivateRoute>
-            <EntiteeDeuxPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/entiteeTrois"
-        element={
-          <PrivateRoute>
-            <EntiteeTroisPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/box"
-        element={
-          <PrivateRoute>
-            <BoxPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/rayon"
-        element={
-          <PrivateRoute>
-            <RayonPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/salle"
-        element={
-          <PrivateRoute>
-            <SallePage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/trave"
-        element={
-          <PrivateRoute>
-            <TravePage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/site"
-        element={
-          <PrivateRoute>
-            <SitePage />
           </PrivateRoute>
         }
       />

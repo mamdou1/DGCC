@@ -2,6 +2,7 @@
 const winston = require("winston");
 const DailyRotateFile = require("winston-daily-rotate-file");
 const path = require("path");
+const safeStringify = require("safe-stable-stringify");
 
 // Créer le dossier logs s'il n'existe pas
 const fs = require("fs");
@@ -16,7 +17,7 @@ const logFormat = winston.format.combine(
   winston.format.splat(),
   winston.format.printf(({ timestamp, level, message, ...meta }) => {
     return `${timestamp} [${level.toUpperCase()}] ${message} ${
-      Object.keys(meta).length ? JSON.stringify(meta) : ""
+      Object.keys(meta).length ? safeStringify(meta) : ""
     }`;
   }),
 );

@@ -12,6 +12,7 @@ const {
   sequelize,
   PieceValue,
   PieceMetaField,
+  PiecesFichier,
 } = require("../models");
 const buildAccessWhere = require("../utils/buildAccessWhere.utils");
 const path = require("path");
@@ -141,7 +142,7 @@ exports.getAll = async (req, res) => {
           as: "values",
           include: [
             { model: MetaField, as: "metaField" },
-            { model: DocumentFile, as: "file" },
+            { model: DocumentFile, as: "files" },
           ],
         },
       ],
@@ -266,6 +267,214 @@ exports.getById = async (req, res) => {
       duration: Date.now() - startTime,
     });
     res.status(500).json({ message: e.message });
+  }
+};
+
+exports.getAllDocumentsFull = async (req, res) => {
+  try {
+    const documents = await Document.findAll({
+      include: [
+        /*
+        ==========================================
+        1️⃣ TYPE DOCUMENT + META FIELDS
+        ==========================================
+        */
+        {
+          model: TypeDocument,
+          as: "typeDocument",
+          include: [
+            {
+              model: MetaField,
+              as: "metaFields",
+            },
+          ],
+        },
+
+        /*
+        ==========================================
+        2️⃣ DOCUMENT VALUES + FILES
+        ==========================================
+        */
+        {
+          model: DocumentValue,
+          as: "values",
+          include: [{ model: MetaField, as: "metaField" }],
+        },
+
+        /*
+        ==========================================
+        3️⃣ DOCUMENT FICHIERS DIRECTS
+        ==========================================
+        */
+        {
+          model: DocumentFichier,
+          as: "documentFichiers",
+          required: false,
+          attributes: {
+            exclude: ["document_value_id"], // ← Exclure cette colonne
+          },
+        },
+
+        /*
+        ==========================================
+        4️⃣ PIECES + DISPONIBLE
+        ==========================================
+        */
+        {
+          model: Pieces,
+          as: "pieces",
+          through: { attributes: ["disponible"] },
+
+          include: [
+            {
+              model: PieceMetaField,
+              as: "metaFields",
+              include: [
+                {
+                  model: PieceValue,
+                  as: "values",
+                  required: false,
+                  include: [
+                    {
+                      model: PiecesFichier,
+                      as: "file",
+                      required: false,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              model: PiecesFichier,
+              as: "piecesFichiers",
+              where: { piece_value_id: null },
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+
+    res.json(documents);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Erreur récupération documents",
+    });
+  }
+};
+
+exports.getDocumentFullByID = async (req, res) => {
+  try {
+    const documentId = req.params.id;
+
+    const document = await Document.findByPk(documentId, {
+      include: [
+        /*
+        ==========================================
+        1️⃣ TYPE DOCUMENT + META FIELDS
+        ==========================================
+        */
+        {
+          model: TypeDocument,
+          as: "typeDocument",
+          include: [
+            {
+              model: MetaField,
+              as: "metaFields",
+            },
+          ],
+        },
+
+        /*
+        ==========================================
+        2️⃣ DOCUMENT VALUES + FILES
+        ==========================================
+        */
+        {
+          model: DocumentValue,
+          as: "values",
+          include: [
+            { model: MetaField, as: "metaField" },
+            { model: DocumentFichier, as: "file", required: false },
+          ],
+        },
+
+        /*
+        ==========================================
+        3️⃣ DOCUMENT FICHIERS DIRECTS (LOT_UNIQUE)
+        ==========================================
+        */
+        {
+          model: DocumentFichier,
+          as: "documentFichiers",
+          required: false,
+          attributes: {
+            exclude: ["document_value_id"], // ← Exclure cette colonne
+          },
+        },
+
+        /*
+        ==========================================
+        4️⃣ PIECES + DISPONIBLE
+        ==========================================
+        */
+        {
+          model: Pieces,
+          as: "pieces",
+          through: { attributes: ["disponible"] },
+
+          include: [
+            /*
+            4.1 PIECE META FIELDS
+            */
+            {
+              model: PieceMetaField,
+              as: "metaFields",
+              include: [
+                {
+                  model: PieceValue,
+                  as: "values",
+                  where: { document_id: documentId },
+                  required: false,
+
+                  include: [
+                    {
+                      model: PiecesFichier,
+                      as: "file",
+                      required: false,
+                    },
+                  ],
+                },
+              ],
+            },
+
+            /*
+            4.2 PIECES FICHIERS DIRECTS (INDIVIDUEL / LOT)
+            */
+            {
+              model: PiecesFichier,
+              as: "piecesFichiers",
+              where: { piece_value_id: null },
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        message: "Document introuvable",
+      });
+    }
+
+    res.json(document);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Erreur récupération document",
+    });
   }
 };
 
@@ -428,6 +637,16 @@ exports.uploadDocumentFiles = async (req, res) => {
       return res.status(400).json({ message: "Aucun fichier uploadé" });
     }
 
+    const documentValues = await DocumentValue.findAll({
+      where: { document_id: documentId },
+      attributes: ["id"],
+      transaction: t,
+    });
+
+    const documentValueIds = documentValues.map((dv) => dv.id);
+
+    console.log("Document value IDs trouvées:", documentValueIds);
+
     const uploadedFiles = [];
 
     for (const file of files) {
@@ -437,11 +656,15 @@ exports.uploadDocumentFiles = async (req, res) => {
 
       const fileName = file.filename || path.basename(file.path);
 
+      const document_value_id =
+        documentValueIds.length > 0 ? documentValueIds[0] : null;
+
       const docFichier = await DocumentFichier.create(
         {
           document_id: documentId,
           piece_id: pieceId,
           piece_value_id: piece_value_id || null,
+          document_value_id: document_value_id,
           fichier: publicPath,
           original_name: file.originalname,
           new_file_name: fileName,
@@ -541,7 +764,7 @@ exports.uploadPieceFile = async (req, res) => {
 
       const fileName = path.basename(file.path);
 
-      const docFichier = await DocumentFichier.create(
+      const docFichier = await PiecesFichier.create(
         {
           document_id: documentId,
           piece_id: pieceId,

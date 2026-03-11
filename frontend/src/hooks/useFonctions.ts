@@ -5,22 +5,29 @@ import {
   createFonction,
   updateFonctionById,
   deleteFonctionById,
-  getFonctionsByService,
-  getFonctionsByDivision,
-  getFonctionsBySection,
 } from "../api/fonction";
-import { getAllEntiteeUn } from "../api/entiteeUn";
-import { getAllEntiteeDeux } from "../api/entiteeDeux";
-import { getAllEntiteeTrois } from "../api/entiteeTrois";
+
+// ✅ NOUVEAUX IMPORTS pour les entités
+import { getDirections, getFunctionsByDirection } from "../api/direction";
+import {
+  getSousDirections,
+  getFunctionsBySousDirection,
+} from "../api/sousDirection";
+import { getDivisions, getFunctionsByDivision } from "../api/division";
+import { getSections, getFunctionsBySection } from "../api/section";
+import { getFunctionsByService, getServices } from "../api/service";
+
 import type {
   Fonction,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
 } from "../interfaces";
 
 // =============================================
-// 1. CLÉS DE CACHE
+// 1. CLÉS DE CACHE (MISES À JOUR)
 // =============================================
 export const fonctionKeys = {
   all: ["fonctions"] as const,
@@ -28,18 +35,25 @@ export const fonctionKeys = {
   list: (filters: string) => [...fonctionKeys.lists(), filters] as const,
   details: () => [...fonctionKeys.all, "detail"] as const,
   detail: (id: number) => [...fonctionKeys.details(), id] as const,
-  byService: (serviceId: number) =>
-    [...fonctionKeys.all, "byService", serviceId] as const,
+  byDirection: (directionId: number) =>
+    [...fonctionKeys.all, "byDirection", directionId] as const,
+  bySousDirection: (sousDirectionId: number) =>
+    [...fonctionKeys.all, "bySousDirection", sousDirectionId] as const,
   byDivision: (divisionId: number) =>
     [...fonctionKeys.all, "byDivision", divisionId] as const,
   bySection: (sectionId: number) =>
     [...fonctionKeys.all, "bySection", sectionId] as const,
+  byService: (serviceId: number) =>
+    [...fonctionKeys.all, "byService", serviceId] as const,
 };
 
+// ✅ NOUVELLES CLÉS POUR LES ENTITÉS
 export const entiteeKeys = {
-  un: ["entiteeUn"] as const,
-  deux: ["entiteeDeux"] as const,
-  trois: ["entiteeTrois"] as const,
+  directions: ["directions"] as const,
+  sousDirections: ["sousDirections"] as const,
+  divisions: ["divisions"] as const,
+  sections: ["sections"] as const,
+  services: ["services"] as const,
 };
 
 // =============================================
@@ -75,76 +89,128 @@ export const useFonctionById = (id: number) => {
   });
 };
 
-// Récupérer les fonctions par service
-export const useFonctionsByService = (serviceId: number) => {
+// ✅ Récupérer les fonctions par direction
+export const useFonctionsByDirection = (directionId: number) => {
   return useQuery({
-    queryKey: fonctionKeys.byService(serviceId),
-    queryFn: () => getFonctionsByService(serviceId),
-    enabled: !!serviceId,
+    queryKey: fonctionKeys.byDirection(directionId),
+    queryFn: () => getFunctionsByDirection(directionId),
+    enabled: !!directionId,
   });
 };
 
-// Récupérer les fonctions par division
+// ✅ Récupérer les fonctions par sous-direction
+export const useFonctionsBySousDirection = (sousDirectionId: number) => {
+  return useQuery({
+    queryKey: fonctionKeys.bySousDirection(sousDirectionId),
+    queryFn: () => getFunctionsBySousDirection(sousDirectionId),
+    enabled: !!sousDirectionId,
+  });
+};
+
+// ✅ Récupérer les fonctions par division
 export const useFonctionsByDivision = (divisionId: number) => {
   return useQuery({
     queryKey: fonctionKeys.byDivision(divisionId),
-    queryFn: () => getFonctionsByDivision(divisionId),
+    queryFn: () => getFunctionsByDivision(divisionId),
     enabled: !!divisionId,
   });
 };
 
-// Récupérer les fonctions par section
+// ✅ Récupérer les fonctions par section
 export const useFonctionsBySection = (sectionId: number) => {
   return useQuery({
     queryKey: fonctionKeys.bySection(sectionId),
-    queryFn: () => getFonctionsBySection(sectionId),
+    queryFn: () => getFunctionsBySection(sectionId),
     enabled: !!sectionId,
   });
 };
 
-// Récupérer toutes les entités
+// ✅ Récupérer les fonctions par service
+export const useFonctionsByService = (serviceId: number) => {
+  return useQuery({
+    queryKey: fonctionKeys.byService(serviceId),
+    queryFn: () => getFunctionsByService(serviceId),
+    enabled: !!serviceId,
+  });
+};
+
+// ✅ Récupérer toutes les entités (nouvelles versions)
 export const useEntitees = () => {
-  const queryUn = useQuery({
-    queryKey: entiteeKeys.un,
+  const queryDirections = useQuery({
+    queryKey: entiteeKeys.directions,
     queryFn: async () => {
-      const res = await getAllEntiteeUn();
+      const res = await getDirections();
       return Array.isArray(res) ? res : [];
     },
   });
 
-  const queryDeux = useQuery({
-    queryKey: entiteeKeys.deux,
+  const querySousDirections = useQuery({
+    queryKey: entiteeKeys.sousDirections,
     queryFn: async () => {
-      const res = await getAllEntiteeDeux();
+      const res = await getSousDirections();
       return Array.isArray(res) ? res : [];
     },
   });
 
-  const queryTrois = useQuery({
-    queryKey: entiteeKeys.trois,
+  const queryDivisions = useQuery({
+    queryKey: entiteeKeys.divisions,
     queryFn: async () => {
-      const res = await getAllEntiteeTrois();
+      const res = await getDivisions();
       return Array.isArray(res) ? res : [];
     },
   });
+
+  const querySections = useQuery({
+    queryKey: entiteeKeys.sections,
+    queryFn: async () => {
+      const res = await getSections();
+      return Array.isArray(res) ? res : [];
+    },
+  });
+
+  const queryServices = useQuery({
+    queryKey: entiteeKeys.services,
+    queryFn: async () => {
+      const res = await getServices();
+      return Array.isArray(res) ? res : [];
+    },
+  });
+
+  const isLoading =
+    queryDirections.isLoading ||
+    querySousDirections.isLoading ||
+    queryDivisions.isLoading ||
+    querySections.isLoading ||
+    queryServices.isLoading;
+
+  const error =
+    queryDirections.error ||
+    querySousDirections.error ||
+    queryDivisions.error ||
+    querySections.error ||
+    queryServices.error;
 
   return {
-    entiteeUn: queryUn.data || [],
-    entiteeDeux: queryDeux.data || [],
-    entiteeTrois: queryTrois.data || [],
-    isLoading: queryUn.isLoading || queryDeux.isLoading || queryTrois.isLoading,
-    error: queryUn.error || queryDeux.error || queryTrois.error,
+    directions: queryDirections.data || [],
+    sousDirections: querySousDirections.data || [],
+    divisions: queryDivisions.data || [],
+    sections: querySections.data || [],
+    services: queryServices.data || [],
+    isLoading,
+    error,
     refetch: async () => {
       await Promise.all([
-        queryUn.refetch(),
-        queryDeux.refetch(),
-        queryTrois.refetch(),
+        queryDirections.refetch(),
+        querySousDirections.refetch(),
+        queryDivisions.refetch(),
+        querySections.refetch(),
+        queryServices.refetch(),
       ]);
     },
   };
 };
 
-// Hook combiné pour charger toutes les données initiales
+// ✅ Hook combiné pour charger toutes les données initiales (MIS À JOUR)
 export const useInitialData = () => {
   const fonctionsQuery = useFonctions();
   const entitees = useEntitees();
@@ -154,9 +220,11 @@ export const useInitialData = () => {
 
   return {
     fonctions: fonctionsQuery.data || [],
-    entiteeUn: entitees.entiteeUn,
-    entiteeDeux: entitees.entiteeDeux,
-    entiteeTrois: entitees.entiteeTrois,
+    directions: entitees.directions,
+    sousDirections: entitees.sousDirections,
+    divisions: entitees.divisions,
+    sections: entitees.sections,
+    services: entitees.services,
     isLoading,
     error,
     refetch: async () => {
@@ -194,6 +262,20 @@ export const useUpdateFonction = () => {
       queryClient.invalidateQueries({
         queryKey: fonctionKeys.detail(variables.id),
       });
+
+      // Invalider aussi les requêtes par entité
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const queryKey = query.queryKey[0];
+          return (
+            queryKey === "byDirection" ||
+            queryKey === "bySousDirection" ||
+            queryKey === "byDivision" ||
+            queryKey === "bySection" ||
+            queryKey === "byService"
+          );
+        },
+      });
     },
   });
 };
@@ -206,6 +288,20 @@ export const useDeleteFonction = () => {
     mutationFn: (id: number) => deleteFonctionById(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: fonctionKeys.lists() });
+
+      // Invalider aussi les requêtes par entité
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const queryKey = query.queryKey[0];
+          return (
+            queryKey === "byDirection" ||
+            queryKey === "bySousDirection" ||
+            queryKey === "byDivision" ||
+            queryKey === "bySection" ||
+            queryKey === "byService"
+          );
+        },
+      });
     },
   });
 };

@@ -2,11 +2,6 @@ module.exports = (sequelize, DataTypes) => {
   const Document = sequelize.define(
     "Document",
     {
-      box_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-
       type_document_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -24,16 +19,17 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "document_id",
       as: "values",
     });
-    Document.belongsTo(models.Box, {
-      foreignKey: "box_id",
-      as: "box",
-    });
 
     Document.belongsToMany(models.Pieces, {
       through: models.DocumentPieces,
       foreignKey: "document_id",
       otherKey: "piece_id",
       as: "pieces",
+    });
+
+    Document.hasMany(models.DocumentFichier, {
+      foreignKey: "document_id",
+      as: "documentFichiers",
     });
   };
 

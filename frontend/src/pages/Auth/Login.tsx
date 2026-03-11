@@ -71,7 +71,7 @@ export default function LoginPage() {
       {/* Container Principal avec effet de verre - AJOUTER flex ET h-[700px] */}
       <div className="relative w-full max-w-[1200px] h-[700px] flex bg-white/80 backdrop-blur-xl rounded-[3rem] shadow-2xl overflow-hidden m-4 border border-white/20">
         {/* ===== Côté Gauche : Design Premium - Dégradé orange ===== */}
-        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-orange-800 via-orange-700  to-ornage-950 p-12 flex-col justify-between relative overflow-hidden">
+        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-orange-800 via-orange-700  to-orange-700 p-12 flex-col justify-between relative overflow-hidden">
           {/* Effets de lumière */}
           <div className="absolute top-0 -left-40 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 -right-20 w-80 h-80 bg-orange-400/30 rounded-full blur-3xl"></div>

@@ -3,11 +3,22 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { Save, X, Briefcase, Building2, Layers, GitMerge } from "lucide-react";
+import {
+  Save,
+  X,
+  Briefcase,
+  Building2,
+  Split,
+  TableOfContents,
+  GitMerge,
+  Map,
+} from "lucide-react";
 import type {
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
   Fonction,
 } from "../../interfaces";
 
@@ -16,14 +27,11 @@ type Props = {
   onHide: () => void;
   onSubmit: (data: Partial<Fonction>) => Promise<void>;
   initial?: Partial<Fonction> | null;
-  entiteeUn: EntiteeUn[];
-  entiteeDeux: EntiteeDeux[];
-  entiteeTrois: EntiteeTrois[];
-  titres?: {
-    entitee1: string;
-    entitee2: string;
-    entitee3: string;
-  };
+  directions: Direction[];
+  sousDirections: SousDirection[];
+  divisions: Division[];
+  sections: Section[];
+  services: Service[];
 };
 
 export default function FonctionForm({
@@ -31,66 +39,104 @@ export default function FonctionForm({
   onHide,
   onSubmit,
   initial,
-  entiteeUn,
-  entiteeDeux,
-  entiteeTrois,
-  titres = { entitee1: "Entité 1", entitee2: "Entité 2", entitee3: "Entité 3" },
+  directions,
+  sousDirections,
+  divisions,
+  sections,
+  services,
 }: Props) {
   const [libelle, setLibelle] = useState("");
-  const [entitee_un_id, setEntitee_un_id] = useState<number | undefined>();
-  const [entitee_deux_id, setEntitee_deux_id] = useState<number | undefined>();
-  const [entitee_trois_id, setEntitee_trois_id] = useState<
+
+  // États pour les entités
+  const [direction_id, setDirection_id] = useState<number | undefined>();
+  const [sous_direction_id, setSous_direction_id] = useState<
     number | undefined
   >();
+  const [division_id, setDivision_id] = useState<number | undefined>();
+  const [section_id, setSection_id] = useState<number | undefined>();
+  const [service_id, setService_id] = useState<number | undefined>();
+
   const [loading, setLoading] = useState(false);
 
   // États pour les listes filtrées
-  const [filteredDeux, setFilteredDeux] = useState<EntiteeDeux[]>([]);
-  const [filteredTrois, setFilteredTrois] = useState<EntiteeTrois[]>([]);
+  const [filteredSousDirections, setFilteredSousDirections] = useState<
+    SousDirection[]
+  >([]);
+  const [filteredDivisions, setFilteredDivisions] = useState<Division[]>([]);
+  const [filteredSections, setFilteredSections] = useState<Section[]>([]);
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
 
   // Initialisation
   useEffect(() => {
     if (visible) {
       if (initial) {
         setLibelle(initial.libelle || "");
-        setEntitee_un_id(initial.entitee_un_id);
-        setEntitee_deux_id(initial.entitee_deux_id);
-        setEntitee_trois_id(initial.entitee_trois_id);
+        setDirection_id(initial.direction_id);
+        setSous_direction_id(initial.sous_direction_id);
+        setDivision_id(initial.division_id);
+        setSection_id(initial.section_id);
+        setService_id(initial.service_id);
       } else {
         setLibelle("");
-        setEntitee_un_id(undefined);
-        setEntitee_deux_id(undefined);
-        setEntitee_trois_id(undefined);
+        setDirection_id(undefined);
+        setSous_direction_id(undefined);
+        setDivision_id(undefined);
+        setSection_id(undefined);
+        setService_id(undefined);
       }
     }
   }, [visible, initial]);
 
-  // Filtrer les entités de niveau 2 quand le niveau 1 change
+  // Filtrer les sous-directions quand la direction change
   useEffect(() => {
-    if (entitee_un_id) {
-      const filtered = entiteeDeux.filter(
-        (e) => e.entitee_un_id === entitee_un_id,
+    if (direction_id) {
+      const filtered = sousDirections.filter(
+        (sd) => sd.direction_id === direction_id,
       );
-      setFilteredDeux(filtered);
-      setEntitee_deux_id(undefined);
-      setEntitee_trois_id(undefined);
+      setFilteredSousDirections(filtered);
+      setSous_direction_id(undefined);
+      setDivision_id(undefined);
+      setSection_id(undefined);
     } else {
-      setFilteredDeux([]);
+      setFilteredSousDirections([]);
     }
-  }, [entitee_un_id, entiteeDeux]);
+  }, [direction_id, sousDirections]);
 
-  // Filtrer les entités de niveau 3 quand le niveau 2 change
+  // Filtrer les divisions quand la sous-direction change
   useEffect(() => {
-    if (entitee_deux_id) {
-      const filtered = entiteeTrois.filter(
-        (e) => e.entitee_deux_id === entitee_deux_id,
+    if (sous_direction_id) {
+      const filtered = divisions.filter(
+        (d) => d.sous_direction_id === sous_direction_id,
       );
-      setFilteredTrois(filtered);
-      setEntitee_trois_id(undefined);
+      setFilteredDivisions(filtered);
+      setDivision_id(undefined);
+      setSection_id(undefined);
     } else {
-      setFilteredTrois([]);
+      setFilteredDivisions([]);
     }
-  }, [entitee_deux_id, entiteeTrois]);
+  }, [sous_direction_id, divisions]);
+
+  // Filtrer les sections quand la division change
+  useEffect(() => {
+    if (division_id) {
+      const filtered = sections.filter((s) => s.division_id === division_id);
+      setFilteredSections(filtered);
+      setSection_id(undefined);
+    } else {
+      setFilteredSections([]);
+    }
+  }, [division_id, sections]);
+
+  // Filtrer les services quand la direction change
+  useEffect(() => {
+    if (direction_id) {
+      const filtered = services.filter((s) => s.direction_id === direction_id);
+      setFilteredServices(filtered);
+      setService_id(undefined);
+    } else {
+      setFilteredServices([]);
+    }
+  }, [direction_id, services]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,9 +146,11 @@ export default function FonctionForm({
     try {
       await onSubmit({
         libelle,
-        entitee_un_id,
-        entitee_deux_id,
-        entitee_trois_id,
+        direction_id,
+        sous_direction_id,
+        division_id,
+        section_id,
+        service_id,
       });
       onHide();
     } catch (error) {
@@ -112,18 +160,13 @@ export default function FonctionForm({
     }
   };
 
-  // Vérifier si les titres existent
-  const titreUnExiste = entiteeUn.length > 0 && entiteeUn[0]?.titre;
-  const titreDeuxExiste = entiteeDeux.length > 0 && entiteeDeux[0]?.titre;
-  const titreTroisExiste = entiteeTrois.length > 0 && entiteeTrois[0]?.titre;
-
   return (
     <Dialog
       visible={visible}
       onHide={onHide}
       showHeader={false}
       style={{ width: "700px" }}
-      className="  rounded-lg overflow-hidden shadow-2xl border-none"
+      className="rounded-lg overflow-hidden shadow-2xl border-none"
       contentClassName="p-0 bg-white"
     >
       <form onSubmit={handleSubmit}>
@@ -165,70 +208,104 @@ export default function FonctionForm({
               />
             </div>
 
-            {/* Niveau 1 */}
-            {titreUnExiste && (
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
-                  <Building2 size={12} className="text-orange-500" />
-                  {titres.entitee1}
-                </label>
-                <Dropdown
-                  value={entitee_un_id}
-                  options={entiteeUn}
-                  optionLabel="libelle"
-                  optionValue="id"
-                  onChange={(e) => setEntitee_un_id(e.value)}
-                  placeholder={`Sélectionner ${titres.entitee1}`}
-                  className="w-full border rounded-xl border-orange-300 focus:ring-2 focus:ring-orange-500"
-                  filter
-                  showClear
-                />
-              </div>
-            )}
+            {/* Directions */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                <Building2 size={12} className="text-orange-500" />
+                Direction
+              </label>
+              <Dropdown
+                value={direction_id}
+                options={directions}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => setDirection_id(e.value)}
+                placeholder="Sélectionner une direction"
+                className="w-full border rounded-xl border-orange-300 focus:ring-2 focus:ring-orange-500"
+                filter
+                showClear
+              />
+            </div>
 
-            {/* Niveau 2 */}
-            {titreDeuxExiste && (
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
-                  <Layers size={12} className="text-blue-500" />
-                  {titres.entitee2}
-                </label>
-                <Dropdown
-                  value={entitee_deux_id}
-                  options={filteredDeux}
-                  optionLabel="libelle"
-                  optionValue="id"
-                  onChange={(e) => setEntitee_deux_id(e.value)}
-                  placeholder={`Sélectionner ${titres.entitee2}`}
-                  className="w-full rounded-xl border border-orange-300"
-                  disabled={!entitee_un_id}
-                  filter
-                  showClear
-                />
-              </div>
-            )}
+            {/* Sous-directions */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                <Split size={12} className="text-indigo-500" />
+                Sous-direction
+              </label>
+              <Dropdown
+                value={sous_direction_id}
+                options={filteredSousDirections}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => setSous_direction_id(e.value)}
+                placeholder="Sélectionner une sous-direction"
+                className="w-full rounded-xl border border-orange-300"
+                disabled={!direction_id}
+                filter
+                showClear
+              />
+            </div>
 
-            {/* Niveau 3 */}
-            {titreTroisExiste && (
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
-                  <GitMerge size={12} className="text-orange-500" />
-                  {titres.entitee3}
-                </label>
-                <Dropdown
-                  value={entitee_trois_id}
-                  options={filteredTrois}
-                  optionLabel="libelle"
-                  optionValue="id"
-                  onChange={(e) => setEntitee_trois_id(e.value)}
-                  placeholder={`Sélectionner ${titres.entitee3}`}
-                  className="w-full rounded-xl border border-orange-300"
-                  disabled={!entitee_deux_id}
-                  filter
-                  showClear
-                />
-              </div>
-            )}
+            {/* Divisions */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                <TableOfContents size={12} className="text-blue-500" />
+                Division
+              </label>
+              <Dropdown
+                value={division_id}
+                options={filteredDivisions}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => setDivision_id(e.value)}
+                placeholder="Sélectionner une division"
+                className="w-full rounded-xl border border-orange-300"
+                disabled={!sous_direction_id}
+                filter
+                showClear
+              />
+            </div>
+
+            {/* Sections */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                <GitMerge size={12} className="text-purple-500" />
+                Section
+              </label>
+              <Dropdown
+                value={section_id}
+                options={filteredSections}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => setSection_id(e.value)}
+                placeholder="Sélectionner une section"
+                className="w-full rounded-xl border border-orange-300"
+                disabled={!division_id}
+                filter
+                showClear
+              />
+            </div>
+
+            {/* Services */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                <Map size={12} className="text-orange-500" />
+                Service
+              </label>
+              <Dropdown
+                value={service_id}
+                options={filteredServices}
+                optionLabel="libelle"
+                optionValue="id"
+                onChange={(e) => setService_id(e.value)}
+                placeholder="Sélectionner un service"
+                className="w-full rounded-xl border border-orange-300"
+                disabled={!direction_id}
+                filter
+                showClear
+              />
+            </div>
           </div>
 
           {/* FOOTER */}

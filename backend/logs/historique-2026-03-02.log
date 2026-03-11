@@ -1,0 +1,89 @@
+2026-03-02 09:48:32 [INFO] HISTORIQUE {"agent_id":1,"action":"logout","resource":"auth/deconnexion","resource_id":1,"method":"POST","path":"/api/auth/deconnexion","status":200,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"}
+2026-03-02 10:17:49 [INFO] HISTORIQUE {"agent_id":1,"action":"login","resource":"auth/connexion","method":"POST","path":"/api/auth/connexion","status":200,"ip":"::1","user_agent":"PostmanRuntime/7.51.1"}
+2026-03-02 10:18:58 [INFO] ✅ Logger initialisé avec succès 
+2026-03-02 10:23:42 [INFO] ✅ Pièces récupérées {"count":5,"userId":1,"duration":7}
+2026-03-02 10:56:11 [INFO] ✅ Logger initialisé avec succès 
+2026-03-02 11:16:00 [INFO] ✅ Logger initialisé avec succès 
+2026-03-02 22:48:39 [INFO] ✅ Types de documents récupérés {"count":11,"userId":1,"duration":73}
+2026-03-02 22:48:39 [INFO] ✅ Total des agents récupéré {"total":5,"userId":1,"duration":21}
+2026-03-02 22:48:39 [INFO] ✅ Total des documents récupéré {"total":0,"userId":1,"duration":32}
+2026-03-02 22:48:39 [INFO] ✅ Total des types de documents récupéré {"total":11,"userId":1,"duration":13}
+2026-03-02 22:48:39 [INFO] ✅ Total des agents récupéré {"total":5,"userId":1,"duration":8}
+2026-03-02 22:48:39 [INFO] ✅ Total des documents récupéré {"total":0,"userId":1,"duration":13}
+2026-03-02 22:48:39 [INFO] ✅ Total des types de documents récupéré {"total":11,"userId":1,"duration":8}
+2026-03-02 22:48:39 [INFO] ✅ Agents par section récupérés {"count":0,"userId":1,"duration":39}
+2026-03-02 22:48:39 [INFO] ✅ Agents par service récupérés {"count":0,"userId":1,"duration":32}
+2026-03-02 22:48:39 [INFO] ✅ Agents par direction récupérés {"count":1,"userId":1,"duration":22}
+2026-03-02 22:48:39 [INFO] ✅ Agents par division récupérés {"count":0,"userId":1,"duration":18}
+2026-03-02 22:48:39 [INFO] ✅ Agents par sous-direction récupérés {"count":0,"userId":1,"duration":14}
+2026-03-02 22:48:39 [INFO] ✅ Agents par structure récupérés {"count":2,"userId":1,"duration":14}
+2026-03-02 22:48:39 [INFO] ✅ Agents par service récupérés {"count":0,"userId":1,"duration":18}
+2026-03-02 22:48:39 [INFO] ✅ Agents par section récupérés {"count":0,"userId":1,"duration":37}
+2026-03-02 22:48:39 [INFO] ✅ Agents par division récupérés {"count":0,"userId":1,"duration":24}
+2026-03-02 22:48:39 [INFO] ✅ Agents par sous-direction récupérés {"count":0,"userId":1,"duration":18}
+2026-03-02 22:48:39 [INFO] ✅ Agents par structure récupérés {"count":2,"userId":1,"duration":11}
+2026-03-02 22:48:39 [INFO] ✅ Agents par direction récupérés {"count":1,"userId":1,"duration":6}
+2026-03-02 22:48:39 [INFO] ✅ Documents par type récupérés {"count":0,"userId":1,"duration":5}
+2026-03-02 22:48:39 [INFO] ✅ Documents par structure récupérés {"count":0,"userId":1,"duration":17}
+2026-03-02 22:48:39 [INFO] ✅ Documents par type récupérés {"count":0,"userId":1,"duration":16}
+2026-03-02 22:48:39 [INFO] ✅ Documents par structure récupérés {"count":0,"userId":1,"duration":14}
+2026-03-02 22:48:39 [INFO] ✅ Documents par mois récupérés {"count":0,"userId":1,"duration":52}
+2026-03-02 22:48:39 [INFO] ✅ Documents par mois récupérés {"count":0,"userId":1,"duration":2}
+2026-03-02 22:48:50 [INFO] ✅ Pièces récupérées {"count":5,"userId":1,"duration":6}
+2026-03-02 22:48:50 [INFO] HISTORIQUE {"agent_id":1,"action":"read","resource":"pieces","resource_id":null,"resource_identifier":"liste des pièces","description":"Consultation de la liste des pièces","method":"GET","path":"/api/pieces/","status":200,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","data":{"count":5,"duration":7}}
+2026-03-02 22:48:52 [INFO] HISTORIQUE {"agent_id":1,"action":"logout","resource":"auth/deconnexion","resource_id":1,"method":"POST","path":"/api/auth/deconnexion","status":200,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"}
+2026-03-02 22:49:03 [INFO] HISTORIQUE {"agent_id":1,"action":"login","resource":"auth/connexion","method":"POST","path":"/api/auth/connexion","status":200,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"}
+2026-03-02 22:49:03 [INFO] ✅ Profil utilisateur récupéré {"userId":1,"nom":"Mamadou Diouma","duration":101}
+2026-03-02 22:49:05 [INFO] ✅ Types de documents récupérés {"count":11,"userId":1,"duration":39}
+2026-03-02 22:49:05 [INFO] ✅ Total des agents récupéré {"total":5,"userId":1,"duration":20}
+2026-03-02 22:49:05 [INFO] ✅ Total des types de documents récupéré {"total":11,"userId":1,"duration":17}
+2026-03-02 22:49:05 [INFO] ✅ Total des documents récupéré {"total":0,"userId":1,"duration":10}
+2026-03-02 22:49:05 [INFO] ✅ Total des agents récupéré {"total":5,"userId":1,"duration":21}
+2026-03-02 22:49:05 [INFO] ✅ Total des types de documents récupéré {"total":11,"userId":1,"duration":17}
+2026-03-02 22:49:05 [INFO] ✅ Total des documents récupéré {"total":0,"userId":1,"duration":12}
+2026-03-02 22:49:05 [INFO] ✅ Agents par direction récupérés {"count":1,"userId":1,"duration":26}
+2026-03-02 22:49:05 [INFO] ✅ Agents par sous-direction récupérés {"count":0,"userId":1,"duration":19}
+2026-03-02 22:49:05 [INFO] ✅ Agents par division récupérés {"count":0,"userId":1,"duration":16}
+2026-03-02 22:49:05 [INFO] ✅ Agents par section récupérés {"count":0,"userId":1,"duration":10}
+2026-03-02 22:49:05 [INFO] ✅ Agents par structure récupérés {"count":2,"userId":1,"duration":6}
+2026-03-02 22:49:05 [INFO] ✅ Agents par service récupérés {"count":0,"userId":1,"duration":10}
+2026-03-02 22:49:05 [INFO] ✅ Agents par direction récupérés {"count":1,"userId":1,"duration":8}
+2026-03-02 22:49:05 [INFO] ✅ Agents par sous-direction récupérés {"count":0,"userId":1,"duration":4}
+2026-03-02 22:49:05 [INFO] ✅ Agents par section récupérés {"count":0,"userId":1,"duration":19}
+2026-03-02 22:49:05 [INFO] ✅ Agents par division récupérés {"count":0,"userId":1,"duration":14}
+2026-03-02 22:49:05 [INFO] ✅ Agents par structure récupérés {"count":2,"userId":1,"duration":34}
+2026-03-02 22:49:05 [INFO] ✅ Agents par service récupérés {"count":0,"userId":1,"duration":15}
+2026-03-02 22:49:05 [INFO] ✅ Documents par mois récupérés {"count":0,"userId":1,"duration":5}
+2026-03-02 22:49:05 [INFO] ✅ Documents par type récupérés {"count":0,"userId":1,"duration":5}
+2026-03-02 22:49:05 [INFO] ✅ Documents par structure récupérés {"count":0,"userId":1,"duration":5}
+2026-03-02 22:49:05 [INFO] ✅ Documents par mois récupérés {"count":0,"userId":1,"duration":3}
+2026-03-02 22:49:05 [INFO] ✅ Documents par type récupérés {"count":0,"userId":1,"duration":2}
+2026-03-02 22:49:05 [INFO] ✅ Documents par structure récupérés {"count":0,"userId":1,"duration":2}
+2026-03-02 22:49:09 [INFO] ✅ Pièces récupérées {"count":5,"userId":1,"duration":2}
+2026-03-02 22:49:09 [INFO] HISTORIQUE {"agent_id":1,"action":"read","resource":"pieces","resource_id":null,"resource_identifier":"liste des pièces","description":"Consultation de la liste des pièces","method":"GET","path":"/api/pieces/","status":200,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","data":{"count":5,"duration":3}}
+2026-03-02 22:49:32 [INFO] 📝 Tentative de création d'une pièce {"userId":1,"body":{"libelle":"Test Méta donnée"}}
+2026-03-02 22:49:32 [INFO] ✅ Pièce créée avec succès {"pieceId":14,"code":"P-006","libelle":"TEST MÉTA DONNÉE","userId":1,"duration":20}
+2026-03-02 22:49:32 [INFO] HISTORIQUE {"agent_id":1,"action":"create","resource":"pieces","resource_id":14,"resource_identifier":"TEST MÉTA DONNÉE (14)","description":"Création de pieces : TEST MÉTA DONNÉE (14)","method":"POST","path":"/api/pieces/","status":201,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","new_data":{"id":14,"code_pieces":"P-006","libelle":"TEST MÉTA DONNÉE","updatedAt":"2026-03-02T22:49:32.150Z","createdAt":"2026-03-02T22:49:32.150Z"}}
+2026-03-02 22:49:32 [INFO] ✅ Pièces récupérées {"count":6,"userId":1,"duration":3}
+2026-03-02 22:49:32 [INFO] HISTORIQUE {"agent_id":1,"action":"read","resource":"pieces","resource_id":null,"resource_identifier":"liste des pièces","description":"Consultation de la liste des pièces","method":"GET","path":"/api/pieces/","status":200,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","data":{"count":6,"duration":4}}
+2026-03-02 22:49:35 [INFO] ✅ Métadonnées de la pièce récupérées {"pieceId":"14","count":0,"userId":1,"duration":3}
+2026-03-02 22:50:18 [INFO] 📝 Tentative de création d'une métadonnée de pièce {"pieceId":"14","userId":1,"body":{"name":"numéro","label":"numéro","field_type":"text","required":true,"position":0}}
+2026-03-02 22:50:18 [INFO] ✅ Métadonnée de pièce créée avec succès {"metaFieldId":4,"pieceId":"14","label":"numéro","userId":1,"duration":44}
+2026-03-02 22:50:18 [INFO] HISTORIQUE {"agent_id":1,"action":"create","resource":"pieceMetaField","resource_id":4,"resource_identifier":"#4","description":"Création de pieceMetaField : #4","method":"POST","path":"/api/pieces/14/meta-fields","status":201,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","new_data":{"id":4,"piece_id":"14","name":"numéro","label":"numéro","field_type":"text","required":true,"position":0,"updatedAt":"2026-03-02T22:50:18.575Z","createdAt":"2026-03-02T22:50:18.575Z"}}
+2026-03-02 22:50:18 [INFO] 📝 Tentative de création d'une métadonnée de pièce {"pieceId":"14","userId":1,"body":{"name":"date","label":"date","field_type":"date","required":false,"position":1}}
+2026-03-02 22:50:18 [INFO] ✅ Métadonnée de pièce créée avec succès {"metaFieldId":5,"pieceId":"14","label":"date","userId":1,"duration":17}
+2026-03-02 22:50:18 [INFO] HISTORIQUE {"agent_id":1,"action":"create","resource":"pieceMetaField","resource_id":5,"resource_identifier":"#5","description":"Création de pieceMetaField : #5","method":"POST","path":"/api/pieces/14/meta-fields","status":201,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","new_data":{"id":5,"piece_id":"14","name":"date","label":"date","field_type":"date","required":false,"position":1,"updatedAt":"2026-03-02T22:50:18.687Z","createdAt":"2026-03-02T22:50:18.687Z"}}
+2026-03-02 22:50:18 [INFO] 📝 Tentative de création d'une métadonnée de pièce {"pieceId":"14","userId":1,"body":{"name":"objet","label":"Objet","field_type":"text","required":true,"position":2}}
+2026-03-02 22:50:18 [INFO] ✅ Métadonnée de pièce créée avec succès {"metaFieldId":6,"pieceId":"14","label":"Objet","userId":1,"duration":17}
+2026-03-02 22:50:18 [INFO] HISTORIQUE {"agent_id":1,"action":"create","resource":"pieceMetaField","resource_id":6,"resource_identifier":"#6","description":"Création de pieceMetaField : #6","method":"POST","path":"/api/pieces/14/meta-fields","status":201,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","new_data":{"id":6,"piece_id":"14","name":"objet","label":"Objet","field_type":"text","required":true,"position":2,"updatedAt":"2026-03-02T22:50:18.736Z","createdAt":"2026-03-02T22:50:18.736Z"}}
+2026-03-02 22:50:18 [INFO] 📝 Tentative de création d'une métadonnée de pièce {"pieceId":"14","userId":1,"body":{"name":"fichier","label":"Fichier","field_type":"file","required":true,"position":3}}
+2026-03-02 22:50:18 [INFO] ✅ Métadonnée de pièce créée avec succès {"metaFieldId":7,"pieceId":"14","label":"Fichier","userId":1,"duration":17}
+2026-03-02 22:50:18 [INFO] HISTORIQUE {"agent_id":1,"action":"create","resource":"pieceMetaField","resource_id":7,"resource_identifier":"#7","description":"Création de pieceMetaField : #7","method":"POST","path":"/api/pieces/14/meta-fields","status":201,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","new_data":{"id":7,"piece_id":"14","name":"fichier","label":"Fichier","field_type":"file","required":true,"position":3,"updatedAt":"2026-03-02T22:50:18.786Z","createdAt":"2026-03-02T22:50:18.786Z"}}
+2026-03-02 22:50:18 [INFO] ✅ Pièces récupérées {"count":6,"userId":1,"duration":3}
+2026-03-02 22:50:18 [INFO] HISTORIQUE {"agent_id":1,"action":"read","resource":"pieces","resource_id":null,"resource_identifier":"liste des pièces","description":"Consultation de la liste des pièces","method":"GET","path":"/api/pieces/","status":200,"ip":"::1","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36","data":{"count":6,"duration":4}}
+2026-03-02 22:50:23 [INFO] ✅ Métadonnées de la pièce récupérées {"pieceId":"13","count":0,"userId":1,"duration":2}
+2026-03-02 22:50:31 [INFO] ✅ Métadonnées de la pièce récupérées {"pieceId":"14","count":4,"userId":1,"duration":3}
+2026-03-02 22:51:15 [INFO] ✅ Logger initialisé avec succès 
+2026-03-02 22:52:45 [INFO] ✅ Pièces récupérées {"count":6,"userId":1,"duration":6}
+2026-03-02 22:57:06 [INFO] ✅ Logger initialisé avec succès 
+2026-03-02 22:57:20 [INFO] ✅ Pièces récupérées {"count":6,"userId":1,"duration":4}

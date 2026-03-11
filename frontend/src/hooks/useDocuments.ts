@@ -8,9 +8,6 @@ import {
 } from "../api/document";
 import { getTypeDocuments } from "../api/typeDocument";
 import { getMetaById } from "../api/metaField";
-import { getAllEntiteeUn } from "../api/entiteeUn";
-import { getAllEntiteeDeux } from "../api/entiteeDeux";
-import { getAllEntiteeTrois } from "../api/entiteeTrois";
 
 // ✅ IMPORTER LES NOUVELLES API
 import { getDirections } from "../api/direction";
@@ -103,65 +100,6 @@ export const useMetaFieldsByType = (typeId: number | null) => {
   });
 };
 
-// Récupérer toutes les entités (anciennes)
-export const useEntitees = () => {
-  const queryUn = useQuery({
-    queryKey: entiteeKeys.un,
-    queryFn: async () => {
-      const res = await getAllEntiteeUn();
-      return Array.isArray(res) ? res : [];
-    },
-  });
-
-  const queryDeux = useQuery({
-    queryKey: entiteeKeys.deux,
-    queryFn: async () => {
-      const res = await getAllEntiteeDeux();
-      return Array.isArray(res) ? res : [];
-    },
-  });
-
-  const queryTrois = useQuery({
-    queryKey: entiteeKeys.trois,
-    queryFn: async () => {
-      const res = await getAllEntiteeTrois();
-      return Array.isArray(res) ? res : [];
-    },
-  });
-
-  const isLoading =
-    queryUn.isLoading || queryDeux.isLoading || queryTrois.isLoading;
-  const error = queryUn.error || queryDeux.error || queryTrois.error;
-
-  const allEntitees = [
-    ...(queryUn.data || []).map((e: any) => ({ ...e, type: "un" as const })),
-    ...(queryDeux.data || []).map((e: any) => ({
-      ...e,
-      type: "deux" as const,
-    })),
-    ...(queryTrois.data || []).map((e: any) => ({
-      ...e,
-      type: "trois" as const,
-    })),
-  ];
-
-  return {
-    entiteeUn: queryUn.data || [],
-    entiteeDeux: queryDeux.data || [],
-    entiteeTrois: queryTrois.data || [],
-    allEntitees,
-    isLoading,
-    error,
-    refetch: async () => {
-      await Promise.all([
-        queryUn.refetch(),
-        queryDeux.refetch(),
-        queryTrois.refetch(),
-      ]);
-    },
-  };
-};
-
 // ✅ NOUVEAU HOOK : Récupérer toutes les nouvelles entités
 export const useNouvellesEntitees = () => {
   const queryDirections = useQuery({
@@ -230,28 +168,19 @@ export const useNouvellesEntitees = () => {
 export const useInitialData = () => {
   const documentsQuery = useDocuments();
   const typesQuery = useTypeDocuments();
-  const entitees = useEntitees();
   const nouvellesEntitees = useNouvellesEntitees(); // ✅ AJOUT
 
   const isLoading =
     documentsQuery.isLoading ||
     typesQuery.isLoading ||
-    entitees.isLoading ||
     nouvellesEntitees.isLoading;
 
   const error =
-    documentsQuery.error ||
-    typesQuery.error ||
-    entitees.error ||
-    nouvellesEntitees.error;
+    documentsQuery.error || typesQuery.error || nouvellesEntitees.error;
 
   return {
     documents: documentsQuery.data || [],
     types: typesQuery.data || [],
-    entitees: entitees.allEntitees,
-    entiteeUn: entitees.entiteeUn,
-    entiteeDeux: entitees.entiteeDeux,
-    entiteeTrois: entitees.entiteeTrois,
     // ✅ NOUVELLES ENTITÉS
     directions: nouvellesEntitees.directions,
     sousDirections: nouvellesEntitees.sousDirections,
@@ -262,7 +191,6 @@ export const useInitialData = () => {
     refetch: async () => {
       await documentsQuery.refetch();
       await typesQuery.refetch();
-      await entitees.refetch();
       await nouvellesEntitees.refetch();
     },
   };

@@ -63,9 +63,11 @@ const {
   Document,
   Pieces,
   TypeDocument,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
+  Direction,
+  SousDirection,
+  Division,
+  Section,
+  Service,
 } = require("../models");
 
 const storage = multer.diskStorage({
@@ -80,47 +82,63 @@ const storage = multer.diskStorage({
         return cb(new Error("Document introuvable"));
       }
 
-      // 2. Récupérer le type de document
+      // 2. Récupérer le type de document avec toutes ses associations
       const typeDocument = await TypeDocument.findByPk(
         document.type_document_id,
+        {
+          include: [
+            { model: Direction, as: "direction" },
+            { model: Service, as: "service" },
+            { model: SousDirection, as: "sousDirection" },
+            { model: Division, as: "division" },
+            { model: Section, as: "section" },
+          ],
+        },
       );
+
       if (!typeDocument) {
         return cb(new Error("Type de document introuvable"));
       }
 
-      // 3. Récupérer les entités (déterminer laquelle est réellement utilisée)
+      // 3. Déterminer l'entité concernée (priorité à la plus spécifique)
       let entiteeConcernee = null;
-      let titre = null;
+      let typeEntite = null;
       let libelle = null;
 
-      // Priorité à la plus petite entité (entiteeTrois > entiteeDeux > entiteeUn)
-      if (typeDocument.entitee_trois_id) {
-        entiteeConcernee = await EntiteeTrois.findByPk(
-          typeDocument.entitee_trois_id,
-        );
-        titre = entiteeConcernee?.titre; // "Département", "Section", etc.
-        libelle = entiteeConcernee?.libelle; // "Département Informatique"
-        console.log("📁 Entité concernée: ENTITEE_TROIS");
-      } else if (typeDocument.entitee_deux_id) {
-        entiteeConcernee = await EntiteeDeux.findByPk(
-          typeDocument.entitee_deux_id,
-        );
-        titre = entiteeConcernee?.titre; // "Sous-direction", "Division", etc.
-        libelle = entiteeConcernee?.libelle; // "Sous-direction Finance"
-        console.log("📁 Entité concernée: ENTITEE_DEUX");
-      } else if (typeDocument.entitee_un_id) {
-        entiteeConcernee = await EntiteeUn.findByPk(typeDocument.entitee_un_id);
-        titre = entiteeConcernee?.titre; // "Direction"
-        libelle = entiteeConcernee?.libelle; // "Direction Administrative"
-        console.log("📁 Entité concernée: ENTITEE_UN");
+      // Ordre de priorité : Section > Division > Sous-direction > Service > Direction
+      if (typeDocument.section) {
+        entiteeConcernee = typeDocument.section;
+        typeEntite = "Section";
+        libelle = entiteeConcernee.libelle;
+        console.log("📁 Entité concernée: SECTION");
+      } else if (typeDocument.division) {
+        entiteeConcernee = typeDocument.division;
+        typeEntite = "Division";
+        libelle = entiteeConcernee.libelle;
+        console.log("📁 Entité concernée: DIVISION");
+      } else if (typeDocument.sousDirection) {
+        entiteeConcernee = typeDocument.sousDirection;
+        typeEntite = "Sous-direction";
+        libelle = entiteeConcernee.libelle;
+        console.log("📁 Entité concernée: SOUS-DIRECTION");
+      } else if (typeDocument.service) {
+        entiteeConcernee = typeDocument.service;
+        typeEntite = "Service";
+        libelle = entiteeConcernee.libelle;
+        console.log("📁 Entité concernée: SERVICE");
+      } else if (typeDocument.direction) {
+        entiteeConcernee = typeDocument.direction;
+        typeEntite = "Direction";
+        libelle = entiteeConcernee.libelle;
+        console.log("📁 Entité concernée: DIRECTION");
       }
 
       // Valeurs par défaut si aucune entité trouvée
-      titre = titre || "ENTITEE_INCONNUE";
-      libelle = libelle || "LIBELLE_INCONNU";
+      typeEntite = typeEntite || "NON_ASSIGNE";
+      libelle = libelle || "NON_ASSIGNE";
       const typeDocLibelle = typeDocument.nom || "TYPE_INCONNU";
 
-      console.log("📁 Titre:", titre);
+      console.log("📁 Type entité:", typeEntite);
       console.log("📁 Libellé entité:", libelle);
       console.log("📁 Type document:", typeDocLibelle);
 
@@ -138,15 +156,15 @@ const storage = multer.diskStorage({
       }
 
       // 5. Construire le chemin selon l'arborescence souhaitée :
-      // fichiers -> [TITRE_ENTITE] -> [LIBELLE_ENTITE] -> [NOM_TYPE_DOCUMENT] -> DOC-[documentId]
+      // uploads/DGCC-file/ -> [TypeEntite] -> [LibelleEntite] -> [NomTypeDocument] -> DOC-[documentId]
       let uploadDir = path.join(
         process.cwd(),
         "uploads",
-        "fichiers",
-        titre, // "Département", "Section", "Direction"
-        libelle, // "Département Informatique", "Section Juridique"
-        typeDocLibelle, // "Rapport d'activité", "PV", "Bon d'achat"
-        `DOC-${documentId}`, // "DOC-29"
+        "DGCC-file",
+        typeEntite, // "Direction", "Service", "Sous-direction", "Division", "Section"
+        libelle, // "Direction Générale", "Service Informatique", etc.
+        typeDocLibelle, // "Rapport d'activité", "Facture", etc.
+        `DOC-${documentId}`, // "DOC-42"
       );
 
       // MODE LOT UNIQUE
@@ -156,16 +174,19 @@ const storage = multer.diskStorage({
       // MODE INDIVIDUEL
       else {
         if (piece_value_id) {
+          // Cas avec métadonnée spécifique
           uploadDir = path.join(
             uploadDir,
-            "PIECES",
+            "PIECES INDIVIDUEL",
             pieceLibelle,
             `META-${piece_value_id}`,
           );
         } else if (pieceId) {
-          uploadDir = path.join(uploadDir, "PIECES", pieceLibelle);
+          // Cas pièce simple sans métadonnée
+          uploadDir = path.join(uploadDir, "PIECES INDIVIDUEL", pieceLibelle);
         } else {
-          uploadDir = path.join(uploadDir, "PIECES", "AUTRES");
+          // Fallback
+          uploadDir = path.join(uploadDir, "PIECES INDIVIDUEL", "AUTRES");
         }
       }
 
