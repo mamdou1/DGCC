@@ -23,6 +23,8 @@ services:
       interval: 10s
       retries: 5
       timeout: 5s
+    networks:
+      - dgcc_network
 
   backend:
     build: ./backend
@@ -40,6 +42,8 @@ services:
     volumes:
       - ./backend/uploads:/app/uploads
     command: npm start
+    networks:
+      - dgcc_network
 
   frontend:
     build: ./frontend
@@ -53,6 +57,12 @@ services:
       - ./frontend:/app
       - /app/node_modules
     command: npm start
+    networks:
+      - dgcc_network
 
 volumes:
   mysql_data:
+
+networks:
+  dgcc_network:
+    driver: bridge
