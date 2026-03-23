@@ -2,9 +2,6 @@
 const {
   AgentEntiteeAccess,
   Agent,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
   Direction,
   SousDirection,
   Service,
@@ -132,10 +129,6 @@ exports.grant = async (req, res) => {
           required: false,
         },
         { model: Service, as: "service", required: false },
-        // Garder les anciennes pour compatibilité
-        { model: EntiteeUn, as: "entitee_un", required: false },
-        { model: EntiteeDeux, as: "entitee_deux", required: false },
-        { model: EntiteeTrois, as: "entitee_trois", required: false },
       ],
     });
 
@@ -217,10 +210,6 @@ exports.agentAccesById = async (req, res) => {
           required: false,
         },
         { model: Service, as: "service", required: false },
-        // Garder les anciennes pour compatibilité
-        { model: EntiteeUn, as: "entitee_un", required: false },
-        { model: EntiteeDeux, as: "entitee_deux", required: false },
-        { model: EntiteeTrois, as: "entitee_trois", required: false },
       ],
     });
 

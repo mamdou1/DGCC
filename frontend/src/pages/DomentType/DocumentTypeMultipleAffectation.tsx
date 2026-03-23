@@ -28,27 +28,6 @@ export default function DocumentTypeMultipleAffectation({
   const [checkedSelected, setCheckedSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // On déclenche l'initialisation si visible est true OU si le composant est monté dans un onglet actif
-  // useEffect(() => {
-  //   if (!types || !Array.isArray(types)) return;
-
-  //   // FILTRAGE BASÉ SUR TES LOGS CONSOLE
-  //   const orphans = types.filter((t) => {
-  //     // D'après tes logs, les orphelins ont structure_libelle === "Non assigné"
-  //     // ou entitee_un === null
-  //     return (
-  //       t.structure_libelle === "Non assigné" ||
-  //       !t.entitee_un ||
-  //       t.entitee_un === null
-  //     );
-  //   });
-
-  //   setAvailableTypes(orphans);
-  //   setSelectedToAssign([]);
-  //   setCheckedAvailable([]);
-  //   setCheckedSelected([]);
-  // }, [types, visible]);
-
   useEffect(() => {
     if (!types || !Array.isArray(types)) return;
 
@@ -56,8 +35,8 @@ export default function DocumentTypeMultipleAffectation({
     const orphans = types.filter((t) => {
       return (
         t.structure_libelle === "Non assigné" ||
-        !t.entitee_un ||
-        t.entitee_un === null
+        !t.direction ||
+        t.direction === null
       );
     });
 

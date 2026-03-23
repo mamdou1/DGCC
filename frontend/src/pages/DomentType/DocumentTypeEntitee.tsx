@@ -134,17 +134,6 @@ export default function DocumentTypeEntitee() {
       section: new Set<number>(),
     };
 
-    // Entités de la fonction
-    if (user?.fonction_details?.entitee_un?.id) {
-      userEntityIds.un.add(user.fonction_details.entitee_un.id);
-    }
-    if (user?.fonction_details?.entitee_deux?.id) {
-      userEntityIds.deux.add(user.fonction_details.entitee_deux.id);
-    }
-    if (user?.fonction_details?.entitee_trois?.id) {
-      userEntityIds.trois.add(user.fonction_details.entitee_trois.id);
-    }
-
     // NOUVELLES ENTITÉS
     if (user?.fonction_details?.direction?.id) {
       userEntityIds.direction.add(user.fonction_details.direction.id);
@@ -164,12 +153,6 @@ export default function DocumentTypeEntitee() {
 
     // Entités des agent_access
     user?.agent_access?.forEach((access) => {
-      if (access.entitee_un?.id) userEntityIds.un.add(access.entitee_un.id);
-      if (access.entitee_deux?.id)
-        userEntityIds.deux.add(access.entitee_deux.id);
-      if (access.entitee_trois?.id)
-        userEntityIds.trois.add(access.entitee_trois.id);
-
       // NOUVELLES ENTITÉS
       if (access.direction?.id)
         userEntityIds.direction.add(access.direction.id);
@@ -211,19 +194,6 @@ export default function DocumentTypeEntitee() {
     ) {
       return userEntityIds.direction.has(typeDoc.direction_id);
     }
-    if (typeDoc.entitee_trois_id) {
-      return userEntityIds.trois.has(typeDoc.entitee_trois_id);
-    }
-    if (typeDoc.entitee_deux_id && !typeDoc.entitee_trois_id) {
-      return userEntityIds.deux.has(typeDoc.entitee_deux_id);
-    }
-    if (
-      typeDoc.entitee_un_id &&
-      !typeDoc.entitee_deux_id &&
-      !typeDoc.entitee_trois_id
-    ) {
-      return userEntityIds.un.has(typeDoc.entitee_un_id);
-    }
     return false;
   };
 
@@ -261,10 +231,7 @@ export default function DocumentTypeEntitee() {
           selectedTypeDoc === `SERV-${t.service_id}` ||
           selectedTypeDoc === `SD-${t.sous_direction_id}` ||
           selectedTypeDoc === `DIV-${t.division_id}` ||
-          selectedTypeDoc === `SEC-${t.section_id}` ||
-          selectedTypeDoc === `E1-${t.entitee_un_id}` ||
-          selectedTypeDoc === `E2-${t.entitee_deux_id}` ||
-          selectedTypeDoc === `E3-${t.entitee_trois_id}`)
+          selectedTypeDoc === `SEC-${t.section_id}`)
       );
     });
 
@@ -340,15 +307,6 @@ export default function DocumentTypeEntitee() {
     if (groupKey.startsWith("direction_")) {
       return `🏢 Direction : ${first.direction?.libelle || "Inconnue"}`;
     }
-    if (groupKey.startsWith("entiteeTrois_")) {
-      return `📌 ${first.entitee_trois?.titre || "Entité"} : ${first.entitee_trois?.libelle || "Inconnue"}`;
-    }
-    if (groupKey.startsWith("entiteeDeux_")) {
-      return `📌 ${first.entitee_deux?.titre || "Entité"} : ${first.entitee_deux?.libelle || "Inconnue"}`;
-    }
-    if (groupKey.startsWith("entiteeUn_")) {
-      return `📌 ${first.entitee_un?.titre || "Entité"} : ${first.entitee_un?.libelle || "Inconnue"}`;
-    }
 
     return groupKey;
   };
@@ -361,16 +319,6 @@ export default function DocumentTypeEntitee() {
     if (isAdmin) return optionsEntites;
 
     const accessibleEntityIds = new Set();
-
-    if (user?.fonction_details?.entitee_un?.id) {
-      accessibleEntityIds.add(String(user.fonction_details.entitee_un.id));
-    }
-    if (user?.fonction_details?.entitee_deux?.id) {
-      accessibleEntityIds.add(`E2-${user.fonction_details.entitee_deux.id}`);
-    }
-    if (user?.fonction_details?.entitee_trois?.id) {
-      accessibleEntityIds.add(`E3-${user.fonction_details.entitee_trois.id}`);
-    }
 
     // NOUVELLES ENTITÉS
     if (user?.fonction_details?.direction?.id) {

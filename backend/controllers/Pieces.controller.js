@@ -1,13 +1,5 @@
 // controllers/Pieces.controller.js
-const {
-  Pieces,
-  Division,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
-  PieceMetaField,
-  sequelize,
-} = require("../models");
+const { Pieces, PieceMetaField, sequelize } = require("../models");
 const logger = require("../config/logger.config");
 const HistoriqueService = require("../services/historique.service");
 

@@ -223,7 +223,7 @@ exports.getFunctionsByDivision = async (req, res) => {
 
     res.json(fonctions);
   } catch (err) {
-    logger.error("❌ Erreur getFunctionsByEntiteeUn:", {
+    logger.error("❌ Erreur getFunctionsByDivision:", {
       divisionId: id,
       error: err.message,
       stack: err.stack,

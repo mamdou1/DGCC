@@ -40,9 +40,6 @@ export const metaFieldKeys = {
 };
 
 export const entiteeKeys = {
-  un: ["entiteeUn"] as const,
-  deux: ["entiteeDeux"] as const,
-  trois: ["entiteeTrois"] as const,
   directions: ["directions"] as const,
   sousDirections: ["sousDirections"] as const,
   divisions: ["divisions"] as const,

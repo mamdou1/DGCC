@@ -14,7 +14,6 @@ const {
   PieceMetaField,
   PiecesFichier,
 } = require("../models");
-const buildAccessWhere = require("../utils/buildAccessWhere.utils");
 const path = require("path");
 const logger = require("../config/logger.config");
 const HistoriqueService = require("../services/historique.service");

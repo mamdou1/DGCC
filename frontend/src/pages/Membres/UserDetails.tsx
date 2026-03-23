@@ -189,9 +189,6 @@ export default function UserDetails({
     user.fonction_details?.division?.libelle ||
     user.fonction_details?.section?.libelle ||
     user.fonction_details?.service?.libelle ||
-    user.fonction_details?.entitee_trois?.libelle ||
-    user.fonction_details?.entitee_deux?.libelle ||
-    user.fonction_details?.entitee_un?.libelle ||
     "Aucune affectation";
 
   // Configuration des types d'entités pour l'affichage

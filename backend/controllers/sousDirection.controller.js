@@ -226,7 +226,7 @@ exports.getFunctionsBySousDirection = async (req, res) => {
 
     res.json(fonctions);
   } catch (err) {
-    logger.error("❌ Erreur getFunctionsByEntiteeUn:", {
+    logger.error("❌ Erreur getFunctionsBySousDirection:", {
       SousdirectionId: id,
       error: err.message,
       stack: err.stack,

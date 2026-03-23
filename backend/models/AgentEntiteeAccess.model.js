@@ -3,19 +3,6 @@ module.exports = (sequelize, DataTypes) => {
   const AgentEntiteeAccess = sequelize.define(
     "AgentEntiteeAccess",
     {
-      // On garde les anciennes
-      entitee_un_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      entitee_deux_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      entitee_trois_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
       // ✅ AJOUTER LES NOUVELLES COLONNES
       direction_id: {
         type: DataTypes.INTEGER,
@@ -49,25 +36,6 @@ module.exports = (sequelize, DataTypes) => {
     AgentEntiteeAccess.belongsTo(models.Agent, {
       foreignKey: "agent_id",
       as: "agent",
-    });
-
-    // Anciennes associations
-    AgentEntiteeAccess.belongsTo(models.EntiteeUn, {
-      foreignKey: "entitee_un_id",
-      as: "entitee_un",
-      allowNull: true,
-    });
-
-    AgentEntiteeAccess.belongsTo(models.EntiteeDeux, {
-      foreignKey: "entitee_deux_id",
-      as: "entitee_deux",
-      allowNull: true,
-    });
-
-    AgentEntiteeAccess.belongsTo(models.EntiteeTrois, {
-      foreignKey: "entitee_trois_id",
-      as: "entitee_trois",
-      allowNull: true,
     });
 
     // ✅ AJOUTER LES NOUVELLES ASSOCIATIONS

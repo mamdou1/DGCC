@@ -69,21 +69,3 @@ export const listAccess = async () => {
     throw error;
   }
 };
-
-// Utilitaires
-export const isValidAccessPayload = (payload: GrantAccessPayload): boolean => {
-  return !!(
-    payload.entitee_un_id ||
-    payload.entitee_deux_id ||
-    payload.entitee_trois_id
-  );
-};
-
-export const getAccessEntityLabel = (access: any): string => {
-  return (
-    access.entitee_un?.libelle ||
-    access.entitee_deux?.libelle ||
-    access.entitee_trois?.libelle ||
-    "Entité inconnue"
-  );
-};

@@ -258,32 +258,6 @@ export default function Sidebar({ children }: SidebarProps) {
       if (user.fonction_details.section_id) {
         ids.section.add(user.fonction_details.section_id);
       }
-
-      // Fallback aux anciennes entités
-      if (user.fonction_details.entitee_un?.id) {
-        console.log(
-          "⚠️ Ancienne entité_un:",
-          user.fonction_details.entitee_un.id,
-        );
-        // Mapper entitee_un -> direction
-        ids.direction.add(user.fonction_details.entitee_un.id);
-      }
-      if (user.fonction_details.entitee_deux?.id) {
-        console.log(
-          "⚠️ Ancienne entité_deux:",
-          user.fonction_details.entitee_deux.id,
-        );
-        // Mapper entitee_deux -> division
-        ids.division.add(user.fonction_details.entitee_deux.id);
-      }
-      if (user.fonction_details.entitee_trois?.id) {
-        console.log(
-          "⚠️ Ancienne entité_trois:",
-          user.fonction_details.entitee_trois.id,
-        );
-        // Mapper entitee_trois -> section
-        ids.section.add(user.fonction_details.entitee_trois.id);
-      }
     }
 
     // Entités des agent_access
@@ -348,11 +322,6 @@ export default function Sidebar({ children }: SidebarProps) {
     if (user.fonction_details.sous_direction_id) return "sousDirection";
     if (user.fonction_details.direction_id) return "direction";
 
-    // Fallback aux anciennes entités
-    if (user.fonction_details.entitee_trois?.id) return "section";
-    if (user.fonction_details.entitee_deux?.id) return "division";
-    if (user.fonction_details.entitee_un?.id) return "direction";
-
     return null;
   };
 
@@ -369,15 +338,6 @@ export default function Sidebar({ children }: SidebarProps) {
       return user.fonction_details.sous_direction_id;
     if (user.fonction_details.direction_id)
       return user.fonction_details.direction_id;
-
-    // Fallback aux anciennes entités
-    if (user.fonction_details.entitee_trois?.id)
-      return user.fonction_details.entitee_trois.id;
-    if (user.fonction_details.entitee_deux?.id)
-      return user.fonction_details.entitee_deux.id;
-    if (user.fonction_details.entitee_un?.id)
-      return user.fonction_details.entitee_un.id;
-
     return null;
   };
 
@@ -405,21 +365,15 @@ export default function Sidebar({ children }: SidebarProps) {
 
       if (entityType === "direction") {
         match = doc.direction_id === entityId;
-        // Fallback aux anciens champs
-        if (!match) match = doc.entitee_un_id === entityId;
       }
       if (entityType === "sousDirection") {
         match = doc.sous_direction_id === entityId;
       }
       if (entityType === "division") {
         match = doc.division_id === entityId;
-        // Fallback aux anciens champs
-        if (!match) match = doc.entitee_deux_id === entityId;
       }
       if (entityType === "section") {
         match = doc.section_id === entityId;
-        // Fallback aux anciens champs
-        if (!match) match = doc.entitee_trois_id === entityId;
       }
 
       if (match) {

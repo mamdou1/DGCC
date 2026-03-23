@@ -62,14 +62,6 @@ class ExerciceController {
     try {
       const { id } = req.params;
 
-      // Vérifier si des programmes sont liés
-      const progs = await Programme.findOne({ where: { exercice_id: id } });
-      if (progs)
-        return res.status(409).json({
-          message:
-            "Impossible de supprimer : des programmes existent pour cet exercice",
-        });
-
       const deleted = await Exercice.destroy({ where: { id } });
       if (!deleted)
         return res.status(404).json({ message: "Exercice non trouvé" });

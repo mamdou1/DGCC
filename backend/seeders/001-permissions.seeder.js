@@ -52,30 +52,6 @@ module.exports = async () => {
     { resource: "historique", action: "access" },
     { resource: "historique", action: "read" },
 
-    { resource: "entiteeUn", action: "access" },
-    { resource: "entiteeUn", action: "create" },
-    { resource: "entiteeUn", action: "read" },
-    { resource: "entiteeUn", action: "update" },
-    { resource: "entiteeUn", action: "delete" },
-
-    { resource: "entiteeDeux", action: "access" },
-    { resource: "entiteeDeux", action: "create" },
-    { resource: "entiteeDeux", action: "read" },
-    { resource: "entiteeDeux", action: "update" },
-    { resource: "entiteeDeux", action: "delete" },
-
-    { resource: "entiteeTrois", action: "access" },
-    { resource: "entiteeTrois", action: "create" },
-    { resource: "entiteeTrois", action: "read" },
-    { resource: "entiteeTrois", action: "update" },
-    { resource: "entiteeTrois", action: "delete" },
-
-    // { resource: "entiteeQuatre", action: "access" },
-    // { resource: "entiteeQuatre", action: "create" },
-    // { resource: "entiteeQuatre", action: "read" },
-    // { resource: "entiteeQuatre", action: "update" },
-    // { resource: "entiteeQuatre", action: "delete" },
-
     { resource: "direction", action: "access" },
     { resource: "direction", action: "create" },
     { resource: "direction", action: "read" },

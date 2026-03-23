@@ -351,9 +351,6 @@ exports.getAgentsByStructure = async (req, res) => {
           sd.libelle, 
           dir.libelle, 
           serv.libelle,
-          e3.libelle, 
-          e2.libelle, 
-          e1.libelle, 
           'Non assigné'
         ) as structureLibelle,
         CASE
@@ -362,9 +359,6 @@ exports.getAgentsByStructure = async (req, res) => {
           WHEN sd.id IS NOT NULL THEN 'Sous-direction'
           WHEN dir.id IS NOT NULL THEN 'Direction'
           WHEN serv.id IS NOT NULL THEN 'Service'
-          WHEN e3.id IS NOT NULL THEN 'Niveau 3'
-          WHEN e2.id IS NOT NULL THEN 'Niveau 2'
-          WHEN e1.id IS NOT NULL THEN 'Niveau 1'
           ELSE 'Sans structure'
         END as typeStructure,
         COUNT(a.id) as nombre
@@ -375,9 +369,6 @@ exports.getAgentsByStructure = async (req, res) => {
       LEFT JOIN sous_directions sd ON sd.id = f.sous_direction_id
       LEFT JOIN directions dir ON dir.id = f.direction_id
       LEFT JOIN services serv ON serv.id = f.service_id
-      LEFT JOIN entitee_trois e3 ON e3.id = f.entitee_trois_id
-      LEFT JOIN entitee_deux e2 ON e2.id = f.entitee_deux_id
-      LEFT JOIN entitee_un e1 ON e1.id = f.entitee_un_id
       GROUP BY structureLibelle, typeStructure
       ORDER BY nombre DESC
     `,
@@ -420,9 +411,6 @@ exports.getDocumentsByStructure = async (req, res) => {
           td.sous_direction_id,
           td.direction_id,
           td.service_id,
-          td.entitee_trois_id,
-          td.entitee_deux_id,
-          td.entitee_un_id,
           0
         ) as entiteeId,
         COALESCE(
@@ -431,9 +419,6 @@ exports.getDocumentsByStructure = async (req, res) => {
           sd.libelle,
           dir.libelle,
           serv.libelle,
-          e3.libelle,
-          e2.libelle,
-          e1.libelle,
           'Non assigné'
         ) as structureLibelle,
         CASE
@@ -442,9 +427,6 @@ exports.getDocumentsByStructure = async (req, res) => {
           WHEN td.sous_direction_id IS NOT NULL THEN 'Sous-direction'
           WHEN td.direction_id IS NOT NULL THEN 'Direction'
           WHEN td.service_id IS NOT NULL THEN 'Service'
-          WHEN td.entitee_trois_id IS NOT NULL THEN 'Niveau 3'
-          WHEN td.entitee_deux_id IS NOT NULL THEN 'Niveau 2'
-          WHEN td.entitee_un_id IS NOT NULL THEN 'Niveau 1'
           ELSE 'Sans structure'
         END as typeStructure,
         COUNT(d.id) as nombre
@@ -455,9 +437,6 @@ exports.getDocumentsByStructure = async (req, res) => {
       LEFT JOIN sous_directions sd ON sd.id = td.sous_direction_id
       LEFT JOIN directions dir ON dir.id = td.direction_id
       LEFT JOIN services serv ON serv.id = td.service_id
-      LEFT JOIN entitee_trois e3 ON e3.id = td.entitee_trois_id
-      LEFT JOIN entitee_deux e2 ON e2.id = td.entitee_deux_id
-      LEFT JOIN entitee_un e1 ON e1.id = td.entitee_un_id
       GROUP BY entiteeId, structureLibelle, typeStructure
       ORDER BY nombre DESC
     `,
@@ -538,15 +517,15 @@ exports.getDocumentsByMonth = async (req, res) => {
 
     const result = await sequelize.query(
       `
-      SELECT 
-        DATE_FORMAT(created_at, '%Y-%m') as mois,
-        DATE_FORMAT(created_at, '%b %Y') as moisLibelle,
-        COUNT(*) as nombre
-      FROM documents
-      WHERE created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-      GROUP BY DATE_FORMAT(created_at, '%Y-%m')
-      ORDER BY mois ASC
-    `,
+  SELECT 
+    DATE_FORMAT(created_at, '%Y-%m') as mois,
+    DATE_FORMAT(MIN(created_at), '%b %Y') as moisLibelle,
+    COUNT(*) as nombre
+  FROM documents
+  WHERE created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+  GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+  ORDER BY mois ASC
+  `,
       { type: sequelize.QueryTypes.SELECT },
     );
 

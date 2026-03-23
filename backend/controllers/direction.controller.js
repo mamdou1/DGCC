@@ -203,7 +203,7 @@ exports.getFunctionsByDirection = async (req, res) => {
 
     res.json(fonctions);
   } catch (err) {
-    logger.error("❌ Erreur getFunctionsByEntiteeUn:", {
+    logger.error("❌ Erreur getFunctionsByDirection:", {
       directionId: id,
       error: err.message,
       stack: err.stack,

@@ -28,7 +28,7 @@ import Layout from "../../components/layout/Layoutt";
 import api from "../../api/axios";
 
 export default function ChangePassword() {
-  const { user } = useAuth(); // ✅ Sans setUser
+  const { user, setUser } = useAuth(); // ✅ Sans setUser
   const navigate = useNavigate();
 
   // États pour le username
@@ -62,10 +62,14 @@ export default function ChangePassword() {
   // Fonction pour rafraîchir les données utilisateur
   const refreshUserData = async () => {
     try {
-      const me = await api.get("/user/me");
-      localStorage.setItem("user", JSON.stringify(me.data));
-      // Mettre à jour l'état local si nécessaire
-      window.location.reload(); // Option radicale mais efficace
+      const response = await api.get("/user/me");
+      const userData = response.data;
+
+      // ✅ Mettre à jour le contexte ET le localStorage
+      setUser(userData); // Mettre à jour le contexte
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      console.log("✅ Utilisateur mis à jour:", userData);
     } catch (error) {
       console.error("❌ Erreur rafraîchissement utilisateur:", error);
     }
@@ -490,16 +494,6 @@ export default function ChangePassword() {
                   <li className="flex items-center gap-2">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        /[A-Z]/.test(newPassword)
-                          ? "bg-orange-500"
-                          : "bg-slate-300"
-                      }`}
-                    />
-                    Une majuscule
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
                         /[a-z]/.test(newPassword)
                           ? "bg-orange-500"
                           : "bg-slate-300"
@@ -516,16 +510,6 @@ export default function ChangePassword() {
                       }`}
                     />
                     Un chiffre
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        /[!@#$%^&*(),.?":{}|<>]/.test(newPassword)
-                          ? "bg-orange-500"
-                          : "bg-slate-300"
-                      }`}
-                    />
-                    Un caractère spécial
                   </li>
                 </ul>
               </div>

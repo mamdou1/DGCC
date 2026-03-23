@@ -36,12 +36,6 @@ db.TypeDocumentPieces = require("./DocumentTypePiece.model")(
 db.DocumentFichier = require("./DocumentFichier.model")(sequelize, DataTypes);
 db.DocumentPieces = require("./DocumentPieces.model")(sequelize, DataTypes);
 
-// =====================
-// 🔹 NOUVEAUX MODÈLES Entitee
-// =====================
-db.EntiteeUn = require("./EntiteeUn.model")(sequelize, DataTypes);
-db.EntiteeDeux = require("./EntiteeDeux.model")(sequelize, DataTypes);
-db.EntiteeTrois = require("./EntiteeTrois.model")(sequelize, DataTypes);
 // db.EntiteeQuatre = require("./EntiteeQuatre.model")(sequelize, DataTypes);
 
 db.Direction = require("./Direction.model")(sequelize, DataTypes);
@@ -49,35 +43,6 @@ db.SousDirection = require("./SousDirection.model")(sequelize, DataTypes);
 db.Division = require("./Division.model")(sequelize, DataTypes);
 db.Section = require("./Section.model")(sequelize, DataTypes);
 db.Service = require("./Service.model")(sequelize, DataTypes);
-
-// =====================
-// 🔹 NOUVEAUX MODÈLES Entitee d'associiation de type de document
-// =====================
-db.TypeDocumentEntiteUn = require("./TypeDocumentEntite.model")(
-  sequelize,
-  DataTypes,
-);
-db.TypeDocumentEntiteDeux = require("./TypeDocumentEntiteDeux.model")(
-  sequelize,
-  DataTypes,
-);
-db.TypeDocumentEntiteTrois = require("./TypeDocumentEntiteTrois.model")(
-  sequelize,
-  DataTypes,
-);
-
-// =====================
-// 🔹 NOUVEAUX MODÈLES Entitee d'associiation pièce
-// =====================
-db.PiecesEntiteUn = require("./PiecesEntitee.model")(sequelize, DataTypes);
-db.PiecesEntiteDeux = require("./PiecesEntiteeDeux.model")(
-  sequelize,
-  DataTypes,
-);
-db.PiecesEntiteTrois = require("./PiecesEntiteeTrois.model")(
-  sequelize,
-  DataTypes,
-);
 
 // =====================
 // 🔹 NOUVEAUX MODÈLES pour l'acces

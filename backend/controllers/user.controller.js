@@ -7,9 +7,6 @@ const {
   Agent,
   Droit,
   Fonction,
-  EntiteeUn,
-  EntiteeDeux,
-  EntiteeTrois,
   Permission,
   AgentEntiteeAccess,
   Direction,
@@ -33,9 +30,6 @@ const fonctionInclude = {
     "division_id",
     "section_id",
     "service_id",
-    "entitee_un_id",
-    "entitee_deux_id",
-    "entitee_trois_id", // Garder les anciens pour compatibilité
   ],
   include: [
     {
@@ -109,43 +103,6 @@ const fonctionInclude = {
       as: "service",
       attributes: ["id", "libelle", "code"],
       required: false,
-    },
-    // Garder les anciennes entités pour compatibilité
-    {
-      model: EntiteeUn,
-      as: "entitee_un",
-      attributes: ["id", "libelle", "code", "titre"],
-    },
-    {
-      model: EntiteeDeux,
-      as: "entitee_deux",
-      attributes: ["id", "libelle", "code", "titre"],
-      include: [
-        {
-          model: EntiteeUn,
-          as: "entitee_un",
-          attributes: ["id", "libelle", "code"],
-        },
-      ],
-    },
-    {
-      model: EntiteeTrois,
-      as: "entitee_trois",
-      attributes: ["id", "libelle", "code", "titre"],
-      include: [
-        {
-          model: EntiteeDeux,
-          as: "entitee_deux",
-          attributes: ["id", "libelle", "code"],
-          include: [
-            {
-              model: EntiteeUn,
-              as: "entitee_un",
-              attributes: ["id", "libelle", "code"],
-            },
-          ],
-        },
-      ],
     },
   ],
 };
@@ -236,46 +193,6 @@ const agentAccessInclude = {
       model: Service,
       as: "service",
       attributes: ["id", "libelle", "code"], // ✅ Enlever 'titre'
-      required: false,
-    },
-    // Garder les anciennes entités avec 'titre' car elles ont cette colonne
-    {
-      model: EntiteeUn,
-      as: "entitee_un",
-      attributes: ["id", "libelle", "code", "titre"], // ✅ 'titre' existe ici
-      required: false,
-    },
-    {
-      model: EntiteeDeux,
-      as: "entitee_deux",
-      attributes: ["id", "libelle", "code", "titre"], // ✅ 'titre' existe ici
-      include: [
-        {
-          model: EntiteeUn,
-          as: "entitee_un",
-          attributes: ["id", "libelle", "code"],
-        },
-      ],
-      required: false,
-    },
-    {
-      model: EntiteeTrois,
-      as: "entitee_trois",
-      attributes: ["id", "libelle", "code", "titre"], // ✅ 'titre' existe ici
-      include: [
-        {
-          model: EntiteeDeux,
-          as: "entitee_deux",
-          attributes: ["id", "libelle", "code"],
-          include: [
-            {
-              model: EntiteeUn,
-              as: "entitee_un",
-              attributes: ["id", "libelle", "code"],
-            },
-          ],
-        },
-      ],
       required: false,
     },
   ],

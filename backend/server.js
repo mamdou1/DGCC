@@ -69,11 +69,6 @@ app.use("/api/types-documents", require("./routes/typeDocument.routes"));
 app.use("/api/meta-fields", require("./routes/metafield.routes"));
 app.use("/api/documents", require("./routes/document.routes"));
 
-app.use("/api/entiteeUn", require("./routes/entiteeUn.routes"));
-app.use("/api/entiteeDeux", require("./routes/entiteeDeux.routes"));
-app.use("/api/entiteeTrois", require("./routes/entiteeTrois.routes"));
-// app.use("/api/entiteeQuatre", require("./routes/entiteeQuatre.routes"));
-
 app.use("/api/directions", require("./routes/direction.routes"));
 app.use("/api/sous-directions", require("./routes/sousDirection.routes"));
 app.use("/api/divisions", require("./routes/division.routes"));
@@ -100,14 +95,25 @@ sequelize
   .then(async () => {
     console.log("✅ Connexion avec l base MySQL de DGCC réussie");
 
-    await sequelize.sync(); // ❌ PAS force / alter ici
+    // Vérifier que sync fonctionne
+    //await sequelize.sync({ alter: true });
+    await sequelize.sync();
+    console.log("✅ Tables synchronisées avec succès");
+
+    // Vérifier que les tables existent
+    // const tables = await sequelize.query("SHOW TABLES");
+    // console.log(
+    //   "📋 Tables créées:",
+    //   tables[0].map((t) => Object.values(t)[0]),
+    // );
 
     // 3️⃣ SEEDER APRÈS sync
     await require("./seeders/001-permissions.seeder")();
 
-    // 4️⃣ Lancer le serveur
     app.listen(process.env.PORT, () => {
       console.log(`🚀 Serveur lancé sur le port ${process.env.PORT}`);
     });
   })
-  .catch(console.error);
+  .catch((err) => {
+    console.error("❌ Erreur:", err);
+  });

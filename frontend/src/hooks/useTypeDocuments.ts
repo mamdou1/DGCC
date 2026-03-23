@@ -43,12 +43,6 @@ export const piecesKeys = {
   lists: () => [...piecesKeys.all, "list"] as const,
 };
 
-export const entiteeKeys = {
-  un: ["entiteeUn"] as const,
-  deux: ["entiteeDeux"] as const,
-  trois: ["entiteeTrois"] as const,
-};
-
 // ✅ NOUVELLES CLÉS
 export const directionKeys = {
   all: ["directions"] as const,

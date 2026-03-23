@@ -11,9 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       code: DataTypes.STRING,
       nom: DataTypes.STRING,
-      entitee_un_id: { type: DataTypes.INTEGER, allowNull: true },
-      entitee_deux_id: { type: DataTypes.INTEGER, allowNull: true },
-      entitee_trois_id: { type: DataTypes.INTEGER, allowNull: true },
 
       direction_id: DataTypes.INTEGER,
       service_id: DataTypes.INTEGER,
@@ -44,23 +41,6 @@ module.exports = (sequelize, DataTypes) => {
       otherKey: "piece_id",
       as: "pieces",
     });
-
-    TypeDocument.belongsTo(models.EntiteeUn, {
-      foreignKey: "entitee_un_id",
-      as: "entitee_un",
-    });
-    TypeDocument.belongsTo(models.EntiteeDeux, {
-      foreignKey: "entitee_deux_id",
-      as: "entitee_deux",
-    });
-    TypeDocument.belongsTo(models.EntiteeTrois, {
-      foreignKey: "entitee_trois_id",
-      as: "entitee_trois",
-    });
-    // TypeDocument.belongsTo(models.EntiteeQuatre, {
-    //   foreignKey: "entitee_quatre_id",
-    //   as: "entitee_quatre",
-    // });
 
     TypeDocument.belongsTo(models.Direction, {
       foreignKey: "direction_id",

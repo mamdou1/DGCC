@@ -18,7 +18,12 @@ module.exports = (sequelize, DataTypes) => {
           fields: ["resource", "action"],
         },
       ],
-    }
+    },
+    {
+      tableName: "agent",
+      timestamps: true,
+      underscored: true,
+    },
   );
 
   Permission.associate = (models) => {

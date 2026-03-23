@@ -169,14 +169,6 @@ export interface Fonction {
   section?: Section;
   service?: Service;
 
-  entitee_un_id?: number;
-  entitee_deux_id?: number;
-  entitee_trois_id?: number;
-
-  entitee_un: EntiteeUn;
-  entitee_deux: EntiteeDeux;
-  entitee_trois: EntiteeTrois;
-
   createdAt?: string; // si tu utilises timestamps dans Mongoose
   updatedAt?: string;
 }
@@ -218,16 +210,6 @@ export interface TypeDocument {
   code: string;
   nom: string;
 
-  // IDs (pour les formulaires)
-  entitee_un_id?: number;
-  entitee_deux_id?: number;
-  entitee_trois_id?: number;
-
-  // Objets joints (pour l'affichage) - on les rend optionnels car ils viennent du "include"
-  entitee_un?: EntiteeUn;
-  entitee_deux?: EntiteeDeux;
-  entitee_trois?: EntiteeTrois;
-
   direction?: Direction;
   sousDirection?: SousDirection;
   division?: Division;
@@ -254,9 +236,6 @@ export interface TypeDocument {
 export interface CreateTypeDocumentPayload {
   code: string;
   nom: string;
-  entitee_un_id?: number | null;
-  entitee_deux_id?: number | null;
-  entitee_trois_id?: number | null;
 }
 
 export type MetaFieldType =
@@ -453,13 +432,6 @@ export interface Box {
   type_document_id: number;
   typeDocument?: TypeDocument;
 
-  entitee_un_id?: number;
-  entitee_deux_id?: number;
-  entitee_trois_id?: number;
-  entitee_un: EntiteeUn;
-  entitee_deux: EntiteeDeux;
-  entitee_trois: EntiteeTrois;
-
   document: Document;
   document_id: number;
 
@@ -504,47 +476,9 @@ export interface DocumentPiece {
   disponible: boolean;
 }
 
-export interface EntiteeUn {
-  id: number;
-  titre: string;
-  code: string;
-  libelle: string;
-
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface EntiteeDeux {
-  id: number;
-  titre: string;
-  code: string;
-  libelle: string;
-  entitee_un_id: number;
-  entitee_un: EntiteeUn;
-
-  createdAt?: string; // si tu utilises timestamps dans Mongoose
-  updatedAt?: string;
-}
-
-export interface EntiteeTrois {
-  id: number;
-  titre: string;
-  code: string;
-  libelle: string;
-  entitee_deux_id: number;
-  entitee_deux: EntiteeDeux;
-
-  createdAt?: string; // si tu utilises timestamps dans Mongoose
-  updatedAt?: string;
-}
-
 // interfaces.ts
 export interface AgentEntiteeAccess {
   id: number;
-  agent_id: number;
-  entitee_un_id?: number | null;
-  entitee_deux_id?: number | null;
-  entitee_trois_id?: number | null;
 
   direction?: Direction;
   sousDirection?: SousDirection;
@@ -561,25 +495,15 @@ export interface AgentEntiteeAccess {
   created_at?: string;
   updated_at?: string;
 
-  // Associations
-  entitee_un?: EntiteeUn;
-  entitee_deux?: EntiteeDeux;
-  entitee_trois?: EntiteeTrois;
   agent?: Agent;
 }
 
 export interface GrantAccessPayload {
   agent_id: number;
-  entitee_un_id?: number | null;
-  entitee_deux_id?: number | null;
-  entitee_trois_id?: number | null;
 }
 
 export interface UpdateAccessPayload {
   agent_id?: number;
-  entitee_un_id?: number | null;
-  entitee_deux_id?: number | null;
-  entitee_trois_id?: number | null;
 }
 
 export interface Direction {
