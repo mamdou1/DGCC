@@ -66,7 +66,7 @@ class DroitController {
         include: [
           {
             model: Permission,
-            as "Permissions"
+            as: "Permissions",
             through: { attributes: [] },
             attributes: ["id", "resource", "action"],
           },
