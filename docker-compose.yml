@@ -33,7 +33,7 @@ services:
     environment:
       - NODE_ENV=docker
     ports:
-      - "5000:5000"
+      - "7000:5000"
     depends_on:
       mysql:
         condition: service_healthy

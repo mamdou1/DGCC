@@ -1,12 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
-  const MetaField = sequelize.define("MetaField", {
-    name: DataTypes.STRING,
-    label: DataTypes.STRING,
-    field_type: DataTypes.STRING,
-    required: DataTypes.BOOLEAN,
-    options: DataTypes.JSON,
-    position: DataTypes.INTEGER,
-  });
+  const MetaField = sequelize.define(
+    "MetaField",
+    {
+      name: DataTypes.STRING,
+      label: DataTypes.STRING,
+      field_type: DataTypes.STRING,
+      required: DataTypes.BOOLEAN,
+      options: DataTypes.JSON,
+      position: DataTypes.INTEGER,
+    },
+    { tableName: "metafields", timestamps: true, underscored: true },
+  );
 
   MetaField.associate = (models) => {
     MetaField.belongsTo(models.TypeDocument, {

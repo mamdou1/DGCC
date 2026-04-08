@@ -1155,6 +1155,15 @@ export default function DocumentPage() {
         visible={disponibleVisible}
         onHide={() => setDisponibleVisible(false)}
         document={selected}
+        onSuccess={() => {
+          refetch();
+          // if (selected) {
+          //   const updatedDoc = allDocs.find((d) => d.id === selected.id);
+          //   if (updatedDoc) {
+          //     setSelected(updatedDoc);
+          //   }
+          // }
+        }}
       />
     </Layout>
   );

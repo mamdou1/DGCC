@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       libelle: DataTypes.STRING,
     },
     {
-      tableName: "Droit",
+      tableName: "droit",
       timestamps: true,
       underscored: true,
     },
@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     Droit.belongsToMany(models.Permission, {
       through: "droit_permission",
       foreignKey: "droit_id",
+      as: "Permissions",
       otherKey: "permission_id",
       timestamps: false,
     });

@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       ],
     },
     {
-      tableName: "agent",
+      tableName: "permissions",
       timestamps: true,
       underscored: true,
     },

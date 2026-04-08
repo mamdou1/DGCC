@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       libelle: { type: DataTypes.STRING, allowNull: false },
     },
-    { tableName: "Fonctions", underscored: true },
+    { tableName: "fonctions", underscored: true },
   );
 
   Fonction.associate = (models) => {

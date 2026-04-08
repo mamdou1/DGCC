@@ -247,7 +247,7 @@ export type MetaFieldType =
   | "file";
 
 export interface MetaField {
-  id: number;
+  id: number | string | null;
   label: string;
   name: string;
   type: MetaFieldType;
