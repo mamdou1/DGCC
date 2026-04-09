@@ -31,9 +31,18 @@ exports.create = async (req, res) => {
       direction_id,
     } = req.body;
 
-    const count = await TypeDocument.count();
+    // Trouver le dernier code
+    const last = await TypeDocument.findOne({
+      order: [["id", "DESC"]],
+      attributes: ["code"],
+    });
 
-    const nextNumber = count + 1;
+    let nextNumber = 1;
+    if (last && last.code) {
+      const lastNumber = parseInt(last.code.split("-")[1]);
+      nextNumber = lastNumber + 1;
+    }
+
     const paddedNumber = nextNumber.toString().padStart(3, "0");
     const code = `TD-${paddedNumber}`;
 
