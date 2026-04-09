@@ -9,9 +9,18 @@ exports.createPieces = async (req, res) => {
   try {
     const { libelle } = req.body;
 
-    const count = await Pieces.count();
+  // Trouver le dernier code de pièce
+    const lastPiece = await Pieces.findOne({
+      order: [['id', 'DESC']],
+      attributes: ['code_pieces']
+    });
 
-    const nextNumber = count + 1;
+    let nextNumber = 1;
+    if (lastPiece && lastPiece.code_pieces) {
+      const lastNumber = parseInt(lastPiece.code_pieces.split('-')[1]);
+      nextNumber = lastNumber + 1;
+    }
+
     const paddedNumber = nextNumber.toString().padStart(3, "0");
     const code_pieces = `P-${paddedNumber}`;
 

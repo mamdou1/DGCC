@@ -445,6 +445,7 @@ export default function Sidebar({ children }: SidebarProps) {
               {(can("direction", "access") ||
                 can("sousDirection", "access") ||
                 can("division", "access") ||
+                can("service", "access") ||
                 can("section", "access")) && (
                 <SidebarTree label="Organigramme" icon={GitFork}>
                   {can("direction", "access") && (
@@ -477,6 +478,14 @@ export default function Sidebar({ children }: SidebarProps) {
                       text="Sections"
                       to="/section"
                       active={location.pathname.startsWith("/section")}
+                    />
+                  )}
+                  {can("service", "access") && (
+                    <SidebarLink
+                      icon={Building}
+                      text="Service"
+                      to="/service"
+                      active={location.pathname.startsWith("/service")}
                     />
                   )}
                 </SidebarTree>

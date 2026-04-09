@@ -110,7 +110,7 @@ sequelize
     // 3️⃣ SEEDER APRÈS sync
     await require("./seeders/001-permissions.seeder")();
 
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT, '0.0.0.0',() => {
       console.log(`🚀 Serveur lancé sur le port ${process.env.PORT}`);
     });
   })
