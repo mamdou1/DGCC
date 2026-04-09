@@ -18,6 +18,7 @@ import {
   History,
   Database,
   Building2,
+  Building,
   FileStack,
   Settings2,
   Briefcase,
