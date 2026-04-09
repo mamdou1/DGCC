@@ -12,9 +12,17 @@ exports.create = async (req, res) => {
     });
 
     const { libelle, division_id } = req.body;
-    const count = await Section.count();
+    // Trouver le dernier code
+    const last = await Section.findOne({
+      order: [["id", "DESC"]],
+      attributes: ["code_pieces"],
+    });
 
-    const nextNumber = count + 1;
+    let nextNumber = 1;
+    if (last && last.code_pieces) {
+      const lastNumber = parseInt(last.code_pieces.split("-")[1]);
+      nextNumber = lastNumber + 1;
+    }
 
     const paddedNumber = nextNumber.toString().padStart(3, "0");
 
