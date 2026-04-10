@@ -14,7 +14,7 @@ exports.create = async (req, res) => {
     const { libelle, direction_id } = req.body;
 
     // Trouver le dernier code
-    const last = await sousDirection.findOne({
+    const last = await SousDirection.findOne({
       order: [["id", "DESC"]],
       attributes: ["code"],
     });

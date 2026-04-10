@@ -207,7 +207,16 @@ class DroitController {
       await oldDroit.update(payload);
 
       // Récupérer la version modifiée
-      const updatedDroit = await Droit.findByPk(id);
+      //const updatedDroit = await Droit.findByPk(id);
+
+      const updatedDroit = await Droit.findByPk(id, {
+        include: [
+          {
+            model: Permission,
+            as: "Permissions", // ⚠️ alias obligatoire
+          },
+        ],
+      });
 
       logger.info("✅ Droit modifié avec succès", {
         droitId: id,

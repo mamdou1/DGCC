@@ -1,14 +1,15 @@
-const express = require("express");
 const dotenv = require("dotenv");
-const cors = require("cors");
-const path = require("path");
 
-//dotenv.config();
 const envFile = process.env.NODE_ENV === "docker" ? ".env.docker" : ".env";
 
-require("dotenv").config({
-  path: envFile,
-});
+dotenv.config({ path: envFile }); // ✅ EN PREMIER
+
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
 const sequelize = require("./config/database");
 //const historiqueLogger = require("./middlewares/historiqueLogger.middleware");
@@ -110,8 +111,10 @@ sequelize
     // 3️⃣ SEEDER APRÈS sync
     await require("./seeders/001-permissions.seeder")();
 
-    app.listen(process.env.PORT, '0.0.0.0',() => {
+    app.listen(process.env.PORT, "0.0.0.0", () => {
       console.log(`🚀 Serveur lancé sur le port ${process.env.PORT}`);
+      // console.log("DB_USER:", process.env.DB_USER);
+      // console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
     });
   })
   .catch((err) => {

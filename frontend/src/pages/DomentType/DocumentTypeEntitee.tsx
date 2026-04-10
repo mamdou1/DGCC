@@ -50,6 +50,7 @@ import { Dropdown } from "primereact/dropdown";
 import TypeDocumentAjoutPieces from "./TypeDocumentAjoutPieces";
 import DocumentTypeAffectAndForm from "./DocumentTypeAffectAndForm";
 import { useAuth } from "../../context/AuthContext";
+import Pagination from "../../components/layout/Pagination";
 
 export default function DocumentTypeEntitee() {
   const { user } = useAuth();
@@ -103,6 +104,17 @@ export default function DocumentTypeEntitee() {
     value: string;
     type: "direction" | "service" | "sousDirection" | "division" | "section";
   } | null>(null);
+
+  // ✅ ÉTATS PAGINATION
+  // Pagination des accordéons (structures)
+  const [currentStructurePage, setCurrentStructurePage] = useState(1);
+  const structuresPerPage = 5; // Nombre d'accordéons par page
+
+  // Pagination interne pour chaque accordéon (stockée par nom de structure)
+  const [internalPages, setInternalPages] = useState<Record<string, number>>(
+    {},
+  );
+  const itemsPerPageInternal = 10; // Nombre de documents par page dans un accordéon
 
   // ✅ Fonction pour vérifier si l'utilisateur est admin
   const isUserAdmin = (user: User | null): boolean => {
@@ -311,8 +323,6 @@ export default function DocumentTypeEntitee() {
     return groupKey;
   };
 
-  const groupedTypes = getGroupedData();
-
   const filteredOptions = useMemo(() => {
     const isAdmin = isUserAdmin(user);
 
@@ -359,6 +369,57 @@ export default function DocumentTypeEntitee() {
       (opt) => opt.value === null || accessibleEntityIds.has(opt.value),
     );
   }, [optionsEntites, user]);
+
+  const groupedTypes = getGroupedData();
+
+  // ✅ PAGINATION DES ACCORDÉONS (structures)
+  const paginatedStructures = useMemo(() => {
+    const structureNames = Object.keys(groupedTypes);
+    const startIndex = (currentStructurePage - 1) * structuresPerPage;
+    const endIndex = startIndex + structuresPerPage;
+    const paginatedNames = structureNames.slice(startIndex, endIndex);
+
+    const paginated: Record<string, TypeDocument[]> = {};
+    paginatedNames.forEach((name) => {
+      paginated[name] = groupedTypes[name];
+    });
+
+    return paginated;
+  }, [groupedTypes, currentStructurePage, structuresPerPage]);
+
+  const totalStructures = Object.keys(groupedTypes).length;
+
+  // ✅ Fonction pour obtenir les documents paginés d'une structure
+  const getPaginatedDocumentsForStructure = (
+    structureName: string,
+    documents: TypeDocument[],
+  ) => {
+    const currentInternalPage = internalPages[structureName] || 1;
+    const startIndex = (currentInternalPage - 1) * itemsPerPageInternal;
+    const endIndex = startIndex + itemsPerPageInternal;
+    const paginatedDocs = documents.slice(startIndex, endIndex);
+
+    return {
+      documents: paginatedDocs,
+      totalDocuments: documents.length,
+      currentPage: currentInternalPage,
+      totalPages: Math.ceil(documents.length / itemsPerPageInternal),
+    };
+  };
+
+  // ✅ Fonction pour changer la page interne d'une structure
+  const handleInternalPageChange = (structureName: string, page: number) => {
+    setInternalPages((prev) => ({
+      ...prev,
+      [structureName]: page,
+    }));
+  };
+
+  // Reset des pages quand les filtres changent
+  useEffect(() => {
+    setCurrentStructurePage(1);
+    setInternalPages({});
+  }, [query, selectedTypeDoc]);
 
   // ✅ Handlers
   const handleStructureClick = (groupKey: string) => {
@@ -680,162 +741,244 @@ export default function DocumentTypeEntitee() {
 
       {/* Liste des types groupés par entité */}
       <div className="space-y-4">
-        {Object.entries(groupedTypes).map(([groupKey, docs]) => {
-          // groupKey est déjà le libellé complet (ex: "🏢 Direction : DIRECTION GENERAL")
+        {Object.entries(paginatedStructures).length > 0 ? (
+          <>
+            {Object.entries(paginatedStructures).map(([groupKey, docs]) => {
+              // groupKey est déjà le libellé complet (ex: "🏢 Direction : DIRECTION GENERAL")
 
-          // Déterminer l'icône en fonction du libellé
-          let Icon = Database; // par défaut
-          if (groupKey.includes("Direction")) Icon = Building2;
-          else if (groupKey.includes("Service")) Icon = Briefcase;
-          else if (groupKey.includes("Sous-direction")) Icon = Split;
-          else if (groupKey.includes("Division")) Icon = TableOfContents;
-          else if (groupKey.includes("Section")) Icon = GitMerge;
+              // Déterminer l'icône en fonction du libellé
+              let Icon = Database; // par défaut
+              if (groupKey.includes("Direction")) Icon = Building2;
+              else if (groupKey.includes("Service")) Icon = Briefcase;
+              else if (groupKey.includes("Sous-direction")) Icon = Split;
+              else if (groupKey.includes("Division")) Icon = TableOfContents;
+              else if (groupKey.includes("Section")) Icon = GitMerge;
 
-          return (
-            <div
-              key={groupKey}
-              className="bg-white border rounded-2xl overflow-hidden shadow-sm"
-            >
-              <button
-                onClick={() => handleStructureClick(groupKey)}
-                className="w-full flex items-center justify-between p-5 transition-all hover:bg-slate-50"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-orange-100 text-orange-600">
-                    <Icon size={20} />
-                  </div>
-                  <div className="text-left">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-slate-700">{groupKey}</h3>
-                      {/* 👇 BADGE À PLACER ICI, À CÔTÉ DU TITRE */}
-                      {selectedAccordionEntity?.label === groupKey && (
-                        <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
-                          Structure active
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-slate-500 font-medium">
-                      {docs.length} document(s)
-                    </p>
-                  </div>
-                </div>
-                {expandedStructure === groupKey ? (
-                  <ChevronDown size={20} className="text-slate-400" />
-                ) : (
-                  <ChevronRight size={20} className="text-slate-400" />
-                )}
-              </button>
-
-              {expandedStructure === groupKey && (
-                <div className="border-t border-slate-50 overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-slate-50/50">
-                      <tr>
-                        <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
-                          Code
-                        </th>
-                        <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
-                          Libellé
-                        </th>
-                        <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                      {docs.map((t) => (
-                        <tr
-                          key={t.id}
-                          onClick={() => {
-                            setSelected(t);
-                            setDetailsVisible(true);
-                          }}
-                          className="cursor-pointer hover:bg-orange-50/30 transition-colors"
-                        >
-                          <td className="p-4">
-                            <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs font-bold">
-                              {t.code}
+              return (
+                <div
+                  key={groupKey}
+                  className="bg-white border rounded-2xl overflow-hidden shadow-sm"
+                >
+                  <button
+                    onClick={() => handleStructureClick(groupKey)}
+                    className="w-full flex items-center justify-between p-5 transition-all hover:bg-slate-50"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 rounded-lg bg-orange-100 text-orange-600">
+                        <Icon size={20} />
+                      </div>
+                      <div className="text-left">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-slate-700">
+                            {groupKey}
+                          </h3>
+                          {/* 👇 BADGE À PLACER ICI, À CÔTÉ DU TITRE */}
+                          {selectedAccordionEntity?.label === groupKey && (
+                            <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
+                              Structure active
                             </span>
-                          </td>
-                          <td className="p-4">
-                            <div className="font-semibold text-slate-800 text-sm flex items-center gap-2">
-                              <FileText size={25} className="text-orange-500" />
-                              {t.nom}
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex justify-center gap-1">
-                              <button
-                                onClick={(e) => {
-                                  setSelected(t);
-                                  setFormPiecesVisible(true);
-                                  e.stopPropagation();
-                                }}
-                                className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg"
-                                title="Ajouter des pièces"
-                              >
-                                <FilePlus size={25} />
-                              </button>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">
+                          {docs.length} document(s)
+                        </p>
+                      </div>
+                    </div>
+                    {expandedStructure === groupKey ? (
+                      <ChevronDown size={20} className="text-slate-400" />
+                    ) : (
+                      <ChevronRight size={20} className="text-slate-400" />
+                    )}
+                  </button>
 
-                              {groupKey.includes("non assignés") && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
+                  {expandedStructure === groupKey && (
+                    <div className="border-t border-slate-50">
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-slate-50/50">
+                            <tr>
+                              <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
+                                Code
+                              </th>
+                              <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-left">
+                                Libellé
+                              </th>
+                              <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-center">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-50">
+                            {(() => {
+                              // ✅ Calculer les documents paginés pour ce groupe
+                              const currentInternalPage =
+                                internalPages[groupKey] || 1;
+                              const startIndex =
+                                (currentInternalPage - 1) *
+                                itemsPerPageInternal;
+                              const endIndex =
+                                startIndex + itemsPerPageInternal;
+                              const paginatedDocs = docs.slice(
+                                startIndex,
+                                endIndex,
+                              );
+                              const totalDocuments = docs.length;
+                              const totalPages = Math.ceil(
+                                totalDocuments / itemsPerPageInternal,
+                              );
+
+                              return paginatedDocs.map((t) => (
+                                <tr
+                                  key={t.id}
+                                  onClick={() => {
                                     setSelected(t);
-                                    setAffectationFormVisible(true);
+                                    setDetailsVisible(true);
                                   }}
-                                  className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg"
-                                  title="Affecter à une structure"
+                                  className="cursor-pointer hover:bg-orange-50/30 transition-colors"
                                 >
-                                  <SplinePointer size={25} />
-                                </button>
-                              )}
+                                  <td className="p-4">
+                                    <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs font-bold">
+                                      {t.code}
+                                    </span>
+                                  </td>
+                                  <td className="p-4">
+                                    <div className="font-semibold text-slate-800 text-sm flex items-center gap-2">
+                                      <FileText
+                                        size={25}
+                                        className="text-orange-500"
+                                      />
+                                      {t.nom}
+                                    </div>
+                                  </td>
+                                  <td className="p-4">
+                                    <div className="flex justify-center gap-1">
+                                      <button
+                                        onClick={(e) => {
+                                          setSelected(t);
+                                          setFormPiecesVisible(true);
+                                          e.stopPropagation();
+                                        }}
+                                        className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg"
+                                        title="Ajouter des pièces"
+                                      >
+                                        <FilePlus size={25} />
+                                      </button>
 
-                              <button
-                                onClick={(e) => {
-                                  setEditing(t);
-                                  setFormVisible(true);
-                                  e.stopPropagation();
-                                }}
-                                className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
-                                title="Modifier"
-                              >
-                                <Pencil size={25} />
-                              </button>
+                                      {groupKey.includes("non assignés") && (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelected(t);
+                                            setAffectationFormVisible(true);
+                                          }}
+                                          className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg"
+                                          title="Affecter à une structure"
+                                        >
+                                          <SplinePointer size={25} />
+                                        </button>
+                                      )}
 
-                              <button
-                                onClick={(e) => {
-                                  setSelected(t);
-                                  setMetaVisible(true);
-                                  e.stopPropagation();
-                                }}
-                                className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg"
-                                title="Métadonnées"
-                              >
-                                <Settings size={25} />
-                              </button>
+                                      <button
+                                        onClick={(e) => {
+                                          setEditing(t);
+                                          setFormVisible(true);
+                                          e.stopPropagation();
+                                        }}
+                                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+                                        title="Modifier"
+                                      >
+                                        <Pencil size={25} />
+                                      </button>
 
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDelete(String(t.id));
-                                }}
-                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                                title="Supprimer"
-                              >
-                                <Trash2 size={25} />
-                              </button>
+                                      <button
+                                        onClick={(e) => {
+                                          setSelected(t);
+                                          setMetaVisible(true);
+                                          e.stopPropagation();
+                                        }}
+                                        className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg"
+                                        title="Métadonnées"
+                                      >
+                                        <Settings size={25} />
+                                      </button>
+
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDelete(String(t.id));
+                                        }}
+                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                        title="Supprimer"
+                                      >
+                                        <Trash2 size={25} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ));
+                            })()}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* ✅ Pagination interne pour cet accordéon */}
+                      {(() => {
+                        const totalDocuments = docs.length;
+                        const totalPages = Math.ceil(
+                          totalDocuments / itemsPerPageInternal,
+                        );
+                        const currentInternalPage =
+                          internalPages[groupKey] || 1;
+
+                        return (
+                          totalPages > 1 && (
+                            <div className="border-t border-slate-100 p-4 bg-slate-50/30">
+                              <div className="flex justify-center items-center">
+                                <Pagination
+                                  currentPage={currentInternalPage}
+                                  totalItems={totalDocuments}
+                                  itemsPerPage={itemsPerPageInternal}
+                                  onPageChange={(page) =>
+                                    handleInternalPageChange(groupKey, page)
+                                  }
+                                />
+                              </div>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          )
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
-              )}
+              );
+            })}
+            {/* ✅ Pagination des accordéons (structures) */}
+            {totalStructures > structuresPerPage && (
+              <div className="mt-8 flex justify-center pt-4 border-t border-slate-200">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="text-sm text-slate-500">
+                    {totalStructures} structures au total
+                  </div>
+                  <Pagination
+                    currentPage={currentStructurePage}
+                    totalItems={totalStructures}
+                    itemsPerPage={structuresPerPage}
+                    onPageChange={setCurrentStructurePage}
+                  />
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100">
+            <div className="inline-flex p-4 bg-slate-50 rounded-full text-slate-300 mb-4">
+              <Search size={40} />
             </div>
-          );
-        })}
+            <p className="text-slate-400 font-medium">
+              Aucun document trouvé pour cette sélection.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Modals */}

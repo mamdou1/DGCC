@@ -139,6 +139,17 @@ export default function DocumentPage() {
     documentType_id || expandedType || null,
   );
 
+  // ✅ ÉTATS PAGINATION (à ajouter après les autres useState)
+  // Pagination des entités (structures)
+  const [currentEntityPage, setCurrentEntityPage] = useState(1);
+  const entitiesPerPage = 5; // Nombre d'entités par page
+
+  // Pagination interne pour chaque type de document (stockée par typeId)
+  const [internalTypePages, setInternalTypePages] = useState<
+    Record<number, number>
+  >({});
+  const itemsPerPageInternal = 5; // Nombre de documents par page dans un type
+
   useEffect(() => {
     if (formVisible && pendingTypeId) {
       setDocumentType_id(pendingTypeId);
@@ -437,6 +448,46 @@ export default function DocumentPage() {
     return grouped;
   }, [filteredTypes, types]);
 
+  const paginatedEntities = useMemo(() => {
+    const startIndex = (currentEntityPage - 1) * entitiesPerPage;
+    const endIndex = startIndex + entitiesPerPage;
+    return filteredEntitees.slice(startIndex, endIndex);
+  }, [filteredEntitees, currentEntityPage, entitiesPerPage]);
+
+  const totalEntities = filteredEntitees.length;
+
+  // ✅ Fonction pour obtenir les documents paginés d'un type
+  const getPaginatedDocumentsForType = (
+    typeId: number,
+    documents: Document[],
+  ) => {
+    const currentInternalPage = internalTypePages[typeId] || 1;
+    const startIndex = (currentInternalPage - 1) * itemsPerPageInternal;
+    const endIndex = startIndex + itemsPerPageInternal;
+    const paginatedDocs = documents.slice(startIndex, endIndex);
+
+    return {
+      documents: paginatedDocs,
+      totalDocuments: documents.length,
+      currentPage: currentInternalPage,
+      totalPages: Math.ceil(documents.length / itemsPerPageInternal),
+    };
+  };
+
+  // ✅ Fonction pour changer la page interne d'un type
+  const handleInternalPageChange = (typeId: number, page: number) => {
+    setInternalTypePages((prev) => ({
+      ...prev,
+      [typeId]: page,
+    }));
+  };
+
+  // Reset des pages quand les filtres changent
+  useEffect(() => {
+    setCurrentEntityPage(1);
+    setInternalTypePages({});
+  }, [query, selectedNiveau]);
+
   const toggleEntitee = (entiteeId: number) => {
     setExpandedEntitee(expandedEntitee === entiteeId ? null : entiteeId);
     setExpandedType(null);
@@ -692,343 +743,384 @@ export default function DocumentPage() {
     if (selectedNiveau) {
       return (
         <div className="space-y-4">
-          {filteredEntitees.length > 0 ? (
-            filteredEntitees.map((entitee) => {
-              const EntiteeIcon = getEntiteeIcon(entitee.type);
-              const entiteeTypes = typesByEntitee[entitee.id] || [];
-              const isExpanded = expandedEntitee === entitee.id;
+          {paginatedEntities.length > 0 ? (
+            <>
+              {paginatedEntities.map((entitee) => {
+                const EntiteeIcon = getEntiteeIcon(entitee.type);
+                const entiteeTypes = typesByEntitee[entitee.id] || [];
+                const isExpanded = expandedEntitee === entitee.id;
 
-              return (
-                <div
-                  key={`${entitee.type}-${entitee.id}`}
-                  className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
-                    isExpanded
-                      ? "border-orange-500 ring-2 ring-orange-200"
-                      : "border-slate-100"
-                  }`}
-                >
-                  {/* HEADER ENTITÉ */}
-                  <button
-                    onClick={() => toggleEntitee(entitee.id)}
-                    className={`w-full flex items-center justify-between p-5 transition-all ${
-                      isExpanded ? "bg-orange-50/50" : "hover:bg-slate-50"
+                return (
+                  <div
+                    key={`${entitee.type}-${entitee.id}`}
+                    className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
+                      isExpanded
+                        ? "border-orange-500 ring-2 ring-orange-200"
+                        : "border-slate-100"
                     }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`p-2 rounded-lg ${
-                          isExpanded
-                            ? "bg-orange-500 text-white"
-                            : "bg-slate-100 text-slate-500"
-                        }`}
-                      >
-                        <EntiteeIcon size={20} />
-                      </div>
-                      <div className="text-left">
-                        <div className="flex items-center gap-2">
-                          <h3
-                            className={`font-bold ${
-                              isExpanded ? "text-orange-800" : "text-slate-700"
-                            }`}
-                          >
-                            {entitee.libelle}
-                          </h3>
-                          {entitee.code && (
-                            <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-mono">
-                              {entitee.code}
-                            </span>
-                          )}
-                          <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${getEntiteeBadgeColor(
-                              entitee.type,
-                            )}`}
-                          >
-                            {getEntiteeShortLabel(entitee.type)}
-                          </span>
+                    {/* HEADER ENTITÉ - inchangé */}
+                    <button
+                      onClick={() => toggleEntitee(entitee.id)}
+                      className={`w-full flex items-center justify-between p-5 transition-all ${
+                        isExpanded ? "bg-orange-50/50" : "hover:bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div
+                          className={`p-2 rounded-lg ${
+                            isExpanded
+                              ? "bg-orange-500 text-white"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
+                          <EntiteeIcon size={20} />
                         </div>
-                        <p className="text-xs text-slate-500 font-medium">
-                          {entiteeTypes.length} type(s) de document
-                        </p>
-                      </div>
-                    </div>
-                    {isExpanded ? (
-                      <ChevronDown size={20} className="text-orange-500" />
-                    ) : (
-                      <ChevronRight size={20} className="text-slate-400" />
-                    )}
-                  </button>
-
-                  {/* TYPES DE DOCUMENTS DE L'ENTITÉ */}
-                  {isExpanded && (
-                    <div className="border-t border-slate-100 p-5 space-y-3 bg-slate-50/30">
-                      {entiteeTypes.length > 0 ? (
-                        entiteeTypes.map((type) => {
-                          const isTypeExpanded = expandedType === type.id;
-                          const typeDocs = allDocs.filter(
-                            (d) => d.type_document_id === type.id,
-                          );
-                          const paginatedDocs = typeDocs.slice(
-                            (currentPage - 1) * itemsPerPage,
-                            currentPage * itemsPerPage,
-                          );
-
-                          return (
-                            <div
-                              key={type.id}
-                              className={`bg-white border rounded-xl overflow-hidden transition-all ${
-                                isTypeExpanded
-                                  ? "border-orange-400"
-                                  : "border-slate-100"
+                        <div className="text-left">
+                          <div className="flex items-center gap-2">
+                            <h3
+                              className={`font-bold ${
+                                isExpanded
+                                  ? "text-orange-800"
+                                  : "text-slate-700"
                               }`}
                             >
-                              {/* HEADER TYPE */}
-                              <div
-                                onClick={() => toggleType(type.id)}
-                                className={`w-full flex items-center justify-between p-4 transition-all ${
-                                  isTypeExpanded
-                                    ? "bg-orange-50/50"
-                                    : "hover:bg-slate-50"
-                                }`}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div
-                                    className={`p-1.5 rounded-lg ${
-                                      isTypeExpanded
-                                        ? "bg-orange-500 text-white"
-                                        : "bg-slate-100 text-slate-500"
-                                    }`}
-                                  >
-                                    <FileText size={16} />
-                                  </div>
-                                  <div className="text-left">
-                                    <div className="flex items-center gap-2">
-                                      <span
-                                        className={`text-sm font-bold ${
-                                          isTypeExpanded
-                                            ? "text-orange-700"
-                                            : "text-slate-700"
-                                        }`}
-                                      >
-                                        {type.nom}
-                                      </span>
-                                      <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-mono">
-                                        {type.code}
-                                      </span>
-                                    </div>
-                                    <p className="text-[10px] text-slate-500">
-                                      {typeDocs.length} document(s)
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setPendingTypeId(type.id);
-                                      setEditingDoc(null);
-                                      setFormVisible(true);
-                                    }}
-                                    className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg"
-                                    title="Nouveau document"
-                                  >
-                                    <Plus size={14} />
-                                  </button>
-                                  {isTypeExpanded ? (
-                                    <ChevronDown
-                                      size={16}
-                                      className="text-orange-500"
-                                    />
-                                  ) : (
-                                    <ChevronRight
-                                      size={16}
-                                      className="text-slate-400"
-                                    />
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* TABLEAU DES DOCUMENTS */}
-                              {isTypeExpanded && (
-                                <div className="border-t border-slate-100 p-4 bg-slate-50/30">
-                                  {typeDocs.length > 0 ? (
-                                    <>
-                                      <div className="overflow-x-auto">
-                                        <table className="w-full text-left border-collapse">
-                                          <thead>
-                                            <tr className="bg-orange-50/30 border-b border-orange-50">
-                                              <th className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest w-24">
-                                                Réf.
-                                              </th>
-                                              {metaFields.map((m) => (
-                                                <th
-                                                  key={m.id}
-                                                  className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest"
-                                                >
-                                                  {m.label}
-                                                </th>
-                                              ))}
-                                              <th className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest text-center">
-                                                Actions
-                                              </th>
-                                            </tr>
-                                          </thead>
-                                          <tbody className="divide-y divide-orange-50">
-                                            {paginatedDocs.map((doc) => (
-                                              <tr
-                                                key={doc.id}
-                                                onClick={() => {
-                                                  setSelected(doc);
-                                                  setDetailsVisible(true);
-                                                }}
-                                                className="cursor-pointer group hover:bg-orange-50/40 transition-colors"
-                                              >
-                                                <td className="p-3">
-                                                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-lg text-xs font-bold border border-orange-200">
-                                                    #
-                                                    {String(doc.id).padStart(
-                                                      3,
-                                                      "0",
-                                                    )}
-                                                  </span>
-                                                </td>
-
-                                                {metaFields.map((m) => {
-                                                  const value =
-                                                    doc.values?.find(
-                                                      (v: any) =>
-                                                        v.metaField?.id ===
-                                                        m.id,
-                                                    )?.value;
-                                                  return (
-                                                    <td
-                                                      key={m.id}
-                                                      className="p-3 text-sm text-orange-900 font-medium"
-                                                    >
-                                                      {value || (
-                                                        <span className="text-orange-200">
-                                                          ---
-                                                        </span>
-                                                      )}
-                                                    </td>
-                                                  );
-                                                })}
-
-                                                <td className="p-3">
-                                                  <div
-                                                    className="flex justify-center gap-1"
-                                                    onClick={(e) =>
-                                                      e.stopPropagation()
-                                                    }
-                                                  >
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setEditingDoc(doc);
-                                                        setPendingTypeId(
-                                                          type.id,
-                                                        );
-                                                        setFormVisible(true);
-                                                      }}
-                                                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-                                                      title="Modifier le document"
-                                                    >
-                                                      <Pencil size={18} />
-                                                    </button>
-
-                                                    <button
-                                                      onClick={(e) => {
-                                                        setSelected(doc);
-                                                        setDisponibleVisible(
-                                                          true,
-                                                        );
-                                                        e.stopPropagation();
-                                                      }}
-                                                      className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
-                                                      title="Contrôle de la disponibilité des pièces"
-                                                    >
-                                                      <Check size={18} />
-                                                    </button>
-                                                    <button
-                                                      onClick={(e) => {
-                                                        setSelected(doc);
-                                                        setAjoutVisible(true);
-                                                        e.stopPropagation();
-                                                      }}
-                                                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-                                                      title="Chargement des fichiers"
-                                                    >
-                                                      <CloudDownload
-                                                        size={18}
-                                                      />
-                                                    </button>
-                                                    <button
-                                                      onClick={() =>
-                                                        handleDelete(
-                                                          String(doc.id),
-                                                        )
-                                                      }
-                                                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                                    >
-                                                      <Trash2 size={18} />
-                                                    </button>
-                                                  </div>
-                                                </td>
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                      </div>
-
-                                      <div className="mt-4 flex justify-center">
-                                        <Pagination
-                                          currentPage={currentPage}
-                                          itemsPerPage={itemsPerPage}
-                                          totalItems={typeDocs.length}
-                                          onPageChange={setCurrentPage}
-                                        />
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <div className="text-center py-8">
-                                      <FileText
-                                        size={32}
-                                        className="mx-auto text-slate-300 mb-2"
-                                      />
-                                      <p className="text-sm text-slate-400 italic">
-                                        Aucun document pour ce type
-                                      </p>
-                                      <button
-                                        onClick={() => {
-                                          setDocumentType_id(type.id);
-                                          setFormVisible(true);
-                                        }}
-                                        className="mt-3 text-sm bg-orange-600 text-white px-4 py-2 rounded-xl hover:bg-orange-700 transition-all"
-                                      >
-                                        <Plus
-                                          size={14}
-                                          className="inline mr-1"
-                                        />
-                                        Créer le premier document
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div className="text-center py-8">
-                          <p className="text-slate-400 text-sm italic">
-                            Aucun type de document pour cette entité
+                              {entitee.libelle}
+                            </h3>
+                            {entitee.code && (
+                              <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-mono">
+                                {entitee.code}
+                              </span>
+                            )}
+                            <span
+                              className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${getEntiteeBadgeColor(
+                                entitee.type,
+                              )}`}
+                            >
+                              {getEntiteeShortLabel(entitee.type)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 font-medium">
+                            {entiteeTypes.length} type(s) de document
                           </p>
                         </div>
+                      </div>
+                      {isExpanded ? (
+                        <ChevronDown size={20} className="text-orange-500" />
+                      ) : (
+                        <ChevronRight size={20} className="text-slate-400" />
                       )}
+                    </button>
+
+                    {/* TYPES DE DOCUMENTS DE L'ENTITÉ */}
+                    {isExpanded && (
+                      <div className="border-t border-slate-100 p-5 space-y-3 bg-slate-50/30">
+                        {entiteeTypes.length > 0 ? (
+                          entiteeTypes.map((type) => {
+                            const typeDocs = allDocs.filter(
+                              (d) => d.type_document_id === type.id,
+                            );
+
+                            // ✅ Utiliser la pagination interne pour ce type
+                            const {
+                              documents: paginatedDocs,
+                              totalDocuments,
+                              currentPage: internalPage,
+                              totalPages,
+                            } = getPaginatedDocumentsForType(type.id, typeDocs);
+
+                            const isTypeExpanded = expandedType === type.id;
+
+                            return (
+                              <div
+                                key={type.id}
+                                className={`bg-white border rounded-xl overflow-hidden transition-all ${
+                                  isTypeExpanded
+                                    ? "border-orange-400"
+                                    : "border-slate-100"
+                                }`}
+                              >
+                                {/* HEADER TYPE - inchangé sauf l'affichage du compteur */}
+                                <div
+                                  onClick={() => toggleType(type.id)}
+                                  className={`w-full flex items-center justify-between p-4 transition-all cursor-pointer ${
+                                    isTypeExpanded
+                                      ? "bg-orange-50/50"
+                                      : "hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div
+                                      className={`p-1.5 rounded-lg ${
+                                        isTypeExpanded
+                                          ? "bg-orange-500 text-white"
+                                          : "bg-slate-100 text-slate-500"
+                                      }`}
+                                    >
+                                      <FileText size={16} />
+                                    </div>
+                                    <div className="text-left">
+                                      <div className="flex items-center gap-2">
+                                        <span
+                                          className={`text-sm font-bold ${
+                                            isTypeExpanded
+                                              ? "text-orange-700"
+                                              : "text-slate-700"
+                                          }`}
+                                        >
+                                          {type.nom}
+                                        </span>
+                                        <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-mono">
+                                          {type.code}
+                                        </span>
+                                      </div>
+                                      <p className="text-[10px] text-slate-500">
+                                        {totalDocuments} document(s)
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPendingTypeId(type.id);
+                                        setEditingDoc(null);
+                                        setFormVisible(true);
+                                      }}
+                                      className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg"
+                                      title="Nouveau document"
+                                    >
+                                      <Plus size={14} />
+                                    </button>
+                                    {isTypeExpanded ? (
+                                      <ChevronDown
+                                        size={16}
+                                        className="text-orange-500"
+                                      />
+                                    ) : (
+                                      <ChevronRight
+                                        size={16}
+                                        className="text-slate-400"
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* TABLEAU DES DOCUMENTS AVEC PAGINATION INTERNE */}
+                                {isTypeExpanded && (
+                                  <div className="border-t border-slate-100 p-4 bg-slate-50/30">
+                                    {totalDocuments > 0 ? (
+                                      <>
+                                        <div className="overflow-x-auto">
+                                          <table className="w-full text-left border-collapse">
+                                            <thead>
+                                              <tr className="bg-orange-50/30 border-b border-orange-50">
+                                                <th className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest w-24">
+                                                  Réf.
+                                                </th>
+                                                {metaFields.map((m) => (
+                                                  <th
+                                                    key={m.id}
+                                                    className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest"
+                                                  >
+                                                    {m.label}
+                                                  </th>
+                                                ))}
+                                                <th className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest text-center">
+                                                  Actions
+                                                </th>
+                                              </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-orange-50">
+                                              {paginatedDocs.map((doc) => (
+                                                <tr
+                                                  key={doc.id}
+                                                  onClick={() => {
+                                                    setSelected(doc);
+                                                    setDetailsVisible(true);
+                                                  }}
+                                                  className="cursor-pointer group hover:bg-orange-50/40 transition-colors"
+                                                >
+                                                  <td className="p-3">
+                                                    <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-lg text-xs font-bold border border-orange-200">
+                                                      #
+                                                      {String(doc.id).padStart(
+                                                        3,
+                                                        "0",
+                                                      )}
+                                                    </span>
+                                                  </td>
+                                                  {metaFields.map((m) => {
+                                                    const value =
+                                                      doc.values?.find(
+                                                        (v: any) =>
+                                                          v.metaField?.id ===
+                                                          m.id,
+                                                      )?.value;
+                                                    return (
+                                                      <td
+                                                        key={m.id}
+                                                        className="p-3 text-sm text-orange-900 font-medium"
+                                                      >
+                                                        {value || (
+                                                          <span className="text-orange-200">
+                                                            ---
+                                                          </span>
+                                                        )}
+                                                      </td>
+                                                    );
+                                                  })}
+                                                  <td className="p-3">
+                                                    <div
+                                                      className="flex justify-center gap-1"
+                                                      onClick={(e) =>
+                                                        e.stopPropagation()
+                                                      }
+                                                    >
+                                                      <button
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          setEditingDoc(doc);
+                                                          setPendingTypeId(
+                                                            type.id,
+                                                          );
+                                                          setFormVisible(true);
+                                                        }}
+                                                        className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                                        title="Modifier le document"
+                                                      >
+                                                        <Pencil size={18} />
+                                                      </button>
+                                                      <button
+                                                        onClick={(e) => {
+                                                          setSelected(doc);
+                                                          setDisponibleVisible(
+                                                            true,
+                                                          );
+                                                          e.stopPropagation();
+                                                        }}
+                                                        className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                                                        title="Contrôle de la disponibilité des pièces"
+                                                      >
+                                                        <Check size={18} />
+                                                      </button>
+                                                      <button
+                                                        onClick={(e) => {
+                                                          setSelected(doc);
+                                                          setAjoutVisible(true);
+                                                          e.stopPropagation();
+                                                        }}
+                                                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                                        title="Chargement des fichiers"
+                                                      >
+                                                        <CloudDownload
+                                                          size={18}
+                                                        />
+                                                      </button>
+                                                      <button
+                                                        onClick={() =>
+                                                          handleDelete(
+                                                            String(doc.id),
+                                                          )
+                                                        }
+                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                      >
+                                                        <Trash2 size={18} />
+                                                      </button>
+                                                    </div>
+                                                  </td>
+                                                </tr>
+                                              ))}
+                                            </tbody>
+                                          </table>
+                                        </div>
+
+                                        {/* ✅ Pagination interne pour ce type */}
+                                        {totalPages > 1 && (
+                                          <div className="mt-4 flex justify-center pt-2 border-t border-slate-100">
+                                            <Pagination
+                                              currentPage={internalPage}
+                                              totalItems={totalDocuments}
+                                              itemsPerPage={
+                                                itemsPerPageInternal
+                                              }
+                                              onPageChange={(page) =>
+                                                handleInternalPageChange(
+                                                  type.id,
+                                                  page,
+                                                )
+                                              }
+                                            />
+                                          </div>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <div className="text-center py-8">
+                                        <FileText
+                                          size={32}
+                                          className="mx-auto text-slate-300 mb-2"
+                                        />
+                                        <p className="text-sm text-slate-400 italic">
+                                          Aucun document pour ce type
+                                        </p>
+                                        <button
+                                          onClick={() => {
+                                            setDocumentType_id(type.id);
+                                            setFormVisible(true);
+                                          }}
+                                          className="mt-3 text-sm bg-orange-600 text-white px-4 py-2 rounded-xl hover:bg-orange-700 transition-all"
+                                        >
+                                          <Plus
+                                            size={14}
+                                            className="inline mr-1"
+                                          />
+                                          Créer le premier document
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="text-center py-8">
+                            <p className="text-slate-400 text-sm italic">
+                              Aucun type de document pour cette entité
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* ✅ Pagination des entités (structures) */}
+              {totalEntities > entitiesPerPage && (
+                <div className="mt-8 flex justify-center pt-4 border-t border-slate-200">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="text-sm text-slate-500">
+                      {totalEntities}{" "}
+                      {selectedNiveau === "direction"
+                        ? "directions"
+                        : selectedNiveau === "sousDirection"
+                          ? "sous-directions"
+                          : selectedNiveau === "division"
+                            ? "divisions"
+                            : "sections"}{" "}
+                      au total
                     </div>
-                  )}
+                    <Pagination
+                      currentPage={currentEntityPage}
+                      totalItems={totalEntities}
+                      itemsPerPage={entitiesPerPage}
+                      onPageChange={setCurrentEntityPage}
+                    />
+                  </div>
                 </div>
-              );
-            })
+              )}
+            </>
           ) : (
             <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100">
               <div className="inline-flex p-4 bg-slate-50 rounded-full text-slate-300 mb-4">
