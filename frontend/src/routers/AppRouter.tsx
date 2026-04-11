@@ -41,6 +41,7 @@ export default function AppRouter() {
   if (loading) return <div>Chargement...</div>;
   return (
     <Routes>
+      <Route path="/" element={<AuthSwitcher />} />
       <Route path="/connexion" element={<AuthSwitcher />} />
       <Route path="/send-code" element={<SendEmail />} />
       <Route path="/verify-code" element={<VerifyEmail />} />
@@ -52,7 +53,7 @@ export default function AppRouter() {
           <PrivateRoute>
             {/* 💡 On vérifie ici aussi la permission ! */}
             {can("statistique", "read") ? (
-              <Dashboard />
+              <AuthSwitcher />
             ) : (
               <Navigate to="/welcome" replace />
             )}

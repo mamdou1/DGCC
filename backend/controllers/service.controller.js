@@ -8,78 +8,37 @@ const HistoriqueService = require("../services/historique.service");
  */
 exports.create = async (req, res) => {
   const startTime = Date.now();
-
   try {
-    logger.info("📝 Tentative de création d'un service", {
-      userId: req.user?.id,
-      body: req.body,
-    });
-
-    // Vérifier si la direction existe
-    if (req.body.direction_id) {
-      const direction = await Direction.findByPk(req.body.direction_id);
-      if (!direction) {
-        logger.warn("⚠️ Direction non trouvée", {
-          directionId: req.body.direction_id,
-          userId: req.user?.id,
-        });
-        return res.status(404).json({ message: "Direction non trouvée" });
-      }
-    }
-
     const { libelle, direction_id } = req.body;
-    // Trouver le dernier code
-    const last = await Service.findOne({
-      order: [["id", "DESC"]],
-      attributes: ["code"],
-    });
 
+    if (!libelle?.trim()) return res.status(400).json({ message: "Le libellé est requis" });
+    if (!direction_id || isNaN(direction_id)) return res.status(400).json({ message: "direction_id requis" });
+
+    const direction = await Direction.findByPk(direction_id);
+    if (!direction) return res.status(404).json({ message: "Direction non trouvée" });
+
+    const last = await Service.findOne({ order: [["id", "DESC"]], attributes: ["code"] });
     let nextNumber = 1;
-    if (last && last.code) {
-      const lastNumber = parseInt(last.code.split("-")[1]);
-      nextNumber = lastNumber + 1;
+    if (last?.code) {
+      const match = last.code.match(/SERV-(\d+)/);
+      if (match) nextNumber = parseInt(match[1]) + 1;
     }
+    const code = `SERV-${nextNumber.toString().padStart(3, "0")}`;
 
-    const paddedNumber = nextNumber.toString().padStart(3, "0");
+    const service = await Service.create({ code, libelle: libelle.trim(), direction_id });
 
-    const code = `SERV-${paddedNumber}`;
-
-    const service = await Service.create({
-      code,
-      libelle,
-      direction_id,
-    });
-
-    logger.info("✅ Service créé avec succès", {
-      serviceId: service.id,
-      code: service.code,
-      libelle: service.libelle,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
-
+    logger.info("✅ Service créé", { serviceId: service.id, userId: req.user?.id, duration: Date.now() - startTime });
     await HistoriqueService.logCreate(req, "service", service);
-
     res.status(201).json(service);
   } catch (err) {
-    if (err.name === "SequelizeUniqueConstraintError") {
-      logger.warn("⚠️ Code déjà existant", {
-        code: req.body.code,
-        userId: req.user?.id,
-      });
-      return res.status(400).json({ message: "Ce code existe déjà" });
+    if (err.name === "SequelizeValidationError") {
+      return res.status(400).json({ message: "Erreur validation", details: err.errors.map(e => e.message) });
     }
-
-    logger.error("❌ Erreur création service:", {
-      error: err.message,
-      stack: err.stack,
-      body: req.body,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
-    res
-      .status(500)
-      .json({ message: "Erreur création service", error: err.message });
+    if (err.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({ message: "Ce code existe déjà" });
+    }
+    logger.error("❌ Erreur création service:", { error: err.message, stack: err.stack, body: req.body });
+    res.status(500).json({ message: "Erreur création service", error: err.message });
   }
 };
 

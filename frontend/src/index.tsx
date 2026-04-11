@@ -21,7 +21,7 @@ root.render(
     <PrimeReactProvider>
       {" "}
       {/* ✅ OBLIGATOIRE */}
-      <BrowserRouter>
+      <BrowserRouter basename="/digidoc">
         <AuthProvider>
           <App />
         </AuthProvider>

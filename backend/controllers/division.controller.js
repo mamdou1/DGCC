@@ -4,7 +4,6 @@ const HistoriqueService = require("../services/historique.service");
 
 exports.create = async (req, res) => {
   const startTime = Date.now();
-
   try {
     logger.info("📝 Tentative de création d'une division", {
       userId: req.user?.id,
@@ -13,7 +12,7 @@ exports.create = async (req, res) => {
 
     const { libelle, sous_direction_id } = req.body;
 
-     // Trouver le dernier code
+    // Trouver le dernier code
     const last = await Division.findOne({
       order: [["id", "DESC"]],
       attributes: ["code"],
@@ -21,12 +20,12 @@ exports.create = async (req, res) => {
 
     let nextNumber = 1;
     if (last && last.code) {
-      const lastNumber = parseInt(last.code.split("-")[1]);
-      nextNumber = lastNumber + 1;
+      const match = last.code.match(/DIV-(\d+)/);
+      if (match) nextNumber = parseInt(match[1]) + 1;
     }
 
     const paddedNumber = nextNumber.toString().padStart(3, "0");
-    const code = `D-${paddedNumber}`;
+    const code = `DIV-${paddedNumber}`;   // ✅ Préfixe corrigé
 
     const division = await Division.create({
       code,
@@ -54,6 +53,7 @@ exports.create = async (req, res) => {
       body: req.body,
       userId: req.user?.id,
       duration: Date.now() - startTime,
+      
     });
 
     // Message d'erreur plus détaillé

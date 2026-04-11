@@ -109,6 +109,10 @@ export default function SousDirectionPage() {
   const [sectionAjoutFonctionVisible, setSectionAjoutFonctionVisible] =
     useState(false);
 
+  // État pour stocker la sous-direction parente lors de la création d'une division
+  const [currentSousDirectionForDivision, setCurrentSousDirectionForDivision] =
+    useState<SousDirection | null>(null);
+
   // Editing states
   const [editing, setEditing] = useState<Partial<SousDirection> | null>(null);
   const [editingDivision, setEditingDivision] =
@@ -818,7 +822,7 @@ export default function SousDirectionPage() {
                           e.stopPropagation();
                           setEditingDivision(null);
                           setIsEditingDivision(false);
-                          setSelectedSousDirection(sousDirection);
+                          setCurrentSousDirectionForDivision(sousDirection);
                           setDivisionFormVisible(true);
                         }}
                         className="flex items-center gap-2 px-4 py-2.5 text-purple-600 font-bold bg-purple-50 hover:bg-purple-600 hover:text-white rounded-xl transition-all border-none"
@@ -918,18 +922,27 @@ export default function SousDirectionPage() {
         }}
       />
 
-      {/* Division Modals */}
+      {/* Division Modals - CORRIGÉS pour pré-sélectionner la sous-direction parente */}
       <DivisionForm
         visible={divisionFormVisible}
         onHide={() => {
           setDivisionFormVisible(false);
           setEditingDivision(null);
           setIsEditingDivision(false);
+          setCurrentSousDirectionForDivision(null);
         }}
         onSubmit={isEditingDivision ? onEditDivision : onCreateDivision}
         refresh={() => {}}
-        initial={editingDivision || undefined}
-        sousDirections={allSousDirections}
+        initial={
+          isEditingDivision
+            ? editingDivision || undefined
+            : { sous_direction_id: currentSousDirectionForDivision?.id }
+        }
+        sousDirections={
+          currentSousDirectionForDivision
+            ? [currentSousDirectionForDivision]
+            : allSousDirections
+        }
         title={isEditingDivision ? "Modifier la division" : "Nouvelle division"}
       />
 
