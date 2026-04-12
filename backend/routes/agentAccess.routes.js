@@ -5,25 +5,51 @@ const {
   authorizePermission,
 } = require("../middlewares/authorizePermission.middleware");
 
-router.post("/", verifyToken, authorizePermission("box", "create"), ctrl.grant);
+router.post(
+  "/",
+  verifyToken,
+  authorizePermission("agent-access", "create"),
+  ctrl.grant,
+);
+router.get(
+  "/",
+  verifyToken,
+  authorizePermission("agent-access", "read"),
+  ctrl.list,
+);
+///
+router.post(
+  "/grant-all-sub-entity",
+  verifyToken,
+  authorizePermission("agent-access", "create"),
+  ctrl.grantAllSubEntity,
+);
+
+router.delete(
+  "/revoke-all-sub-entity",
+  verifyToken,
+  authorizePermission("agent-access", "delete"),
+  ctrl.revokeAllSubEntity,
+);
+///
 router.get(
   "/:agentId",
   verifyToken,
-  authorizePermission("box", "read"),
+  authorizePermission("agent-access", "read"),
   ctrl.agentAccesById,
 );
-router.get("/", verifyToken, authorizePermission("box", "read"), ctrl.list);
 
 router.delete(
   "/:id",
   verifyToken,
-  authorizePermission("box", "delete"),
+  authorizePermission("agent-access", "delete"),
   ctrl.revoke,
 );
+
 router.put(
   "/:id",
   verifyToken,
-  authorizePermission("box", "update"),
+  authorizePermission("agent-access", "update"),
   ctrl.update,
 );
 

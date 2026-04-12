@@ -8,6 +8,12 @@ module.exports = async () => {
     { resource: "exercice", action: "update" },
     { resource: "exercice", action: "delete" },
 
+    { resource: "agent-access", action: "access" },
+    { resource: "agent-access", action: "create" },
+    { resource: "agent-access", action: "read" },
+    { resource: "agent-access", action: "update" },
+    { resource: "agent-access", action: "delete" },
+
     { resource: "agent", action: "access" },
     { resource: "agent", action: "create" },
     { resource: "agent", action: "read" },

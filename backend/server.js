@@ -2,10 +2,7 @@ const dotenv = require("dotenv");
 
 const envFile = process.env.NODE_ENV === "docker" ? ".env.docker" : ".env";
 
-dotenv.config({ path: envFile }); // ✅ EN PREMIER
-
-console.log("DB_USER:", process.env.DB_USER);
-console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+dotenv.config({ path: envFile });
 
 const express = require("express");
 const cors = require("cors");
