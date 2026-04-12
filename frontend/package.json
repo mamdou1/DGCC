@@ -1,5 +1,6 @@
 {
-  "name": "gym-frontend",
+  "name": "digidoc",
+  "homepage": "digidoc",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -47,7 +48,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.9",
-    "@types/react": "^19.2.2",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.41",

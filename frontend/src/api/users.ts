@@ -52,7 +52,7 @@ export const createUser = async (
 };
 
 /**
- * ✅ Mettre à jour un utilisateur (ADMIN) avec photo
+ * Mettre à jour un utilisateur (ADMIN) avec photo
  */
 export const updateUser = async (
   payload: Partial<User>,

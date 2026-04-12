@@ -13,7 +13,7 @@ import "primeicons/primeicons.css";
 import "./index.css";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 root.render(
@@ -21,13 +21,13 @@ root.render(
     <PrimeReactProvider>
       {" "}
       {/* ✅ OBLIGATOIRE */}
-      <BrowserRouter>
+      <BrowserRouter basename="/digidoc">
         <AuthProvider>
           <App />
         </AuthProvider>
       </BrowserRouter>
     </PrimeReactProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 reportWebVitals();

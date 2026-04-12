@@ -30,6 +30,8 @@ import {
   useUpdateUser,
   useDeleteUser,
   useGrantAccess,
+  useGrantAllSubEntity,
+  useRevokeAllSubEntity,
 } from "../../hooks/useUsers";
 
 export default function UserPage() {
@@ -51,6 +53,8 @@ export default function UserPage() {
   const updateMutation = useUpdateUser();
   const deleteMutation = useDeleteUser();
   const grantAccessMutation = useGrantAccess();
+  const grantAllSubEntityMutation = useGrantAllSubEntity();
+  const revokeAllSubEntityMutation = useRevokeAllSubEntity();
 
   // États UI (inchangés)
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -76,9 +80,67 @@ export default function UserPage() {
   };
 
   // ✅ ÉTAPE 3: Remplacer onCreate
+  // const onCreate = async (payload: Partial<User>, photoFile?: File) => {
+  //   try {
+  //     await createMutation.mutateAsync({ payload, photoFile });
+  //     toast.current?.show({
+  //       severity: "success",
+  //       summary: "Succès",
+  //       detail: "Utilisateur créé",
+  //     });
+  //     setFormVisible(false);
+  //   } catch (err: any) {
+  //     toast.current?.show({
+  //       severity: "error",
+  //       summary: "Erreur",
+  //       detail: "Échec de création",
+  //     });
+  //   }
+  // };
+
+  // // ✅ ÉTAPE 4: Remplacer onEdit
+  // const onEdit = async (payload: Partial<User>, photoFile?: File) => {
+  //   if (!editing?.id) return;
+  //   try {
+  //     await updateMutation.mutateAsync({
+  //       id: String(editing.id),
+  //       payload,
+  //       photoFile,
+  //     });
+  //     toast.current?.show({
+  //       severity: "success",
+  //       summary: "Mis à jour",
+  //       detail: "Utilisateur modifié",
+  //     });
+  //     setEditing(null);
+  //     setFormVisible(false);
+  //   } catch (err: any) {
+  //     toast.current?.show({
+  //       severity: "error",
+  //       summary: "Erreur",
+  //       detail: "Échec de modification",
+  //     });
+  //   }
+  // };
+
+  // Modifier onCreate et onEdit pour gérer le cascade
   const onCreate = async (payload: Partial<User>, photoFile?: File) => {
     try {
-      await createMutation.mutateAsync({ payload, photoFile });
+      const { cascadeAccess, ...userData } = payload;
+      const result = await createMutation.mutateAsync({
+        payload: userData,
+        photoFile,
+      });
+
+      // Si cascade activé, accorder les accès
+      if (cascadeAccess?.enabled && result.id) {
+        await grantAllSubEntityMutation.mutateAsync({
+          agentId: Number(result.id),
+          entityType: cascadeAccess.entityType!,
+          entityId: cascadeAccess.entityId!,
+        });
+      }
+
       toast.current?.show({
         severity: "success",
         summary: "Succès",
@@ -94,15 +156,54 @@ export default function UserPage() {
     }
   };
 
-  // ✅ ÉTAPE 4: Remplacer onEdit
   const onEdit = async (payload: Partial<User>, photoFile?: File) => {
     if (!editing?.id) return;
     try {
+      const { cascadeAccess, ...userData } = payload;
+
+      // Mettre à jour l'utilisateur
       await updateMutation.mutateAsync({
         id: String(editing.id),
-        payload,
+        payload: userData,
         photoFile,
       });
+
+      // Gérer les accès cascade
+      if (cascadeAccess) {
+        if (cascadeAccess.enabled) {
+          // Si coché, accorder tous les accès
+          await grantAllSubEntityMutation.mutateAsync({
+            agentId: Number(editing.id),
+            entityType: cascadeAccess.entityType!,
+            entityId: cascadeAccess.entityId!,
+          });
+        } else {
+          // Si décoché, révoquer tous les accès
+          // Déterminer l'entité source (direction, sous-direction ou division)
+          let entityType = null;
+          let entityId = null;
+
+          if (userData.direction_id) {
+            entityType = "direction";
+            entityId = userData.direction_id;
+          } else if (userData.sous_direction_id) {
+            entityType = "sousDirection";
+            entityId = userData.sous_direction_id;
+          } else if (userData.division_id) {
+            entityType = "division";
+            entityId = userData.division_id;
+          }
+
+          if (entityType && entityId) {
+            await revokeAllSubEntityMutation.mutateAsync({
+              agentId: Number(editing.id),
+              entityType,
+              entityId,
+            });
+          }
+        }
+      }
+
       toast.current?.show({
         severity: "success",
         summary: "Mis à jour",

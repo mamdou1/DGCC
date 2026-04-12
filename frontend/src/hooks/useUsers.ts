@@ -10,6 +10,10 @@ import {
 import { getDroits } from "../api/droit";
 import { grantAccess } from "../api/agentEntiteeAccess";
 import type { User, Droit } from "../interfaces";
+import {
+  grantAllSubEntity,
+  revokeAllSubEntity,
+} from "../api/agentEntiteeAccess";
 
 // =============================================
 // 1. CLÉS DE CACHE
@@ -149,6 +153,46 @@ export const useGrantAccess = () => {
     mutationFn: (payload: any[]) => grantAccess(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
+    },
+  });
+};
+
+//  Nouvelle mutation pour accorder l'accès à toutes les sous-entités
+export const useGrantAllSubEntity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      agentId,
+      entityType,
+      entityId,
+    }: {
+      agentId: number;
+      entityType: string;
+      entityId: number;
+    }) => grantAllSubEntity(agentId, entityType, entityId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+};
+
+//  Nouvelle mutation pour révoquer l'accès à toutes les sous-entités
+export const useRevokeAllSubEntity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      agentId,
+      entityType,
+      entityId,
+    }: {
+      agentId: number;
+      entityType: string;
+      entityId: number;
+    }) => revokeAllSubEntity(agentId, entityType, entityId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 };

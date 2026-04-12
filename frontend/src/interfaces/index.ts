@@ -111,6 +111,40 @@ export interface LiquidationPiece {
   disponible: boolean;
 }
 
+// export interface User {
+//   id: string;
+//   nom: string;
+//   prenom: string;
+//   email: string;
+//   telephone?: string;
+//   username: string;
+//   num_matricule: string;
+
+//   direction_id?: number;
+//   service_id?: number;
+//   sous_direction_id?: number;
+//   division_id?: number;
+//   section_id?: number;
+
+//   createdAt: string;
+//   updatedAt: string;
+
+//   is_on_line?: boolean;
+//   last_activity?: string;
+
+//   // On utilise l'ID pour les formulaires, et l'objet pour l'affichage
+//   droit?: Droit | string;
+
+//   fonction?: number;
+//   fonction_details?: Fonction;
+
+//   agent_access?: AgentEntiteeAccess[];
+
+//   photo_profil?: string;
+// }
+
+// interfaces/index.js (AJOUTER cascadeAccess)
+
 export interface User {
   id: string;
   nom: string;
@@ -141,6 +175,22 @@ export interface User {
   agent_access?: AgentEntiteeAccess[];
 
   photo_profil?: string;
+
+  // AJOUTER POUR LE CASCADE ACCESS
+  cascadeAccess?: {
+    enabled: boolean;
+    entityType: "direction" | "sousDirection" | "division";
+    entityId: number;
+  };
+}
+
+// Ajouter aussi une interface pour le payload de création/mise à jour
+export interface UserPayload extends Partial<User> {
+  cascadeAccess?: {
+    enabled: boolean;
+    entityType: "direction" | "sousDirection" | "division";
+    entityId: number;
+  };
 }
 
 export interface InscriptionPayload {
@@ -476,7 +526,6 @@ export interface DocumentPiece {
   disponible: boolean;
 }
 
-// interfaces.ts
 export interface AgentEntiteeAccess {
   id: number;
 

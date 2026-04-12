@@ -69,3 +69,39 @@ export const listAccess = async () => {
     throw error;
   }
 };
+
+// Accorder l'accès à toutes les sous-entités
+export const grantAllSubEntity = async (
+  agentId: number,
+  entityType: string,
+  entityId: number,
+) => {
+  try {
+    const { data } = await api.post("/agent-access/grant-all-sub-entity", {
+      agentId,
+      entityType,
+      entityId,
+    });
+    return data;
+  } catch (error: any) {
+    console.error("❌ Erreur grantAllSubEntity:", error);
+    throw error;
+  }
+};
+
+// Révoquer l'accès à toutes les sous-entités
+export const revokeAllSubEntity = async (
+  agentId: number,
+  entityType: string,
+  entityId: number,
+) => {
+  try {
+    const { data } = await api.delete("/agent-access/revoke-all-sub-entity", {
+      data: { agentId, entityType, entityId },
+    });
+    return data;
+  } catch (error: any) {
+    console.error("❌ Erreur revokeAllSubEntity:", error);
+    throw error;
+  }
+};
