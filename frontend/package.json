@@ -1,6 +1,6 @@
 {
   "name": "digidoc",
-  "homepage": "digidoc",
+  "homepage": "/digidoc",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

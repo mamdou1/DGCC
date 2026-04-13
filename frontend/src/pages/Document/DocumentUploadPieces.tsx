@@ -208,6 +208,15 @@ export default function DocumentUploadPieces({
         if (value.file) {
           recordsByPiece[pieceId][rowId].files?.push(value.file);
         }
+        if (value.file) {
+          console.log("📁 Fichier reçu de l'API:", {
+            id: value.file.id,
+            original_name: value.file.original_name,
+            new_file_name: value.file.new_file_name,
+            fichier: value.file.fichier,
+          });
+          recordsByPiece[pieceId][rowId].files?.push(value.file);
+        }
       });
 
       const finalRecords: Record<number, PieceRecord[]> = {};

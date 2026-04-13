@@ -27,6 +27,7 @@ import {
   Plus,
   Trash2,
   Pencil,
+  CheckSquare,
 } from "lucide-react";
 import type {
   Document,
@@ -42,7 +43,8 @@ import {
   uploadPieceFile,
 } from "../../api/pieceValue";
 import { confirmDialog } from "primereact/confirmdialog";
-import { useAuth } from "../../context/AuthContext";
+import { Checkbox } from "primereact/checkbox";
+import FileItem from "../../components/documents/FileItem";
 
 type Props = {
   visible: boolean;
@@ -61,6 +63,15 @@ type Props = {
 //   files?: any[];
 //   createdAt?: string;
 // }
+
+interface DocumentFile {
+  id: number;
+  fichier: string;
+  original_name: string;
+  new_file_name?: string;
+  created_at?: string;
+  createdAt?: string;
+}
 
 export default function RechercheUploadPieces({
   visible,
@@ -109,7 +120,6 @@ export default function RechercheUploadPieces({
   const [previewOpen, setPreviewOpen] = useState<Record<string, boolean>>({});
   const [uploaded, setUploaded] = useState<Record<string, boolean>>({});
   const [pieceFiles, setPieceFiles] = useState<Record<number, any[]>>({});
-  const { can } = useAuth();
 
   // Visionneuse (un seul état pour gérer tous les aperçus)
   const [viewer, setViewer] = useState<{
@@ -120,6 +130,12 @@ export default function RechercheUploadPieces({
     pieceId?: number | null;
     fieldId?: number | null;
   }>({ visible: false, url: null, isPreview: false });
+
+  const [lotPiecesSelection, setLotPiecesSelection] = useState<number[]>([]);
+  const [showLotPieceSelector, setShowLotPieceSelector] = useState(false);
+
+  // Fonction pour supprimer un fichier de pièce simple
+  const [deletingFiles, setDeletingFiles] = useState<Set<number>>(new Set());
 
   /* ================= CHARGEMENT INITIAL ================= */
   useEffect(() => {
@@ -165,54 +181,6 @@ export default function RechercheUploadPieces({
   };
 
   /* ================= CHARGEMENT DES ENREGISTREMENTS ================= */
-  // const loadAllPieceRecords = async () => {
-  //   if (!document) return;
-
-  //   try {
-  //     const values = await getPieceValuesByDocument(document.id);
-  //     console.log("📦 Valeurs brutes:", values);
-
-  //     const recordsByPiece: Record<number, Record<number, PieceRecord>> = {};
-
-  //     values.forEach((value) => {
-  //       const pieceId = value.piece_id;
-  //       const rowId = value.row_id || value.id;
-
-  //       if (!recordsByPiece[pieceId]) {
-  //         recordsByPiece[pieceId] = {};
-  //       }
-
-  //       if (!recordsByPiece[pieceId][rowId]) {
-  //         recordsByPiece[pieceId][rowId] = {
-  //           id: rowId,
-  //           rowId: rowId,
-  //           values: {},
-  //           files: [],
-  //           createdAt: value.createdAt,
-  //         };
-  //       }
-
-  //       recordsByPiece[pieceId][rowId].values[value.piece_meta_field_id] =
-  //         value.value;
-
-  //       if (value.file) {
-  //         recordsByPiece[pieceId][rowId].files?.push(value.file);
-  //       }
-  //     });
-
-  //     const finalRecords: Record<number, PieceRecord[]> = {};
-  //     Object.keys(recordsByPiece).forEach((pieceId) => {
-  //       finalRecords[parseInt(pieceId)] = Object.values(
-  //         recordsByPiece[parseInt(pieceId)],
-  //       );
-  //     });
-
-  //     console.log("✅ Enregistrements groupés par row_id:", finalRecords);
-  //     setPieceRecords(finalRecords);
-  //   } catch (error) {
-  //     console.error("Erreur chargement enregistrements:", error);
-  //   }
-  // };
 
   const loadAllPieceRecords = async () => {
     if (!document) return;
@@ -251,6 +219,15 @@ export default function RechercheUploadPieces({
         if (value.file) {
           recordsByPiece[pieceId][rowId].files?.push(value.file);
         }
+        if (value.file) {
+          console.log("📁 Fichier reçu de l'API:", {
+            id: value.file.id,
+            original_name: value.file.original_name,
+            new_file_name: value.file.new_file_name,
+            fichier: value.file.fichier,
+          });
+          recordsByPiece[pieceId][rowId].files?.push(value.file);
+        }
       });
 
       const finalRecords: Record<number, PieceRecord[]> = {};
@@ -278,6 +255,141 @@ export default function RechercheUploadPieces({
     } catch (error) {
       console.error("Erreur chargement fichiers lot:", error);
     }
+  };
+
+  /* ================= COMPOSANT DE SELECTION DES PIECES LOT_UNIQUE ================= */
+  const LotPieceSelector = ({
+    pieces,
+    selectedPieces,
+    onTogglePiece,
+    onClose,
+    onConfirm,
+  }: {
+    pieces: any[];
+    selectedPieces: number[];
+    onTogglePiece: (pieceId: number) => void;
+    onClose: () => void;
+    onConfirm: () => void;
+  }) => {
+    const [expandedDivisions, setExpandedDivisions] = useState<
+      Record<string, boolean>
+    >({});
+
+    const toggleDivision = (division: string) => {
+      setExpandedDivisions((prev) => ({
+        ...prev,
+        [division]: !prev[division],
+      }));
+    };
+
+    // Grouper uniquement les pièces filtrées
+    const groupedPieces = pieces.reduce((acc: any, item: any) => {
+      const divisionObj = item.division || item.piece?.division;
+      const divLibelle = divisionObj?.libelle || "AUTRES PIECES";
+
+      if (!acc[divLibelle]) {
+        acc[divLibelle] = [];
+      }
+      acc[divLibelle].push(item);
+      return acc;
+    }, {});
+
+    // Vérifier s'il y a des pièces à afficher
+    const hasPieces = Object.keys(groupedPieces).length > 0;
+
+    return (
+      <div className="bg-white rounded-xl border border-orange-200 p-4 mb-4">
+        <h4 className="text-sm font-bold text-orange-700 mb-3 flex items-center gap-2">
+          <CheckSquare size={16} />
+          Voulez-vous associer des pièces à ce lot ?
+        </h4>
+        <p className="text-xs text-slate-500 mb-4">
+          Cochez les pièces qui sont incluses dans ce document.
+          {pieces.length === 0 && (
+            <span className="block mt-2 text-amber-600 font-medium">
+              ℹ️ Toutes les pièces sont déjà disponibles pour ce document.
+            </span>
+          )}
+        </p>
+
+        {hasPieces ? (
+          <div className="max-h-60 overflow-y-auto border border-slate-200 rounded-lg p-2">
+            {Object.entries(groupedPieces).map(
+              ([division, pieces]: [string, any]) => {
+                const isExpanded = expandedDivisions[division] ?? true;
+
+                return (
+                  <div
+                    key={division}
+                    className="mb-2 border border-slate-100 rounded-lg overflow-hidden"
+                  >
+                    <div
+                      onClick={() => toggleDivision(division)}
+                      className="bg-slate-50 p-2 flex items-center justify-between cursor-pointer"
+                    >
+                      <span className="text-xs font-bold uppercase text-slate-600">
+                        {division}
+                      </span>
+                      {isExpanded ? (
+                        <ChevronUp size={14} />
+                      ) : (
+                        <ChevronDown size={14} />
+                      )}
+                    </div>
+
+                    {isExpanded && (
+                      <div className="p-2 space-y-2">
+                        {pieces.map((p: any) => (
+                          <div
+                            key={p.id}
+                            className="flex items-center gap-2 p-1"
+                          >
+                            <Checkbox
+                              checked={selectedPieces.includes(p.id)}
+                              onChange={() => onTogglePiece(p.id)}
+                              className="border border-orange-400"
+                            />
+                            <span className="text-sm">{p.libelle}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              },
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-4 bg-slate-50 rounded-lg">
+            <p className="text-sm text-slate-500">
+              Aucune pièce non disponible
+            </p>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2 mt-4">
+          <Button
+            label="Annuler"
+            onClick={onClose}
+            className="bg-slate-100 text-slate-600 border-none text-sm py-2 px-4"
+          />
+          <Button
+            label="Confirmer la sélection"
+            onClick={onConfirm}
+            className="bg-orange-600 text-white border-none text-sm py-2 px-4"
+            disabled={!hasPieces} // Désactiver s'il n'y a pas de pièces
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const toggleLotPieceSelection = (pieceId: number) => {
+    setLotPiecesSelection((prev) =>
+      prev.includes(pieceId)
+        ? prev.filter((id) => id !== pieceId)
+        : [...prev, pieceId],
+    );
   };
 
   /* ================= DÉTECTION DU MODE ================= */
@@ -456,7 +568,7 @@ export default function RechercheUploadPieces({
     const editing = editingRecord[pieceId];
     let success = true;
 
-    const rowId = editing?.rowId || Date.now();
+    const rowId = editing?.rowId || Math.floor(Math.random() * 1000000); // Nombre aléatoire entre 0 et 1 million
 
     for (const field of fields) {
       const key = `${pieceId}_${field.id}`;
@@ -598,9 +710,15 @@ export default function RechercheUploadPieces({
   const handleSelectLotFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files?.[0];
     if (!files) return;
-    setSelectedFiles((prev) => ({ ...prev, LOT_UNIQUE: files }));
+
+    setSelectedLotFile(files);
     setPreviewOpen({ LOT_UNIQUE: true });
 
+    // Réinitialiser la sélection
+    setLotPiecesSelection([]);
+    setShowLotPieceSelector(true);
+
+    // Ouvrir la prévisualisation
     setViewer({
       visible: true,
       url: URL.createObjectURL(files),
@@ -648,26 +766,64 @@ export default function RechercheUploadPieces({
     }
   };
 
+  // const loadSimplePieceFiles = async (pieceId: number) => {
+  //   if (!document) return;
+
+  //   try {
+  //     const { data } = await api.get(
+  //       `/documents/${document.id}/piece/${pieceId}/files`,
+  //     );
+
+  //     setPieceFiles((prev) => ({
+  //       ...prev,
+  //       [pieceId]: Array.isArray(data) ? data : [],
+  //     }));
+
+  //     setUploaded((prev) => ({
+  //       ...prev,
+  //       [pieceId]: Array.isArray(data) && data.length > 0,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Erreur chargement fichiers pièce:", error);
+  //   }
+  // };
+
+  // Fonction pour charger les fichiers d'une pièce simple
   const loadSimplePieceFiles = async (pieceId: number) => {
     if (!document) return;
 
     try {
-      const { data } = await api.get(
+      const { data } = await api.get<DocumentFile[]>(
         `/documents/${document.id}/piece/${pieceId}/files`,
       );
 
       setPieceFiles((prev) => ({
         ...prev,
-        [pieceId]: Array.isArray(data) ? data : [],
+        [pieceId]: data,
       }));
 
       setUploaded((prev) => ({
         ...prev,
-        [pieceId]: Array.isArray(data) && data.length > 0,
+        [pieceId]: data.length > 0,
       }));
     } catch (error) {
       console.error("Erreur chargement fichiers pièce:", error);
     }
+  };
+
+  const refreshSimpleFiles = async (pieceId: number) => {
+    await loadSimplePieceFiles(pieceId);
+    if (onSuccess) onSuccess();
+  };
+
+  const refreshLotFiles = async () => {
+    await loadLotUniqueFiles();
+    if (onSuccess) onSuccess();
+  };
+
+  const refreshMetaFiles = async () => {
+    await loadAllPieceRecords();
+    if (onSuccess) onSuccess();
   };
 
   const handleUploadLotFile = async () => {
@@ -677,9 +833,13 @@ export default function RechercheUploadPieces({
     formData.append("files", selectedLotFile);
     formData.append("upload_mode", "LOT_UNIQUE");
 
+    if (lotPiecesSelection.length > 0) {
+      formData.append("piece_ids", JSON.stringify(lotPiecesSelection));
+    }
+
     try {
       await api.post(
-        `/documents/${document.id}/document-type/${document.type_document_id}/lot-unique/files`,
+        `/documents/${document.id}/document-type/${document.type_document_id}/lot-unique/files-with-pieces`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } },
       );
@@ -687,14 +847,22 @@ export default function RechercheUploadPieces({
       toast.current?.show({
         severity: "success",
         summary: "Succès",
-        detail: "Dossier complet enregistré",
+        detail:
+          lotPiecesSelection.length > 0
+            ? `Dossier enregistré et ${lotPiecesSelection.length} pièce(s) marquée(s) comme disponible(s)`
+            : "Dossier complet enregistré",
       });
+
+      // ✅ Recharger les données du document pour mettre à jour les disponibilités
+      if (onSuccess) {
+        await onSuccess(); // Si onSuccess recharge le document
+      }
 
       await loadLotUniqueFiles();
       setSelectedLotFile(null);
+      setLotPiecesSelection([]);
+      setShowLotPieceSelector(false);
       handleCancelPreview();
-
-      if (onSuccess) onSuccess();
     } catch (error) {
       console.error("Erreur upload lot:", error);
       toast.current?.show({
@@ -907,7 +1075,7 @@ export default function RechercheUploadPieces({
                     Upload du dossier complet
                   </h3>
 
-                  <input
+                  {/* <input
                     type="file"
                     id="lot-unique-upload"
                     hidden
@@ -927,42 +1095,48 @@ export default function RechercheUploadPieces({
                         ? selectedLotFile.name
                         : "Sélectionner le PDF du dossier"}
                     </p>
-                  </label>
+                  </label> */}
                 </div>
 
+                {/* ✅ NOUVEAU : Sélecteur de pièces pour LOT_UNIQUE */}
+                {showLotPieceSelector && selectedLotFile && (
+                  <LotPieceSelector
+                    pieces={piecesState}
+                    selectedPieces={lotPiecesSelection}
+                    onTogglePiece={toggleLotPieceSelection}
+                    onClose={() => {
+                      setShowLotPieceSelector(false);
+                      setLotPiecesSelection([]);
+                    }}
+                    onConfirm={() => {
+                      setShowLotPieceSelector(false);
+                      // Les pièces sont déjà dans lotPiecesSelection
+                    }}
+                  />
+                )}
+
+                {/*Dans la section MODE LOT UNIQUE, remplacer l'affichage des
+                fichiers*/}
                 {lotFiles.length > 0 && (
                   <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
                     <h4 className="text-xs font-bold text-slate-500 mb-3">
-                      Fichiers uploadés
+                      Fichiers uploadés ({lotFiles.length})
                     </h4>
-                    {lotFiles.map((f) => (
-                      <div
-                        key={f.id}
-                        className="flex items-center justify-between p-3 bg-slate-50 rounded-xl mb-2"
-                      >
-                        <span className="text-sm truncate flex-1">
-                          {f.original_name}
-                        </span>
-                        {/* <button
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Supprimer"
-                        >
-                          <Trash2 size={16} />
-                        </button> */}
-                        <button
-                          onClick={() =>
-                            setViewer({
-                              visible: true,
-                              url: `http://localhost:5000/${f.fichier}`,
-                              isPreview: false,
-                            })
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {lotFiles.map((f: DocumentFile) => (
+                        <FileItem
+                          key={f.id}
+                          file={f}
+                          documentId={document.id}
+                          pieceId={null}
+                          fileType="document"
+                          onDeleteSuccess={() => refreshLotFiles()}
+                          onView={(url) =>
+                            setViewer({ visible: true, url, isPreview: false })
                           }
-                          className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg"
-                        >
-                          <Eye size={16} />
-                        </button>
-                      </div>
-                    ))}
+                        />
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -1090,33 +1264,16 @@ export default function RechercheUploadPieces({
                                                         <th className="px-4 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200 whitespace-nowrap">
                                                           Fichiers
                                                         </th>
-                                                        {can(
-                                                          "box",
-                                                          "create",
-                                                        ) && (
-                                                          <th className="px-4 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200 whitespace-nowrap">
-                                                            Actions
-                                                          </th>
-                                                        )}
+                                                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200 whitespace-nowrap">
+                                                          Actions
+                                                        </th>
                                                       </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-100">
                                                       {records.map((record) => (
                                                         <tr
                                                           key={record.id}
-                                                          onClick={() => {
-                                                            if (
-                                                              record.files &&
-                                                              record.files[0]
-                                                            ) {
-                                                              setViewer({
-                                                                visible: true,
-                                                                url: `http://localhost:5000/${record.files[0].fichier}`,
-                                                                isPreview: false,
-                                                              });
-                                                            }
-                                                          }}
-                                                          className="cursor-pointer hover:bg-orange-50/30 transition-colors"
+                                                          className="hover:bg-orange-50/30 transition-colors"
                                                         >
                                                           {pieceMetaFields[
                                                             p.id
@@ -1131,31 +1288,41 @@ export default function RechercheUploadPieces({
                                                                 record.files
                                                                   .length >
                                                                   0 ? (
-                                                                  <button
-                                                                    onClick={() => {
-                                                                      if (
-                                                                        record.files &&
-                                                                        record
-                                                                          .files[0]
-                                                                      ) {
-                                                                        setViewer(
-                                                                          {
-                                                                            visible: true,
-                                                                            url: `http://localhost:5000/${record.files[0].fichier}`,
-                                                                            isPreview: false,
-                                                                          },
-                                                                        );
-                                                                      }
-                                                                    }}
-                                                                    className="text-orange-600 hover:text-orange-800 inline-flex items-center gap-1"
-                                                                  >
-                                                                    <Eye
-                                                                      size={14}
-                                                                    />
-                                                                    <span className="text-xs">
-                                                                      Voir
-                                                                    </span>
-                                                                  </button>
+                                                                  <div className="space-y-1">
+                                                                    {record.files.map(
+                                                                      (f) => (
+                                                                        <FileItem
+                                                                          key={
+                                                                            f.id
+                                                                          }
+                                                                          file={
+                                                                            f
+                                                                          }
+                                                                          documentId={
+                                                                            document.id
+                                                                          }
+                                                                          pieceId={
+                                                                            p.id
+                                                                          }
+                                                                          fileType="piece" // 🔥 Fichier dans pieces_fichiers
+                                                                          onDeleteSuccess={() =>
+                                                                            refreshMetaFiles()
+                                                                          }
+                                                                          onView={(
+                                                                            url,
+                                                                          ) =>
+                                                                            setViewer(
+                                                                              {
+                                                                                visible: true,
+                                                                                url,
+                                                                                isPreview: false,
+                                                                              },
+                                                                            )
+                                                                          }
+                                                                        />
+                                                                      ),
+                                                                    )}
+                                                                  </div>
                                                                 ) : (
                                                                   <span className="text-slate-300">
                                                                     -
@@ -1192,43 +1359,38 @@ export default function RechercheUploadPieces({
                                                               </span>
                                                             )}
                                                           </td>
-                                                          {can(
-                                                            "box",
-                                                            "create",
-                                                          ) && (
-                                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                              <div className="flex items-center justify-center gap-2">
-                                                                <button
-                                                                  onClick={() =>
-                                                                    handleEditRecord(
-                                                                      p.id,
-                                                                      record,
-                                                                    )
-                                                                  }
-                                                                  className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                                                                  title="Modifier"
-                                                                >
-                                                                  <Pencil
-                                                                    size={16}
-                                                                  />
-                                                                </button>
-                                                                <button
-                                                                  onClick={() =>
-                                                                    handleDeleteRecord(
-                                                                      p.id,
-                                                                      record,
-                                                                    )
-                                                                  }
-                                                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                                  title="Supprimer"
-                                                                >
-                                                                  <Trash2
-                                                                    size={16}
-                                                                  />
-                                                                </button>
-                                                              </div>
-                                                            </td>
-                                                          )}
+                                                          <td className="px-4 py-3 whitespace-nowrap">
+                                                            <div className="flex items-center justify-center gap-2">
+                                                              <button
+                                                                onClick={() =>
+                                                                  handleEditRecord(
+                                                                    p.id,
+                                                                    record,
+                                                                  )
+                                                                }
+                                                                className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                                                title="Modifier"
+                                                              >
+                                                                <Pencil
+                                                                  size={16}
+                                                                />
+                                                              </button>
+                                                              <button
+                                                                onClick={() =>
+                                                                  handleDeleteRecord(
+                                                                    p.id,
+                                                                    record,
+                                                                  )
+                                                                }
+                                                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Supprimer"
+                                                              >
+                                                                <Trash2
+                                                                  size={16}
+                                                                />
+                                                              </button>
+                                                            </div>
+                                                          </td>
                                                         </tr>
                                                       ))}
                                                     </tbody>
@@ -1236,21 +1398,18 @@ export default function RechercheUploadPieces({
                                                 </div>
                                               </div>
                                             )}
-                                            {can("box", "create") && (
-                                              <>
-                                                {!showFormForPiece && (
-                                                  <div className="flex justify-end">
-                                                    <Button
-                                                      label="Nouvel enregistrement"
-                                                      icon={<Plus size={14} />}
-                                                      onClick={() =>
-                                                        handleNewRecord(p.id)
-                                                      }
-                                                      className="bg-orange-600 text-white border-none text-sm py-2 px-4"
-                                                    />
-                                                  </div>
-                                                )}
-                                              </>
+
+                                            {!showFormForPiece && (
+                                              <div className="flex justify-end">
+                                                {/* <Button
+                                                  label="Nouvel enregistrement"
+                                                  icon={<Plus size={14} />}
+                                                  onClick={() =>
+                                                    handleNewRecord(p.id)
+                                                  }
+                                                  className="bg-orange-600 text-white border-none text-sm py-2 px-4"
+                                                /> */}
+                                              </div>
                                             )}
 
                                             {showFormForPiece && (
@@ -1339,64 +1498,61 @@ export default function RechercheUploadPieces({
                                                   Fichier justificatif
                                                 </span>
                                               </div>
-                                              {can("box", "create") && (
-                                                <div
-                                                  onClick={(e) =>
-                                                    e.stopPropagation()
+
+                                              {/* <div
+                                                onClick={(e) =>
+                                                  e.stopPropagation()
+                                                }
+                                              >
+                                                <input
+                                                  id={`file-simple-${p.id}`}
+                                                  type="file"
+                                                  accept=".pdf"
+                                                  hidden
+                                                  onChange={(e) =>
+                                                    handleSelectFile(
+                                                      e,
+                                                      p.id.toString(),
+                                                    )
                                                   }
+                                                />
+                                                <label
+                                                  htmlFor={`file-simple-${p.id}`}
+                                                  className="cursor-pointer bg-orange-50 text-orange-600 p-2 rounded-lg hover:bg-orange-600 hover:text-white transition-all flex items-center gap-2"
                                                 >
-                                                  <input
-                                                    id={`file-simple-${p.id}`}
-                                                    type="file"
-                                                    accept=".pdf"
-                                                    hidden
-                                                    onChange={(e) =>
-                                                      handleSelectFile(
-                                                        e,
-                                                        p.id.toString(),
-                                                      )
-                                                    }
-                                                  />
-                                                  <label
-                                                    htmlFor={`file-simple-${p.id}`}
-                                                    className="cursor-pointer bg-orange-50 text-orange-600 p-2 rounded-lg hover:bg-orange-600 hover:text-white transition-all flex items-center gap-2"
-                                                  >
-                                                    <FileText size={16} />
-                                                    <span className="text-xs font-medium">
-                                                      {uploaded[p.id]
-                                                        ? "Choisir encore"
-                                                        : "Choisir"}
-                                                    </span>
-                                                  </label>
-                                                </div>
-                                              )}
+                                                  <FileText size={16} />
+                                                  <span className="text-xs font-medium">
+                                                    {uploaded[p.id]
+                                                      ? "Choisir encore"
+                                                      : "Choisir"}
+                                                  </span>
+                                                </label>
+                                              </div> */}
                                             </div>
 
                                             {pieceFiles[p.id]?.length > 0 && (
                                               <div className="mt-3 space-y-2">
-                                                {pieceFiles[p.id].map((f) => (
-                                                  <div
-                                                    key={f.id}
-                                                    className="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-100"
-                                                  >
-                                                    <span className="text-xs truncate flex-1">
-                                                      {f.original_name}
-                                                    </span>
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
+                                                {pieceFiles[p.id].map(
+                                                  (f: DocumentFile) => (
+                                                    <FileItem
+                                                      key={f.id}
+                                                      file={f}
+                                                      documentId={document.id}
+                                                      pieceId={p.id}
+                                                      fileType="document"
+                                                      onDeleteSuccess={() =>
+                                                        refreshSimpleFiles(p.id)
+                                                      }
+                                                      onView={(url) =>
                                                         setViewer({
                                                           visible: true,
-                                                          url: `http://localhost:5000/${f.fichier}`,
+                                                          url,
                                                           isPreview: false,
-                                                        });
-                                                      }}
-                                                      className="text-orange-600 hover:text-orange-800"
-                                                    >
-                                                      <Eye size={14} />
-                                                    </button>
-                                                  </div>
-                                                ))}
+                                                        })
+                                                      }
+                                                    />
+                                                  ),
+                                                )}
                                               </div>
                                             )}
                                           </>

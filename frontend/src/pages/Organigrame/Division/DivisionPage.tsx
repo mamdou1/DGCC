@@ -5,6 +5,7 @@ import DivisionDetails from "./DivisionDetails";
 import DivisionForm from "./DivisionForm";
 import DivisionAjoutFonction from "./DivisionAjoutFonction";
 import SectionAjoutFonction from "../Section/SectionAjoutFonction";
+import SectionForm from "../Section/SectionForm";
 import {
   Division,
   SousDirection,
@@ -44,7 +45,7 @@ import {
 
 import { useSousDirections } from "../../../hooks/useSousDirections";
 
-import { getSectionsByDivision } from "../../../api/section";
+import { getSectionsByDivision, createSection } from "../../../api/section"; // ← AJOUT : createSection
 import { getFonctionsBySection } from "../../../api/fonction";
 
 export default function DivisionPage() {
@@ -88,6 +89,10 @@ export default function DivisionPage() {
   const [sectionAjoutFonctionVisible, setSectionAjoutFonctionVisible] =
     useState(false);
 
+  // États pour le formulaire de création de section
+  const [sectionFormVisible, setSectionFormVisible] = useState(false);
+  const [currentDivisionForSection, setCurrentDivisionForSection] = useState<Division | null>(null);
+
   // Editing states
   const [editing, setEditing] = useState<Partial<Division> | null>(null);
 
@@ -119,6 +124,17 @@ export default function DivisionPage() {
     } catch (err) {
       console.error("Erreur chargement sections", err);
       setSectionsMap((prev) => ({ ...prev, [divisionId]: [] }));
+    }
+  };
+
+  // Recharger les sections d'une division après création
+  const refreshSections = async (divisionId: number) => {
+    try {
+      const data = await getSectionsByDivision(divisionId);
+      const sections = Array.isArray(data) ? data : [];
+      setSectionsMap((prev) => ({ ...prev, [divisionId]: sections }));
+    } catch (err) {
+      console.error("Erreur rafraîchissement sections", err);
     }
   };
 
@@ -206,6 +222,34 @@ export default function DivisionPage() {
         }
       },
     });
+  };
+
+  // ============================================
+  // HANDLER - Création d'une section (CORRIGÉ)
+  // ============================================
+  const handleCreateSection = async (formData: Partial<Section>) => {
+    if (!currentDivisionForSection) return;
+    try {
+      // Ajouter l'ID de la division parente
+      const payload = { ...formData, division_id: currentDivisionForSection.id };
+      await createSection(payload);
+      // Rafraîchir les sections de cette division
+      await refreshSections(currentDivisionForSection.id);
+      toast.current?.show({
+        severity: "success",
+        summary: "Succès",
+        detail: "Section créée avec succès",
+      });
+      setSectionFormVisible(false);
+      setCurrentDivisionForSection(null);
+    } catch (err: any) {
+      console.error("Erreur création section:", err);
+      toast.current?.show({
+        severity: "error",
+        summary: "Erreur",
+        detail: err?.response?.data?.message || "Échec de création de la section",
+      });
+    }
   };
 
   // ============================================
@@ -559,16 +603,17 @@ export default function DivisionPage() {
                         <TableOfContents size={14} className="text-pink-500" />
                         Sections rattachées ({sections.length})
                       </h4>
-                      {/* Note: Pour créer une section, il faudrait un formulaire dédié */}
                       <Button
-                        disabled
-                        className="flex items-center gap-2 px-4 py-2.5 text-slate-400 bg-slate-100 rounded-xl border-none cursor-not-allowed"
-                        title="Création de section (à implémenter)"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentDivisionForSection(division);
+                          setSectionFormVisible(true);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl border-none transition-all"
+                        title="Créer une nouvelle section"
                       >
                         <PlusIcon size={16} />
-                        <span className="text-xs font-bold">
-                          Nouvelle section
-                        </span>
+                        <span className="text-xs font-bold">Nouvelle section</span>
                       </Button>
                     </div>
 
@@ -653,7 +698,6 @@ export default function DivisionPage() {
         }}
       />
 
-      {/* Section Modal (juste pour ajouter fonction) */}
       <SectionAjoutFonction
         visible={sectionAjoutFonctionVisible}
         onHide={() => setSectionAjoutFonctionVisible(false)}
@@ -665,6 +709,19 @@ export default function DivisionPage() {
             detail: "Fonction ajoutée",
           });
         }}
+      />
+
+      {/* MODAL DE CRÉATION DE SECTION - avec uniquement la division parente et appel API */}
+      <SectionForm
+        visible={sectionFormVisible}
+        onHide={() => {
+          setSectionFormVisible(false);
+          setCurrentDivisionForSection(null);
+        }}
+        onSubmit={handleCreateSection}
+        initial={{ division_id: currentDivisionForSection?.id }}
+        refresh={() => {}}
+        divisions={currentDivisionForSection ? [currentDivisionForSection] : []}
       />
     </Layout>
   );

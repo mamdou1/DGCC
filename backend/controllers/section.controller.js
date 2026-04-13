@@ -4,58 +4,37 @@ const HistoriqueService = require("../services/historique.service");
 
 exports.create = async (req, res) => {
   const startTime = Date.now();
-
   try {
-    logger.info("📝 Tentative de création d'une section", {
-      userId: req.user?.id,
-      body: req.body,
-    });
-
     const { libelle, division_id } = req.body;
-    // Trouver le dernier code
-    const last = await Section.findOne({
-      order: [["id", "DESC"]],
-      attributes: ["code"],
-    });
 
+    // Validation présence
+    if (!libelle?.trim()) return res.status(400).json({ message: "Le libellé est requis" });
+    if (!division_id || isNaN(division_id)) return res.status(400).json({ message: "division_id requis et doit être un nombre" });
+
+    // Vérifier que la division existe
+    const division = await Division.findByPk(division_id);
+    if (!division) return res.status(404).json({ message: "Division non trouvée" });
+
+    // Génération du code
+    const last = await Section.findOne({ order: [["id", "DESC"]], attributes: ["code"] });
     let nextNumber = 1;
-    if (last && last.code) {
-      const lastNumber = parseInt(last.code.split("-")[1]);
-      nextNumber = lastNumber + 1;
+    if (last?.code) {
+      const match = last.code.match(/SEC-(\d+)/);
+      if (match) nextNumber = parseInt(match[1]) + 1;
     }
+    const code = `SEC-${nextNumber.toString().padStart(3, "0")}`;
 
-    const paddedNumber = nextNumber.toString().padStart(3, "0");
+    const section = await Section.create({ code, libelle: libelle.trim(), division_id });
 
-    const code = `SEC-${paddedNumber}`;
-
-    const section = await Section.create({
-      code,
-      libelle,
-      division_id,
-    });
-
-    logger.info("✅ Section créée avec succès", {
-      sectionId: section.id,
-      code: section.code,
-      libelle: section.libelle,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
-
+    logger.info("✅ Section créée", { sectionId: section.id, userId: req.user?.id, duration: Date.now() - startTime });
     await HistoriqueService.logCreate(req, "section", section);
-
     res.status(201).json(section);
   } catch (err) {
-    logger.error("❌ Erreur création section:", {
-      error: err.message,
-      stack: err.stack,
-      body: req.body,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
-    res
-      .status(500)
-      .json({ message: "Erreur création section", error: err.message });
+    if (err.name === "SequelizeValidationError") {
+      return res.status(400).json({ message: "Erreur validation", details: err.errors.map(e => e.message) });
+    }
+    logger.error("❌ Erreur création section:", { error: err.message, stack: err.stack, body: req.body });
+    res.status(500).json({ message: "Erreur création section", error: err.message });
   }
 };
 

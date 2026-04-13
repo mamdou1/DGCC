@@ -25,7 +25,7 @@ exports.getPieceValuesByDocument = async (req, res) => {
         {
           model: PiecesFichier,
           as: "file",
-          attributes: ["id", "fichier", "original_name"],
+          attributes: ["id", "fichier", "original_name", "new_file_name"],
         },
       ],
     });
@@ -76,7 +76,7 @@ exports.getPieceValuesByPiece = async (req, res) => {
         {
           model: PiecesFichier,
           as: "file",
-          attributes: ["id", "fichier", "original_name"],
+          attributes: ["id", "fichier", "original_name", "new_file_name"],
         },
       ],
     });

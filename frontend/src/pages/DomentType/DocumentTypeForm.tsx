@@ -22,6 +22,10 @@ export default function DocumentTypeForm({
 
   const handleSubmit = async () => {
     if (!nom) return;
+    if (!nom) {
+      alert("Le nom est obligatoire");
+      return;
+    }
     setLoading(true);
     try {
       await onSubmit({ nom });

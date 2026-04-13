@@ -49,7 +49,7 @@ const FileItem = ({
     }
 
     confirmDialog({
-      message: `Voulez-vous vraiment supprimer le fichier "${file.original_name}" ?`,
+      message: `Voulez-vous vraiment supprimer le fichier "${file.new_file_name}" ?`,
       header: "Confirmation",
       icon: "pi pi-info-circle",
       acceptLabel: "Supprimer",
@@ -110,7 +110,7 @@ const FileItem = ({
   };
 
   const handleView = () => {
-    const fileUrl = `http://localhost:5001/${file.fichier}`;
+    const fileUrl = `http://localhost:5000/${file.fichier}`;
     if (onView) {
       onView(fileUrl);
     } else {
@@ -136,7 +136,7 @@ const FileItem = ({
           <div className="p-2 bg-slate-50 rounded-lg">{getFileIcon()}</div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-slate-700 truncate">
-              {file.original_name}
+              {file.new_file_name}
             </p>
             <p className="text-xs text-slate-400">
               {formatDate(file.created_at || file.createdAt)}

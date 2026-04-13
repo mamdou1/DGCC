@@ -138,6 +138,8 @@ export default function DirectionPage() {
   const [selectedDivision, setSelectedDivision] = useState<Division | null>(
     null,
   );
+  // 👇 Ajout : état pour la section sélectionnée
+  const [selectedSection, setSelectedSection] = useState<Section | null>(null);
 
   // Modal visibility
   const [directionFormVisible, setDirectionFormVisible] = useState(false);
@@ -162,6 +164,12 @@ export default function DirectionPage() {
 
   const [sectionAjoutFonctionVisible, setSectionAjoutFonctionVisible] =
     useState(false);
+
+  // États pour pré‑remplir les formulaires avec la direction parente
+  const [currentDirectionForService, setCurrentDirectionForService] =
+    useState<Direction | null>(null);
+  const [currentDirectionForSousDirection, setCurrentDirectionForSousDirection] =
+    useState<Direction | null>(null);
 
   // Editing states
   const [editingDirection, setEditingDirection] =
@@ -205,11 +213,10 @@ export default function DirectionPage() {
   // DATA LOADING FUNCTIONS
   // ============================================
   const loadServices = async (directionId: number) => {
-    if (servicesMap[directionId]) return; // Déjà chargé
+    if (servicesMap[directionId]) return;
 
     try {
       const data = await getServicesByDirection(directionId);
-      // S'assurer que data est un tableau
       const services = Array.isArray(data) ? data : [];
       setServicesMap((prev) => ({ ...prev, [directionId]: services }));
     } catch (err) {
@@ -219,7 +226,7 @@ export default function DirectionPage() {
   };
 
   const loadSousDirections = async (directionId: number) => {
-    if (sousDirectionsMap[directionId]) return; // Déjà chargé
+    if (sousDirectionsMap[directionId]) return;
 
     try {
       const data = await getSousDirectionsByDirection(directionId);
@@ -235,7 +242,7 @@ export default function DirectionPage() {
   };
 
   const loadDivisions = async (sousDirectionId: number) => {
-    if (divisionsMap[sousDirectionId]) return; // Déjà chargé
+    if (divisionsMap[sousDirectionId]) return;
 
     try {
       const data = await getDivisionsBySousDirection(sousDirectionId);
@@ -371,7 +378,6 @@ export default function DirectionPage() {
         detail: "Service créé",
       });
       setServiceFormVisible(false);
-      // Recharger les services de la direction
       if (expandedDirection) {
         await loadServices(expandedDirection);
       }
@@ -687,7 +693,6 @@ export default function DirectionPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Boutons d’action */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -768,7 +773,6 @@ export default function DirectionPage() {
     );
   }
 
-  // Composant pour une sous-direction avec ses divisions et sections
   function SousDirectionItem({
     sousDirection,
     direction,
@@ -803,7 +807,6 @@ export default function DirectionPage() {
 
     return (
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        {/* HEADER SOUS-DIRECTION */}
         <div
           onClick={toggle}
           className=" cursor-pointer flex items-center justify-between p-3 bg-white hover:bg-blue-50/30 transition-all"
@@ -876,7 +879,6 @@ export default function DirectionPage() {
           </div>
         </div>
 
-        {/* DIVISIONS DE LA SOUS-DIRECTION */}
         {expanded && (
           <div className="p-3 bg-slate-50/30 border-t border-slate-100 ml-8 space-y-3">
             {divisions.length > 0 ? (
@@ -900,7 +902,6 @@ export default function DirectionPage() {
     );
   }
 
-  // Composant pour une division avec ses sections
   function DivisionItem({
     division,
     sousDirection,
@@ -935,7 +936,6 @@ export default function DirectionPage() {
 
     return (
       <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-        {/* HEADER DIVISION */}
         <div
           onClick={toggle}
           className="cursor-pointer flex items-center justify-between p-2 bg-white hover:bg-purple-50/30 transition-all"
@@ -1005,7 +1005,6 @@ export default function DirectionPage() {
           </div>
         </div>
 
-        {/* SECTIONS DE LA DIVISION */}
         {expanded && (
           <div className="p-2 bg-slate-50/30 border-t border-slate-100 ml-6 space-y-2">
             {sections.length > 0 ? (
@@ -1027,7 +1026,6 @@ export default function DirectionPage() {
     );
   }
 
-  // Composant pour une section avec ses fonctions
   function SectionItem({
     section,
     division,
@@ -1062,7 +1060,6 @@ export default function DirectionPage() {
 
     return (
       <div className="border border-slate-200 rounded-lg bg-white">
-        {/* HEADER SECTION */}
         <div
           onClick={toggle}
           className="cursor-pointer flex items-center justify-between p-2 hover:bg-pink-50/30 transition-all"
@@ -1086,7 +1083,8 @@ export default function DirectionPage() {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedDivision(division);
+                // 👇 On passe la section sélectionnée, pas la division
+                setSelectedSection(section);
                 setSectionAjoutFonctionVisible(true);
               }}
               className="p-1 text-purple-600 hover:bg-purple-50 rounded"
@@ -1110,7 +1108,6 @@ export default function DirectionPage() {
           </div>
         </div>
 
-        {/* FONCTIONS DE LA SECTION */}
         {expanded && (
           <div className="p-2 bg-slate-50/30 border-t border-slate-100 space-y-1">
             {fonctions.length > 0 ? (
@@ -1353,7 +1350,7 @@ export default function DirectionPage() {
                             e.stopPropagation();
                             setEditingService(null);
                             setIsEditingService(false);
-                            setSelectedDirection(direction);
+                            setCurrentDirectionForService(direction);
                             setServiceFormVisible(true);
                           }}
                           className="flex items-center gap-2 px-4 py-2.5 text-teal-600 font-bold bg-teal-50 hover:bg-teal-600 hover:text-white rounded-xl transition-all border-none"
@@ -1397,7 +1394,7 @@ export default function DirectionPage() {
                             e.stopPropagation();
                             setEditingSousDirection(null);
                             setIsEditingSousDirection(false);
-                            setSelectedDirection(direction);
+                            setCurrentDirectionForSousDirection(direction);
                             setSousDirectionFormVisible(true);
                           }}
                           className="flex items-center gap-2 px-4 py-2.5 text-blue-600 font-bold bg-blue-50 hover:bg-blue-600 hover:text-white rounded-xl transition-all border-none"
@@ -1497,11 +1494,16 @@ export default function DirectionPage() {
           setServiceFormVisible(false);
           setEditingService(null);
           setIsEditingService(false);
+          setCurrentDirectionForService(null);
         }}
         onSubmit={isEditingService ? onEditService : onCreateService}
         refresh={() => {}}
-        initial={editingService || undefined}
-        directions={allDirections}
+        initial={
+          isEditingService
+            ? editingService || undefined
+            : { direction_id: currentDirectionForService?.id }
+        }
+        directions={currentDirectionForService ? [currentDirectionForService] : allDirections}
         title={isEditingService ? "Modifier le service" : "Nouveau service"}
       />
 
@@ -1525,13 +1527,18 @@ export default function DirectionPage() {
           setSousDirectionFormVisible(false);
           setEditingSousDirection(null);
           setIsEditingSousDirection(false);
+          setCurrentDirectionForSousDirection(null);
         }}
         onSubmit={
           isEditingSousDirection ? onEditSousDirection : onCreateSousDirection
         }
         refresh={() => {}}
-        initial={editingSousDirection || undefined}
-        directions={allDirections}
+        initial={
+          isEditingSousDirection
+            ? editingSousDirection || undefined
+            : { direction_id: currentDirectionForSousDirection?.id }
+        }
+        directions={currentDirectionForSousDirection ? [currentDirectionForSousDirection] : allDirections}
         title={
           isEditingSousDirection
             ? "Modifier la sous-direction"
@@ -1580,17 +1587,23 @@ export default function DirectionPage() {
         }}
       />
 
-      {/* Section Modal (juste pour ajouter fonction) */}
+      {/* Section Modal – correction : on passe la section sélectionnée */}
       <SectionAjoutFonction
         visible={sectionAjoutFonctionVisible}
-        onHide={() => setSectionAjoutFonctionVisible(false)}
-        section={null}
+        onHide={() => {
+          setSectionAjoutFonctionVisible(false);
+          setSelectedSection(null); // Réinitialiser la section
+        }}
+        section={selectedSection}
         onSuccess={() => {
           toast.current?.show({
             severity: "success",
             summary: "Succès",
             detail: "Fonction ajoutée",
           });
+          // Optionnel : recharger les fonctions de la section (via un rafraîchissement du composant SectionItem)
+          // Cela peut être fait en forçant le rechargement des fonctions dans SectionItem,
+          // mais ce n'est pas obligatoire pour l'affichage du nom.
         }}
       />
     </Layout>

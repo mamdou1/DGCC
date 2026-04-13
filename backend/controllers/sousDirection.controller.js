@@ -4,61 +4,48 @@ const HistoriqueService = require("../services/historique.service");
 
 exports.create = async (req, res) => {
   const startTime = Date.now();
-
   try {
-    logger.info("📝 Tentative de création d'une sous-direction", {
-      userId: req.user?.id,
-      body: req.body,
-    });
-
     const { libelle, direction_id } = req.body;
 
     // Trouver le dernier code
-    const last = await SousDirection.findOne({
+    const last = await sousDirection.findOne({
       order: [["id", "DESC"]],
       attributes: ["code"],
     });
 
     let nextNumber = 1;
-    if (last && last.code) {
-      const lastNumber = parseInt(last.code.split("-")[1]);
-      nextNumber = lastNumber + 1;
+    if (last?.code) {
+      const match = last.code.match(/SD-(\d+)/);
+      if (match) nextNumber = parseInt(match[1]) + 1;
     }
-
-    const paddedNumber = nextNumber.toString().padStart(3, "0");
-
-    const code = `SD-${paddedNumber}`;
-
-    // const num = Math.floor(Math.random() * 1000000)
-    //   .toString()
-    //   .padStart(6, "0");
-
-    // const code = `SD-${num}`;
+    const code = `SD-${nextNumber.toString().padStart(3, "0")}`;
 
     const sousDirection = await SousDirection.create({
       code,
-      libelle,
+      libelle: libelle.trim(),
       direction_id,
     });
 
-    logger.info("✅ Sous-direction créée avec succès", {
+    logger.info("✅ Sous-direction créée", {
       sousDirectionId: sousDirection.id,
-      code: sousDirection.code,
-      libelle: sousDirection.libelle,
       userId: req.user?.id,
       duration: Date.now() - startTime,
     });
-
     await HistoriqueService.logCreate(req, "sousDirection", sousDirection);
-
     res.status(201).json(sousDirection);
   } catch (err) {
+    if (err.name === "SequelizeValidationError") {
+      return res
+        .status(400)
+        .json({
+          message: "Erreur validation",
+          details: err.errors.map((e) => e.message),
+        });
+    }
     logger.error("❌ Erreur création sous-direction:", {
       error: err.message,
       stack: err.stack,
       body: req.body,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
     });
     res
       .status(500)

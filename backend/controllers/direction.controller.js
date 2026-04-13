@@ -9,37 +9,39 @@ const HistoriqueService = require("../services/historique.service");
 
 exports.create = async (req, res) => {
   const startTime = Date.now();
-
   try {
-    logger.info("📝 Tentative de création d'une direction", {
-      userId: req.user?.id,
-      body: req.body,
-    });
+    logger.info("📝 Tentative de création d'une direction", { userId: req.user?.id, body: req.body });
 
-    const direction = await Direction.create(req.body);
+    const { code, libelle } = req.body;
 
-    logger.info("✅ Direction créée avec succès", {
-      directionId: direction.id,
-      code: direction.code,
-      libelle: direction.libelle,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
+    // Validation manuelle
+    if (!code || !code.trim()) {
+      return res.status(400).json({ message: "Le code est requis" });
+    }
+    if (!libelle || !libelle.trim()) {
+      return res.status(400).json({ message: "Le libellé est requis" });
+    }
 
+    // Vérifier l'unicité du code (optionnel, le modèle le fait déjà)
+    const existing = await Direction.findOne({ where: { code } });
+    if (existing) {
+      return res.status(409).json({ message: "Ce code direction existe déjà" });
+    }
+
+    const direction = await Direction.create({ code, libelle });
+
+    logger.info("✅ Direction créée", { directionId: direction.id, userId: req.user?.id, duration: Date.now() - startTime });
     await HistoriqueService.logCreate(req, "direction", direction);
-
     res.status(201).json(direction);
   } catch (err) {
-    logger.error("❌ Erreur création direction:", {
-      error: err.message,
-      stack: err.stack,
-      body: req.body,
-      userId: req.user?.id,
-      duration: Date.now() - startTime,
-    });
-    res
-      .status(500)
-      .json({ message: "Erreur création direction", error: err.message });
+    if (err.name === "SequelizeValidationError") {
+      return res.status(400).json({ message: "Erreur de validation", details: err.errors.map(e => e.message) });
+    }
+    if (err.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({ message: "Ce code direction existe déjà" });
+    }
+    logger.error("❌ Erreur création direction:", { error: err.message, stack: err.stack, body: req.body });
+    res.status(500).json({ message: "Erreur création direction", error: err.message });
   }
 };
 
