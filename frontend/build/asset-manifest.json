@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/digidoc/static/css/main.f977a716.css",
+    "main.js": "/digidoc/static/js/main.ca82fa09.js",
+    "static/js/453.16213857.chunk.js": "/digidoc/static/js/453.16213857.chunk.js",
+    "static/media/primeicons.svg": "/digidoc/static/media/primeicons.6ed59f962963a4a73af2.svg",
+    "static/media/digidoc1.png": "/digidoc/static/media/digidoc1.83ee4e444dc8c08c0f51.png",
+    "static/media/primeicons.eot": "/digidoc/static/media/primeicons.ff0c4cd79b2ffca2de54.eot",
+    "static/media/primeicons.woff": "/digidoc/static/media/primeicons.8931fda1930c3bd21e96.woff",
+    "static/media/primeicons.ttf": "/digidoc/static/media/primeicons.a5c2a53d1ff7a9ff5933.ttf",
+    "static/media/primeicons.woff2": "/digidoc/static/media/primeicons.024b32cc7bf399b1a847.woff2",
+    "index.html": "/digidoc/index.html",
+    "main.f977a716.css.map": "/digidoc/static/css/main.f977a716.css.map",
+    "main.ca82fa09.js.map": "/digidoc/static/js/main.ca82fa09.js.map",
+    "453.16213857.chunk.js.map": "/digidoc/static/js/453.16213857.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f977a716.css",
+    "static/js/main.ca82fa09.js"
+  ]
+}
