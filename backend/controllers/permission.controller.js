@@ -1,4 +1,3 @@
-// controllers/permission.controller.js
 const { Permission } = require("../models");
 const logger = require("../config/logger.config");
 const HistoriqueService = require("../services/historique.service");
@@ -56,11 +55,6 @@ exports.getAllPermissions = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-// controllers/permission.controller.js
-const { Permission } = require("../models");
-const logger = require("../config/logger.config");
-const HistoriqueService = require("../services/historique.service");
 
 exports.getPermissionByID = async (req, res) => {
   const startTime = Date.now();
