@@ -455,7 +455,7 @@ export default function Recherche() {
       case "division":
         return <TableOfContents size={16} className="text-indigo-600" />;
       case "section":
-        return <GitMerge size={16} className="text-orange-600" />;
+        return <GitMerge size={16} className="text-dgcc5" />;
       case "service":
         return <Briefcase size={16} className="text-emerald-600" />;
       default:
@@ -472,10 +472,10 @@ export default function Recherche() {
 
       return (
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-orange-100 shadow-sm">
+          <div className="bg-white p-6 rounded-2xl border border-dgcc12 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               {fonctionEntityType && getNiveauIcon(fonctionEntityType)}
-              <label className="text-xs font-bold text-orange-700 uppercase tracking-wider">
+              <label className="text-xs font-bold text-dgcc3 uppercase tracking-wider">
                 Types de documents de votre structure
               </label>
             </div>
@@ -486,7 +486,7 @@ export default function Recherche() {
               optionLabel="nom"
               optionValue="id"
               placeholder="Sélectionner un type de document"
-              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-dgcc13/50 rounded-xl"
               filter
             />
           </div>
@@ -496,11 +496,11 @@ export default function Recherche() {
 
     // Cas 1 et 2 : Interface à 3 dropdowns
     return (
-      <div className="bg-white p-6 rounded-2xl border border-orange-100 shadow-sm mb-6">
+      <div className="bg-white p-6 rounded-2xl border border-dgcc12 shadow-sm mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Dropdown 1 : Niveaux */}
           <div>
-            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-2 block">
+            <label className="text-xs font-bold text-dgcc3 uppercase tracking-wider mb-2 block">
               Niveau structure
             </label>
             <Dropdown
@@ -512,7 +512,7 @@ export default function Recherche() {
                 setDocumentType_id(null);
               }}
               placeholder="Sélectionner un niveau"
-              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-dgcc13/50 rounded-xl"
               itemTemplate={(option) => (
                 <div className="flex items-center gap-2">
                   {getNiveauIcon(option.value)}
@@ -524,7 +524,7 @@ export default function Recherche() {
 
           {/* Dropdown 2 : Entités du niveau */}
           <div>
-            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-2 block">
+            <label className="text-xs font-bold text-dgcc3 uppercase tracking-wider mb-2 block">
               {selectedNiveau
                 ? niveauOptions.find((n) => n.value === selectedNiveau)?.label
                 : "Structure"}
@@ -544,7 +544,7 @@ export default function Recherche() {
                     ? "Aucune structure accessible"
                     : "Sélectionner une structure"
               }
-              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-dgcc13/50 rounded-xl"
               optionLabel="label"
               optionValue="value"
               filter
@@ -584,7 +584,7 @@ export default function Recherche() {
 
           {/* Dropdown 3 : Types de documents */}
           <div>
-            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider mb-2 block">
+            <label className="text-xs font-bold text-dgcc3 uppercase tracking-wider mb-2 block">
               Type de document
             </label>
             <Dropdown
@@ -599,7 +599,7 @@ export default function Recherche() {
                     ? "Aucun type disponible"
                     : "Sélectionner un type"
               }
-              className="w-full border-none shadow-none bg-orange-50/50 rounded-xl"
+              className="w-full border-none shadow-none bg-dgcc13/50 rounded-xl"
               optionLabel="nom"
               optionValue="id"
               filter
@@ -614,8 +614,8 @@ export default function Recherche() {
     <Layout>
       <Toast ref={toast} />
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-orange-950 flex items-center gap-3">
-          <div className="p-3 bg-orange-800 text-white rounded-2xl shadow-lg">
+        <h1 className="text-3xl font-black text-dgcc1 flex items-center gap-3">
+          <div className="p-3 bg-dgcc2 text-white rounded-2xl shadow-lg">
             <Search size={24} />
           </div>
           Recherche Avancée
@@ -627,21 +627,21 @@ export default function Recherche() {
 
       {/* Checkboxes des libellés (Critères) - à afficher si un type est sélectionné */}
       {documentType_id && metaFields.length > 0 && (
-        <div className="bg-white p-6 rounded-2xl border border-orange-100 shadow-sm mb-6">
-          <p className="text-sm font-bold text-orange-800 mb-3">
+        <div className="bg-white p-6 rounded-2xl border border-dgcc12 shadow-sm mb-6">
+          <p className="text-sm font-bold text-dgcc2 mb-3">
             Critères de recherche :
           </p>
           <div className="flex flex-wrap gap-4">
             {metaFields.map((m) => (
               <div
                 key={m.id}
-                className="flex items-center gap-2 bg-orange-50 px-3 py-2 rounded-lg border border-orange-100"
+                className="flex items-center gap-2 bg-dgcc13 px-3 py-2 rounded-lg border border-dgcc12"
               >
                 <Checkbox
                   onChange={() => toggleField(m.id)}
                   checked={selectedFields.includes(m.id)}
                 />
-                <label className="text-sm text-orange-900 font-medium">
+                <label className="text-sm text-dgcc font-medium">
                   {m.label}
                 </label>
               </div>
@@ -658,7 +658,7 @@ export default function Recherche() {
             .map((m) => (
               <div key={m.id} className="relative group">
                 <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-dgcc8"
                   size={16}
                 />
                 <input
@@ -667,7 +667,7 @@ export default function Recherche() {
                   onChange={(e) =>
                     setSearchValues({ ...searchValues, [m.id]: e.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-3 bg-white border border-orange-100 rounded-xl shadow-sm outline-none focus:border-orange-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-dgcc12 rounded-xl shadow-sm outline-none focus:border-dgcc6 transition-all text-sm"
                 />
               </div>
             ))}
@@ -675,27 +675,27 @@ export default function Recherche() {
       )}
 
       {/* Résultats (Tableau) */}
-      <div className="bg-white rounded-[2rem] border border-orange-100 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-[2rem] border border-dgcc12 shadow-xl overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-orange-50/30 border-b border-orange-50">
-              <th className="p-5 text-[11px] font-black text-orange-800 uppercase w-24">
+            <tr className="bg-dgcc13/30 border-b border-dgcc13">
+              <th className="p-5 text-[11px] font-black text-dgcc2 uppercase w-24">
                 Réf.
               </th>
               {metaFields.map((m) => (
                 <th
                   key={m.id}
-                  className="p-5 text-[11px] font-black text-orange-800 uppercase"
+                  className="p-5 text-[11px] font-black text-dgcc2 uppercase"
                 >
                   {m.label}
                 </th>
               ))}
-              <th className="p-5 text-[11px] font-black text-orange-800 uppercase w-24">
+              <th className="p-5 text-[11px] font-black text-dgcc2 uppercase w-24">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-orange-50">
+          <tbody className="divide-y divide-dgcc13">
             {documentType_id &&
               paginated.map((d) => (
                 <tr
@@ -704,10 +704,10 @@ export default function Recherche() {
                     setSelected(d);
                     setDetailsVisible(true);
                   }}
-                  className="cursor-pointer hover:bg-orange-50/40 transition-colors"
+                  className="cursor-pointer hover:bg-dgcc13/40 transition-colors"
                 >
                   <td className="p-5">
-                    <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-xs font-bold">
+                    <span className="bg-dgcc12 text-dgcc3 px-3 py-1 rounded-lg text-xs font-bold">
                       #{String(d.id).padStart(3, "0")}
                     </span>
                   </td>
@@ -718,9 +718,9 @@ export default function Recherche() {
                     return (
                       <td
                         key={m.id}
-                        className="p-5 text-sm text-orange-900 font-medium"
+                        className="p-5 text-sm text-dgcc font-medium"
                       >
-                        {value || <span className="text-orange-200">---</span>}
+                        {value || <span className="text-dgcc10">---</span>}
                       </td>
                     );
                   })}
@@ -745,7 +745,7 @@ export default function Recherche() {
                           setAjoutVisible(true);
                           e.stopPropagation();
                         }}
-                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                        className="p-2 text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
                         title="Chargement des fichiers"
                       >
                         <CloudDownload size={18} />
@@ -759,10 +759,10 @@ export default function Recherche() {
 
         {!documentType_id && (
           <div className="p-20 text-center">
-            <div className="inline-flex p-6 bg-orange-50 rounded-full mb-4 text-orange-200">
+            <div className="inline-flex p-6 bg-dgcc13 rounded-full mb-4 text-dgcc10">
               <FileText size={48} />
             </div>
-            <p className="text-orange-800 font-bold text-lg">
+            <p className="text-dgcc2 font-bold text-lg">
               {!hasAdditionalAccess(user) && !isUserAdmin(user)
                 ? "Sélectionnez un type de document"
                 : "Sélectionnez un niveau, une structure et un type de document"}

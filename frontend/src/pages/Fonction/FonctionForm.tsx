@@ -172,7 +172,7 @@ export default function FonctionForm({
       <form onSubmit={handleSubmit}>
         <div className="relative">
           {/* HEADER */}
-          <div className="bg-gradient-to-br from-orange-600 to-orange-900 p-6 text-white">
+          <div className="bg-gradient-to-br from-dgcc5 to-dgcc p-6 text-white">
             <button
               type="button"
               onClick={onHide}
@@ -182,8 +182,8 @@ export default function FonctionForm({
             </button>
 
             <div className="flex items-center gap-2 mb-1">
-              <Briefcase size={18} className="text-orange-200" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-200">
+              <Briefcase size={18} className="text-dgcc10" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-dgcc10">
                 {initial ? "Modification" : "Nouvelle fonction"}
               </span>
             </div>
@@ -203,7 +203,7 @@ export default function FonctionForm({
                 value={libelle}
                 onChange={(e) => setLibelle(e.target.value)}
                 placeholder="Ex: Chef de service, Directeur..."
-                className="w-full p-4 bg-slate-50 border border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500"
+                className="w-full p-4 bg-slate-50 border border-dgcc9 rounded-xl focus:ring-2 focus:ring-dgcc6"
                 autoFocus
               />
             </div>
@@ -211,7 +211,7 @@ export default function FonctionForm({
             {/* Directions */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
-                <Building2 size={12} className="text-orange-500" />
+                <Building2 size={12} className="text-dgcc6" />
                 Direction
               </label>
               <Dropdown
@@ -221,7 +221,7 @@ export default function FonctionForm({
                 optionValue="id"
                 onChange={(e) => setDirection_id(e.value)}
                 placeholder="Sélectionner une direction"
-                className="w-full border rounded-xl border-orange-300 focus:ring-2 focus:ring-orange-500"
+                className="w-full border rounded-xl border-dgcc9 focus:ring-2 focus:ring-dgcc6"
                 filter
                 showClear
               />
@@ -240,7 +240,7 @@ export default function FonctionForm({
                 optionValue="id"
                 onChange={(e) => setSous_direction_id(e.value)}
                 placeholder="Sélectionner une sous-direction"
-                className="w-full rounded-xl border border-orange-300"
+                className="w-full rounded-xl border border-dgcc9"
                 disabled={!direction_id}
                 filter
                 showClear
@@ -260,7 +260,7 @@ export default function FonctionForm({
                 optionValue="id"
                 onChange={(e) => setDivision_id(e.value)}
                 placeholder="Sélectionner une division"
-                className="w-full rounded-xl border border-orange-300"
+                className="w-full rounded-xl border border-dgcc9"
                 disabled={!sous_direction_id}
                 filter
                 showClear
@@ -280,7 +280,7 @@ export default function FonctionForm({
                 optionValue="id"
                 onChange={(e) => setSection_id(e.value)}
                 placeholder="Sélectionner une section"
-                className="w-full rounded-xl border border-orange-300"
+                className="w-full rounded-xl border border-dgcc9"
                 disabled={!division_id}
                 filter
                 showClear
@@ -290,7 +290,7 @@ export default function FonctionForm({
             {/* Services */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
-                <Map size={12} className="text-orange-500" />
+                <Map size={12} className="text-dgcc6" />
                 Service
               </label>
               <Dropdown
@@ -300,7 +300,7 @@ export default function FonctionForm({
                 optionValue="id"
                 onChange={(e) => setService_id(e.value)}
                 placeholder="Sélectionner un service"
-                className="w-full rounded-xl border border-orange-300"
+                className="w-full rounded-xl border border-dgcc9"
                 disabled={!direction_id}
                 filter
                 showClear
@@ -326,7 +326,7 @@ export default function FonctionForm({
               icon={<Save size={16} />}
               loading={loading}
               disabled={!libelle.trim()}
-              className="bg-orange-600 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all"
+              className="bg-dgcc5 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-dgcc10 hover:bg-dgcc3 transition-all"
             />
           </div>
         </div>

@@ -253,20 +253,20 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <LayoutDashboard size={20} className="text-orange-600" />
-            <span className="text-xs font-bold text-orange-600 uppercase tracking-[0.2em]">
+            <LayoutDashboard size={20} className="text-dgcc5" />
+            <span className="text-xs font-bold text-dgcc5 uppercase tracking-[0.2em]">
               Reporting System
             </span>
           </div>
           <h1 className="text-4xl font-black text-slate-800 tracking-tight">
-            Tableau de <span className="text-orange-800">Bord</span>
+            Tableau de <span className="text-dgcc2">Bord</span>
           </h1>
           <p className="text-slate-500 font-medium mt-1">
             Visualisation consolidée des statistiques de la plateforme
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+        {/* <div className="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
           <div className="flex items-center gap-2 px-3 text-slate-400 border-r border-slate-100">
             <Calendar size={18} />
             <span className="text-xs font-bold uppercase tracking-wider">
@@ -287,7 +287,7 @@ export default function Dashboard() {
           >
             <Plus size={20} />
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* TOTAUX - 3 CARDS */}

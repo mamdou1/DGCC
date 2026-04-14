@@ -62,8 +62,8 @@ export default function PiecesForm({
     <Dialog
       header={
         <div className="flex items-center gap-2 text-slate-800 font-bold">
-          <div className="bg-orange-100 p-2 rounded-lg">
-            <FileStack size={18} className="text-orange-700" />
+          <div className="bg-dgcc12 p-2 rounded-lg">
+            <FileStack size={18} className="text-dgcc3" />
           </div>
           <span>{title}</span>
         </div>
@@ -82,7 +82,7 @@ export default function PiecesForm({
           <div className="grid grid-cols-2 gap-4">
             {/* <div className={inputWrapper}>
               <label className={labelStyle}>
-                <Hash size={14} className="text-orange-700" /> Code
+                <Hash size={14} className="text-dgcc3" /> Code
               </label>
               <InputText
                 value={formData.code_pieces}
@@ -93,12 +93,12 @@ export default function PiecesForm({
                   })
                 }
                 placeholder="Ex: DOC-01"
-                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20"
+                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-dgcc6/20"
               />
             </div> */}
             <div className={inputWrapper}>
               <label className={labelStyle}>
-                <FileText size={14} className="text-orange-700" /> Nom du type
+                <FileText size={14} className="text-dgcc3" /> Nom du type
               </label>
               <InputText
                 value={formData.libelle}
@@ -106,7 +106,7 @@ export default function PiecesForm({
                   setFormData({ ...formData, libelle: e.target.value })
                 }
                 placeholder="Ex: Facture d'achat"
-                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20"
+                className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-dgcc6/20"
               />
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function PiecesForm({
             icon={!loading && <Save size={18} className="mr-2" />}
             onClick={handleSubmit}
             disabled={loading || !formData.libelle}
-            className="bg-orange-700 text-white font-bold px-6 py-3 rounded-xl border-none shadow-lg shadow-orange-100 hover:bg-orange-700 transition-all active:scale-95"
+            className="bg-dgcc3 text-white font-bold px-6 py-3 rounded-xl border-none shadow-lg shadow-dgcc12 hover:bg-dgcc3 transition-all active:scale-95"
           />
         </div>
       </div>

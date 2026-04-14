@@ -60,12 +60,12 @@ export default function DocumentTypeForm({
       <div className="space-y-5">
         {/* <div className="space-y-2">
           <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <Hash size={14} className="text-orange-500" /> Code Référence
+            <Hash size={14} className="text-dgcc6" /> Code Référence
           </label>
           <InputText
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 transition-all font-mono"
+            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-dgcc6/20 transition-all font-mono"
             placeholder="ex: FACT-SC"
             autoFocus
           />
@@ -73,13 +73,12 @@ export default function DocumentTypeForm({
 
         <div className="space-y-2">
           <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <FileText size={14} className="text-orange-500" /> Libellé du
-            document
+            <FileText size={14} className="text-dgcc6" /> Libellé du document
           </label>
           <InputText
             value={nom}
             onChange={(e) => setNom(e.target.value)}
-            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 transition-all"
+            className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-dgcc6/20 transition-all"
             placeholder="ex: Facture de service"
           />
         </div>
@@ -100,7 +99,7 @@ export default function DocumentTypeForm({
           onClick={handleSubmit}
           loading={loading}
           disabled={!nom}
-          className="bg-orange-600 hover:bg-orange-700 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
+          className="bg-dgcc5 hover:bg-dgcc3 text-white border-none px-8 py-3 rounded-xl shadow-lg shadow-dgcc10 transition-all font-bold"
         />
       </div>
     </div>

@@ -166,14 +166,14 @@ export default function UserDetails({
 
   const InfoRow = ({ icon: Icon, label, value }: any) => (
     <div className="flex items-start gap-3 p-2">
-      <div className="mt-1 bg-orange-50 p-2 rounded-lg text-orange-500">
+      <div className="mt-1 bg-dgcc13 p-2 rounded-lg text-dgcc6">
         <Icon size={16} />
       </div>
       <div>
         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
           {label}
         </span>
-        <p className="text-sm font-semibold text-orange-900">
+        <p className="text-sm font-semibold text-dgcc">
           {value || "Non renseigné"}
         </p>
       </div>
@@ -235,11 +235,11 @@ export default function UserDetails({
       type: "SECTION" as const,
       label: "Sections",
       icon: <GitMerge size={18} />,
-      bgColor: "bg-orange-100",
-      textColor: "text-orange-700",
-      iconColor: "text-orange-600",
-      lightBg: "bg-orange-50",
-      lightText: "text-orange-500",
+      bgColor: "bg-dgcc12",
+      textColor: "text-dgcc3",
+      iconColor: "text-dgcc5",
+      lightBg: "bg-dgcc13",
+      lightText: "text-dgcc6",
       getEntity: (access: AgentEntiteeAccess) => access.section,
       getParentInfo: (access: AgentEntiteeAccess) =>
         `${access.section?.division?.libelle || ""} • ${access.section?.division?.sousDirection?.libelle || ""}`,
@@ -264,8 +264,8 @@ export default function UserDetails({
       <Toast ref={toast} />
       <Dialog
         header={
-          <div className="flex items-center gap-2 text-orange-900 font-bold">
-            <UserIcon size={20} className="text-orange-500" />
+          <div className="flex items-center gap-2 text-dgcc font-bold">
+            <UserIcon size={20} className="text-dgcc6" />
             <span>Détails du compte</span>
           </div>
         }
@@ -305,10 +305,10 @@ export default function UserDetails({
                 <span className="w-2 h-2 block bg-white rounded-full"></span>
               </div>
             </div>
-            <h2 className="mt-3 text-lg font-bold text-orange-900 uppercase tracking-tight">
+            <h2 className="mt-3 text-lg font-bold text-dgcc uppercase tracking-tight">
               {user.prenom} {user.nom}
             </h2>
-            <span className="text-[10px] font-black bg-orange-100 text-orange-700 px-3 py-1 rounded-full uppercase mt-1">
+            <span className="text-[10px] font-black bg-dgcc12 text-dgcc3 px-3 py-1 rounded-full uppercase mt-1">
               {typeof user.droit === "string"
                 ? user.droit
                 : user.droit?.libelle}
@@ -371,7 +371,7 @@ export default function UserDetails({
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <h3 className="text-xs font-black text-slate-800 uppercase flex items-center gap-2">
-                <Lock size={14} className="text-orange-500" />
+                <Lock size={14} className="text-dgcc6" />
                 Accès Documents (Spécifiques)
               </h3>
               <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-500">
@@ -381,7 +381,7 @@ export default function UserDetails({
 
             {loading ? (
               <div className="text-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dgcc5 mx-auto"></div>
                 <p className="text-xs text-slate-400 mt-2">
                   Chargement des accès...
                 </p>
@@ -436,7 +436,7 @@ export default function UserDetails({
                           return (
                             <div
                               key={acc.id}
-                              className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-orange-200 hover:shadow-sm transition-all"
+                              className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-dgcc9 hover:shadow-sm transition-all"
                             >
                               <div className="flex items-center gap-3">
                                 <div

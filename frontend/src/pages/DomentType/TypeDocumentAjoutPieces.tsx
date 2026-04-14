@@ -244,12 +244,12 @@ export default function TypeDocumentAjoutPieces({
           {/* Liste des pièces affectées (droite) */}
           <div className="flex-1 flex flex-col">
             <div className="flex items-center gap-2 mb-3">
-              <CheckSquare size={16} className="text-orange-500" />
+              <CheckSquare size={16} className="text-dgcc6" />
               <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">
                 Pièces affectées ({assignedPieces.length})
               </span>
             </div>
-            <div className="flex-1 border-2 border-orange-100 rounded-2xl overflow-y-auto bg-orange-50/30 shadow-inner">
+            <div className="flex-1 border-2 border-dgcc12 rounded-2xl overflow-y-auto bg-dgcc13/30 shadow-inner">
               {assignedPieces.length > 0 ? (
                 assignedPieces.map((p) =>
                   renderPieceItem(p, selectedAssigned, setSelectedAssigned),

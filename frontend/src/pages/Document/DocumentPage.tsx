@@ -35,6 +35,7 @@ import { TypeDocument, Document } from "../../interfaces";
 import DocumentUploadPieces from "./DocumentUploadPieces";
 import DocumentDisponiblePieces from "./DocumentDisponiblePieces";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmDeleteDialog from "../../components/layout/ConfirmDeleteDialog";
 
 // ✅ IMPORTER LES NOUVEAUX HOOKS
 import {
@@ -366,10 +367,11 @@ export default function DocumentPage() {
     confirmDialog({
       message: "Voulez-vous supprimer ce document définitivement ?",
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -550,7 +552,7 @@ export default function DocumentPage() {
       case "division":
         return "bg-indigo-100 text-indigo-700";
       case "section":
-        return "bg-orange-100 text-orange-700";
+        return "bg-dgcc12 text-dgcc3";
       default:
         return "bg-slate-100 text-slate-700";
     }
@@ -577,7 +579,7 @@ export default function DocumentPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5"></div>
         </div>
       </Layout>
     );
@@ -598,11 +600,11 @@ export default function DocumentPage() {
       </Layout>
     );
   }
-
   // Déterminer ce qu'il faut afficher
   const getDisplayContent = () => {
     const params = new URLSearchParams(location.search);
     const typeId = params.get("typeId");
+    const entitee = params.get("entitee");
 
     // ===== CAS 2.2 : Affichage direct des documents du type sélectionné
     if (typeId) {
@@ -618,7 +620,7 @@ export default function DocumentPage() {
                 setDocumentType_id(Number(typeId));
                 setFormVisible(true);
               }}
-              className="mt-4 bg-orange-700 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-orange-800 transition-all"
+              className="mt-4 bg-dgcc3 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-dgcc2 transition-all"
             >
               <Plus size={16} className="inline mr-2" />
               Créer le premier document
@@ -637,24 +639,24 @@ export default function DocumentPage() {
           <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-orange-50/30 border-b border-orange-50">
-                  <th className="p-4 text-[11px] font-black text-orange-800 uppercase tracking-widest w-24">
+                <tr className="bg-dgcc13/30 border-b border-dgcc13">
+                  <th className="p-4 text-[11px] font-black text-dgcc2 uppercase tracking-widest w-24">
                     Réf.
                   </th>
                   {metaFields.map((m) => (
                     <th
                       key={m.id}
-                      className="p-4 text-[11px] font-black text-orange-800 uppercase tracking-widest"
+                      className="p-4 text-[11px] font-black text-dgcc2 uppercase tracking-widest"
                     >
                       {m.label}
                     </th>
                   ))}
-                  <th className="p-4 text-[11px] font-black text-orange-800 uppercase tracking-widest text-center">
+                  <th className="p-4 text-[11px] font-black text-dgcc2 uppercase tracking-widest text-center">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-orange-50">
+              <tbody className="divide-y divide-dgcc13">
                 {paginatedDocs.map((doc) => (
                   <tr
                     key={doc.id}
@@ -662,10 +664,10 @@ export default function DocumentPage() {
                       setSelected(doc);
                       setDetailsVisible(true);
                     }}
-                    className="cursor-pointer group hover:bg-orange-50/40 transition-colors"
+                    className="cursor-pointer group hover:bg-dgcc13/40 transition-colors"
                   >
                     <td className="p-4">
-                      <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-lg text-xs font-bold border border-orange-200">
+                      <span className="bg-dgcc12 text-dgcc3 px-2 py-1 rounded-lg text-xs font-bold border border-dgcc9">
                         #{String(doc.id).padStart(3, "0")}
                       </span>
                     </td>
@@ -679,9 +681,7 @@ export default function DocumentPage() {
                           key={m.id}
                           className="p-4 text-sm text-orange-900 font-medium"
                         >
-                          {value || (
-                            <span className="text-orange-200">---</span>
-                          )}
+                          {value || <span className="text-dgcc9">---</span>}
                         </td>
                       );
                     })}
@@ -697,7 +697,7 @@ export default function DocumentPage() {
                             setDisponibleVisible(true);
                             e.stopPropagation();
                           }}
-                          className="p-2 text-slate-400 hover:text-orange-600 hover:bg-white rounded-lg transition-all"
+                          className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-white rounded-lg transition-all"
                           title="Contrôle de la disponibilité des pièces"
                         >
                           <Check size={18} />
@@ -738,8 +738,275 @@ export default function DocumentPage() {
         </div>
       );
     }
+    // ===== CAS 3 : Utilisateur sans accès supplémentaire (uniquement sa fonction)
+    // Ce cas s'affiche quand :
+    // - Pas de typeId sélectionné
+    // - Pas d'entitee sélectionnée
+    // - L'utilisateur n'est PAS admin
+    // - L'utilisateur n'a PAS d'accès supplémentaire
+    if (!typeId && !entitee && !isUserAdmin() && !hasAdditionalAccess()) {
+      const fonctionTypes = getUserFonctionTypes();
 
-    // ===== CAS 1 : ADMIN ou Utilisateur avec accès supplémentaires
+      if (fonctionTypes.length === 0) {
+        return (
+          <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100">
+            <FileText size={48} className="mx-auto text-slate-300 mb-4" />
+            <p className="text-slate-400 font-medium">
+              Aucun type de document disponible pour votre fonction
+            </p>
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-4">
+          {fonctionTypes.map((type) => {
+            const typeDocs = allDocs.filter(
+              (d) => d.type_document_id === type.id,
+            );
+            const isTypeExpanded = expandedType === type.id;
+
+            return (
+              <div
+                key={type.id}
+                className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
+                  isTypeExpanded
+                    ? "border-dgcc6 ring-2 ring-dgcc9"
+                    : "border-slate-100"
+                }`}
+              >
+                {/* HEADER TYPE - comme dans les Cas 1 et 2 */}
+                <div
+                  onClick={() => toggleType(type.id)}
+                  className={`w-full flex items-center justify-between p-5 transition-all cursor-pointer ${
+                    isTypeExpanded ? "bg-dgcc13/50" : "hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`p-2 rounded-lg ${
+                        isTypeExpanded
+                          ? "bg-dgcc6 text-white"
+                          : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      <FileStack size={20} />
+                    </div>
+                    <div className="text-left">
+                      <div className="flex items-center gap-2">
+                        <h3
+                          className={`font-bold ${
+                            isTypeExpanded ? "text-dgcc2" : "text-slate-700"
+                          }`}
+                        >
+                          {type.nom}
+                        </h3>
+                        {type.code && (
+                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-mono">
+                            {type.code}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500 font-medium">
+                        {typeDocs.length} document(s)
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPendingTypeId(type.id);
+                        setEditingDoc(null);
+                        setFormVisible(true);
+                      }}
+                      className="p-1.5 text-dgcc5 hover:bg-dgcc13 rounded-lg"
+                      title="Nouveau document"
+                    >
+                      <Plus size={16} />
+                    </button>
+                    {isTypeExpanded ? (
+                      <ChevronDown size={20} className="text-dgcc6" />
+                    ) : (
+                      <ChevronRight size={20} className="text-slate-400" />
+                    )}
+                  </div>
+                </div>
+
+                {/* TABLEAU DES DOCUMENTS - comme dans les Cas 1 et 2 */}
+                {isTypeExpanded && (
+                  <div className="border-t border-slate-100 p-5 bg-slate-50/30">
+                    {typeDocs.length > 0 ? (
+                      <>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse">
+                            <thead>
+                              <tr className="bg-dgcc13/30 border-b border-dgcc13">
+                                <th className="p-3 text-[11px] font-black text-dgcc2 uppercase tracking-widest w-24">
+                                  Réf.
+                                </th>
+                                {metaFields.map((m) => (
+                                  <th
+                                    key={m.id}
+                                    className="p-3 text-[11px] font-black text-dgcc2 uppercase tracking-widest"
+                                  >
+                                    {m.label}
+                                  </th>
+                                ))}
+                                <th className="p-3 text-[11px] font-black text-dgcc2 uppercase tracking-widest text-center">
+                                  Actions
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-dgcc13">
+                              {typeDocs.map((doc) => (
+                                <tr
+                                  key={doc.id}
+                                  onClick={() => {
+                                    setSelected(doc);
+                                    setDetailsVisible(true);
+                                  }}
+                                  className="cursor-pointer group hover:bg-dgcc13/40 transition-colors"
+                                >
+                                  <td className="p-3">
+                                    <span className="bg-dgcc12 text-dgcc3 px-2 py-1 rounded-lg text-xs font-bold border border-dgcc9">
+                                      #{String(doc.id).padStart(3, "0")}
+                                    </span>
+                                  </td>
+                                  {metaFields.map((m) => {
+                                    const value = doc.values?.find(
+                                      (v: any) => v.metaField?.id === m.id,
+                                    )?.value;
+                                    return (
+                                      <td
+                                        key={m.id}
+                                        className="p-3 text-sm text-orange-900 font-medium"
+                                      >
+                                        {value || (
+                                          <span className="text-dgcc9">
+                                            ---
+                                          </span>
+                                        )}
+                                      </td>
+                                    );
+                                  })}
+                                  <td className="p-3">
+                                    <div
+                                      className="flex justify-center gap-1"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setEditingDoc(doc);
+                                          setPendingTypeId(type.id);
+                                          setFormVisible(true);
+                                        }}
+                                        className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
+                                        title="Modifier le document"
+                                      >
+                                        <Pencil size={18} />
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          setSelected(doc);
+                                          setDisponibleVisible(true);
+                                          e.stopPropagation();
+                                        }}
+                                        className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                                        title="Contrôle de la disponibilité des pièces"
+                                      >
+                                        <Check size={18} />
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          setSelected(doc);
+                                          setAjoutVisible(true);
+                                          e.stopPropagation();
+                                        }}
+                                        className="p-2 text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
+                                        title="Chargement des fichiers"
+                                      >
+                                        <CloudDownload size={18} />
+                                      </button>
+                                      {/* <ConfirmDeleteDialog
+                                        resourceName="document"
+                                        onDelete={async () =>
+                                          await deleteMutation.mutateAsync(
+                                            String(doc.id),
+                                          )
+                                        }
+                                      >
+                                        {({ showDialog }) => (
+                                          <button
+                                            onClick={showDialog}
+                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                          >
+                                            <Trash2 size={18} />
+                                          </button>
+                                        )}
+                                      </ConfirmDeleteDialog> */}
+                                      <button
+                                        onClick={() =>
+                                          handleDelete(String(doc.id))
+                                        }
+                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                      >
+                                        <Trash2 size={18} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Pagination si nécessaire */}
+                        {typeDocs.length > itemsPerPageInternal && (
+                          <div className="mt-4 flex justify-center pt-2 border-t border-slate-100">
+                            <Pagination
+                              currentPage={internalTypePages[type.id] || 1}
+                              totalItems={typeDocs.length}
+                              itemsPerPage={itemsPerPageInternal}
+                              onPageChange={(page) =>
+                                handleInternalPageChange(type.id, page)
+                              }
+                            />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-8">
+                        <FileText
+                          size={32}
+                          className="mx-auto text-slate-300 mb-2"
+                        />
+                        <p className="text-sm text-slate-400 italic">
+                          Aucun document pour ce type
+                        </p>
+                        <button
+                          onClick={() => {
+                            setDocumentType_id(type.id);
+                            setFormVisible(true);
+                          }}
+                          className="mt-3 text-sm bg-dgcc5 text-white px-4 py-2 rounded-xl hover:bg-dgcc3 transition-all"
+                        >
+                          <Plus size={14} className="inline mr-1" />
+                          Créer le premier document
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // ===== CAS 1 : ADMIN ou Utilisateur avec accès supplémentaires (affichage par entité)
     if (selectedNiveau) {
       return (
         <div className="space-y-4">
@@ -755,22 +1022,22 @@ export default function DocumentPage() {
                     key={`${entitee.type}-${entitee.id}`}
                     className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
                       isExpanded
-                        ? "border-orange-500 ring-2 ring-orange-200"
+                        ? "border-dgcc6 ring-2 ring-dgcc9"
                         : "border-slate-100"
                     }`}
                   >
-                    {/* HEADER ENTITÉ - inchangé */}
+                    {/* HEADER ENTITÉ */}
                     <button
                       onClick={() => toggleEntitee(entitee.id)}
                       className={`w-full flex items-center justify-between p-5 transition-all ${
-                        isExpanded ? "bg-orange-50/50" : "hover:bg-slate-50"
+                        isExpanded ? "bg-dgcc13/50" : "hover:bg-slate-50"
                       }`}
                     >
                       <div className="flex items-center gap-4">
                         <div
                           className={`p-2 rounded-lg ${
                             isExpanded
-                              ? "bg-orange-500 text-white"
+                              ? "bg-dgcc6 text-white"
                               : "bg-slate-100 text-slate-500"
                           }`}
                         >
@@ -780,9 +1047,7 @@ export default function DocumentPage() {
                           <div className="flex items-center gap-2">
                             <h3
                               className={`font-bold ${
-                                isExpanded
-                                  ? "text-orange-800"
-                                  : "text-slate-700"
+                                isExpanded ? "text-dgcc2" : "text-slate-700"
                               }`}
                             >
                               {entitee.libelle}
@@ -806,7 +1071,7 @@ export default function DocumentPage() {
                         </div>
                       </div>
                       {isExpanded ? (
-                        <ChevronDown size={20} className="text-orange-500" />
+                        <ChevronDown size={20} className="text-dgcc6" />
                       ) : (
                         <ChevronRight size={20} className="text-slate-400" />
                       )}
@@ -821,7 +1086,6 @@ export default function DocumentPage() {
                               (d) => d.type_document_id === type.id,
                             );
 
-                            // ✅ Utiliser la pagination interne pour ce type
                             const {
                               documents: paginatedDocs,
                               totalDocuments,
@@ -836,16 +1100,16 @@ export default function DocumentPage() {
                                 key={type.id}
                                 className={`bg-white border rounded-xl overflow-hidden transition-all ${
                                   isTypeExpanded
-                                    ? "border-orange-400"
+                                    ? "border-dgcc8"
                                     : "border-slate-100"
                                 }`}
                               >
-                                {/* HEADER TYPE - inchangé sauf l'affichage du compteur */}
+                                {/* HEADER TYPE */}
                                 <div
                                   onClick={() => toggleType(type.id)}
                                   className={`w-full flex items-center justify-between p-4 transition-all cursor-pointer ${
                                     isTypeExpanded
-                                      ? "bg-orange-50/50"
+                                      ? "bg-dgcc13/50"
                                       : "hover:bg-slate-50"
                                   }`}
                                 >
@@ -853,7 +1117,7 @@ export default function DocumentPage() {
                                     <div
                                       className={`p-1.5 rounded-lg ${
                                         isTypeExpanded
-                                          ? "bg-orange-500 text-white"
+                                          ? "bg-dgcc6 text-white"
                                           : "bg-slate-100 text-slate-500"
                                       }`}
                                     >
@@ -864,7 +1128,7 @@ export default function DocumentPage() {
                                         <span
                                           className={`text-sm font-bold ${
                                             isTypeExpanded
-                                              ? "text-orange-700"
+                                              ? "text-dgcc3"
                                               : "text-slate-700"
                                           }`}
                                         >
@@ -887,7 +1151,7 @@ export default function DocumentPage() {
                                         setEditingDoc(null);
                                         setFormVisible(true);
                                       }}
-                                      className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg"
+                                      className="p-1.5 text-dgcc5 hover:bg-dgcc13 rounded-lg"
                                       title="Nouveau document"
                                     >
                                       <Plus size={14} />
@@ -895,7 +1159,7 @@ export default function DocumentPage() {
                                     {isTypeExpanded ? (
                                       <ChevronDown
                                         size={16}
-                                        className="text-orange-500"
+                                        className="text-dgcc6"
                                       />
                                     ) : (
                                       <ChevronRight
@@ -906,7 +1170,7 @@ export default function DocumentPage() {
                                   </div>
                                 </div>
 
-                                {/* TABLEAU DES DOCUMENTS AVEC PAGINATION INTERNE */}
+                                {/* TABLEAU DES DOCUMENTS */}
                                 {isTypeExpanded && (
                                   <div className="border-t border-slate-100 p-4 bg-slate-50/30">
                                     {totalDocuments > 0 ? (
@@ -914,24 +1178,24 @@ export default function DocumentPage() {
                                         <div className="overflow-x-auto">
                                           <table className="w-full text-left border-collapse">
                                             <thead>
-                                              <tr className="bg-orange-50/30 border-b border-orange-50">
-                                                <th className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest w-24">
+                                              <tr className="bg-dgcc13/30 border-b border-dgcc13">
+                                                <th className="p-3 text-[11px] font-black text-dgcc2 uppercase tracking-widest w-24">
                                                   Réf.
                                                 </th>
                                                 {metaFields.map((m) => (
                                                   <th
                                                     key={m.id}
-                                                    className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest"
+                                                    className="p-3 text-[11px] font-black text-dgcc2 uppercase tracking-widest"
                                                   >
                                                     {m.label}
                                                   </th>
                                                 ))}
-                                                <th className="p-3 text-[11px] font-black text-orange-800 uppercase tracking-widest text-center">
+                                                <th className="p-3 text-[11px] font-black text-dgcc2 uppercase tracking-widest text-center">
                                                   Actions
                                                 </th>
                                               </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-orange-50">
+                                            <tbody className="divide-y divide-dgcc13">
                                               {paginatedDocs.map((doc) => (
                                                 <tr
                                                   key={doc.id}
@@ -939,10 +1203,10 @@ export default function DocumentPage() {
                                                     setSelected(doc);
                                                     setDetailsVisible(true);
                                                   }}
-                                                  className="cursor-pointer group hover:bg-orange-50/40 transition-colors"
+                                                  className="cursor-pointer group hover:bg-dgcc13/40 transition-colors"
                                                 >
                                                   <td className="p-3">
-                                                    <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-lg text-xs font-bold border border-orange-200">
+                                                    <span className="bg-dgcc12 text-dgcc3 px-2 py-1 rounded-lg text-xs font-bold border border-dgcc9">
                                                       #
                                                       {String(doc.id).padStart(
                                                         3,
@@ -963,7 +1227,7 @@ export default function DocumentPage() {
                                                         className="p-3 text-sm text-orange-900 font-medium"
                                                       >
                                                         {value || (
-                                                          <span className="text-orange-200">
+                                                          <span className="text-dgcc9">
                                                             ---
                                                           </span>
                                                         )}
@@ -986,7 +1250,7 @@ export default function DocumentPage() {
                                                           );
                                                           setFormVisible(true);
                                                         }}
-                                                        className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                                        className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
                                                         title="Modifier le document"
                                                       >
                                                         <Pencil size={18} />
@@ -1010,7 +1274,7 @@ export default function DocumentPage() {
                                                           setAjoutVisible(true);
                                                           e.stopPropagation();
                                                         }}
-                                                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                                        className="p-2 text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
                                                         title="Chargement des fichiers"
                                                       >
                                                         <CloudDownload
@@ -1035,7 +1299,6 @@ export default function DocumentPage() {
                                           </table>
                                         </div>
 
-                                        {/* ✅ Pagination interne pour ce type */}
                                         {totalPages > 1 && (
                                           <div className="mt-4 flex justify-center pt-2 border-t border-slate-100">
                                             <Pagination
@@ -1068,7 +1331,7 @@ export default function DocumentPage() {
                                             setDocumentType_id(type.id);
                                             setFormVisible(true);
                                           }}
-                                          className="mt-3 text-sm bg-orange-600 text-white px-4 py-2 rounded-xl hover:bg-orange-700 transition-all"
+                                          className="mt-3 text-sm bg-dgcc5 text-white px-4 py-2 rounded-xl hover:bg-dgcc3 transition-all"
                                         >
                                           <Plus
                                             size={14}
@@ -1096,7 +1359,7 @@ export default function DocumentPage() {
                 );
               })}
 
-              {/* ✅ Pagination des entités (structures) */}
+              {/* Pagination des entités */}
               {totalEntities > entitiesPerPage && (
                 <div className="mt-8 flex justify-center pt-4 border-t border-slate-200">
                   <div className="flex flex-col items-center gap-2">
@@ -1143,6 +1406,7 @@ export default function DocumentPage() {
       );
     }
 
+    // Message par défaut
     return (
       <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100">
         <div className="inline-flex p-4 bg-slate-50 rounded-full text-slate-300 mb-4">
@@ -1154,7 +1418,6 @@ export default function DocumentPage() {
       </div>
     );
   };
-
   return (
     <Layout>
       <Toast ref={toast} />
@@ -1162,13 +1425,13 @@ export default function DocumentPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-orange-950 flex items-center gap-3">
-            <div className="p-3 bg-orange-800 text-white rounded-2xl shadow-lg shadow-orange-200">
+          <h1 className="text-3xl font-black text-dgcc flex items-center gap-3">
+            <div className="p-3 bg-dgcc3 text-white rounded-2xl shadow-lg shadow-dgcc9">
               <FileStack size={24} />
             </div>
             Gestion des Documents
           </h1>
-          <p className="text-orange-600/70 text-sm mt-1 ml-16 font-medium">
+          <p className="text-dgcc5/70 text-sm mt-1 ml-16 font-medium">
             {selectedNiveau === "direction" &&
               "Parcourez les documents par direction"}
             {selectedNiveau === "sousDirection" &&
@@ -1187,7 +1450,7 @@ export default function DocumentPage() {
             setSelected(null);
             setFormVisible(true);
           }}
-          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
+          className="bg-dgcc5 hover:bg-dgcc text-white border-none px-6 py-3 rounded-xl shadow-lg shadow-dgcc9 transition-all font-bold"
         />
       </div>
 
@@ -1195,14 +1458,14 @@ export default function DocumentPage() {
       <div className="mb-8">
         <div className="relative group max-w-md">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400 group-focus-within:text-orange-600 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-dgcc8 group-focus-within:text-dgcc5 transition-colors"
             size={18}
           />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher un document..."
-            className="w-full pl-12 pr-4 py-4 bg-white border border-orange-100 rounded-2xl shadow-sm outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all text-sm"
+            className="w-full pl-12 pr-4 py-4 bg-white border border-dgcc12 rounded-2xl shadow-sm outline-none focus:ring-4 focus:ring-dgcc6/10 focus:border-dgcc6 transition-all text-sm"
           />
         </div>
       </div>

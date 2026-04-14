@@ -168,8 +168,10 @@ export default function DirectionPage() {
   // États pour pré‑remplir les formulaires avec la direction parente
   const [currentDirectionForService, setCurrentDirectionForService] =
     useState<Direction | null>(null);
-  const [currentDirectionForSousDirection, setCurrentDirectionForSousDirection] =
-    useState<Direction | null>(null);
+  const [
+    currentDirectionForSousDirection,
+    setCurrentDirectionForSousDirection,
+  ] = useState<Direction | null>(null);
 
   // Editing states
   const [editingDirection, setEditingDirection] =
@@ -340,10 +342,11 @@ export default function DirectionPage() {
     confirmDialog({
       message: `Voulez-vous supprimer cette direction définitivement ?`,
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -420,9 +423,13 @@ export default function DirectionPage() {
     confirmDialog({
       message: `Voulez-vous supprimer ce service définitivement ?`,
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
+      rejectClassName:
+        "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
       accept: async () => {
         try {
@@ -498,10 +505,11 @@ export default function DirectionPage() {
     confirmDialog({
       message: `Voulez-vous supprimer cette sous-direction définitivement ? Cette action est irréversible.`,
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -579,10 +587,11 @@ export default function DirectionPage() {
     confirmDialog({
       message: `Voulez-vous supprimer cette division définitivement ? Cette action est irréversible.`,
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -634,10 +643,11 @@ export default function DirectionPage() {
       confirmDialog({
         message: `Voulez-vous supprimer cette fonction définitivement ?`,
         header: "Confirmation",
-        icon: "pi pi-info-circle",
+        icon: "pi pi-info-circle text-red-500",
         acceptLabel: "Supprimer",
         rejectLabel: "Annuler",
-        acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+        acceptClassName:
+          "p-button-danger text-white bg-red-500 p-button-raised p-button-rounded p-2",
         rejectClassName:
           "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
         style: { width: "450px" },
@@ -1162,7 +1172,7 @@ export default function DirectionPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5"></div>
         </div>
       </Layout>
     );
@@ -1191,7 +1201,7 @@ export default function DirectionPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
+          <div className="bg-dgcc p-3 rounded-2xl text-white shadow-lg shadow-dgcc12">
             <Building2 size={28} />
           </div>
           <div>
@@ -1206,7 +1216,7 @@ export default function DirectionPage() {
         <Button
           label="Nouvelle direction"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+          className="bg-dgcc hover:bg-dgcc1 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
           onClick={() => {
             setEditingDirection(null);
             setDirectionFormVisible(true);
@@ -1218,7 +1228,7 @@ export default function DirectionPage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
         <div className="relative group max-w-md">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-dgcc6 transition-colors"
             size={20}
           />
           <InputText
@@ -1243,7 +1253,7 @@ export default function DirectionPage() {
                 key={direction.id}
                 className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
                   isExpanded
-                    ? "border-orange-500 ring-2 ring-orange-200"
+                    ? "border-dgcc6 ring-2 ring-dgcc9"
                     : "border-slate-100"
                 }`}
               >
@@ -1258,7 +1268,7 @@ export default function DirectionPage() {
                     <div
                       className={`p-2 rounded-lg ${
                         isExpanded
-                          ? "bg-orange-500 text-white"
+                          ? "bg-dgcc6 text-white"
                           : "bg-slate-100 text-slate-500"
                       }`}
                     >
@@ -1267,7 +1277,7 @@ export default function DirectionPage() {
                     <div className="text-left">
                       <div className="flex items-center gap-2">
                         <h3
-                          className={`font-bold ${isExpanded ? "text-orange-800" : "text-slate-700"}`}
+                          className={`font-bold ${isExpanded ? "text-dgcc3" : "text-slate-700"}`}
                         >
                           {direction.libelle}
                         </h3>
@@ -1290,7 +1300,7 @@ export default function DirectionPage() {
                         setSelectedDirection(direction);
                         setDirectionDetailsVisible(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg"
+                      className="p-2 text-slate-400 hover:text-dgcc4 hover:bg-dgcc13 rounded-lg"
                       title="Voir les détails"
                     >
                       <Eye size={18} />
@@ -1312,7 +1322,7 @@ export default function DirectionPage() {
                         setEditingDirection(direction);
                         setDirectionFormVisible(true);
                       }}
-                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+                      className="p-2 text-dgcc5 hover:bg-dgcc13 rounded-lg"
                       title="Modifier"
                     >
                       <Pencil size={18} />
@@ -1328,7 +1338,7 @@ export default function DirectionPage() {
                       <Trash2 size={18} />
                     </button>
                     {isExpanded ? (
-                      <ChevronDown size={20} className="text-orange-700" />
+                      <ChevronDown size={20} className="text-dgcc4" />
                     ) : (
                       <ChevronRight size={20} className="text-slate-400" />
                     )}
@@ -1503,7 +1513,11 @@ export default function DirectionPage() {
             ? editingService || undefined
             : { direction_id: currentDirectionForService?.id }
         }
-        directions={currentDirectionForService ? [currentDirectionForService] : allDirections}
+        directions={
+          currentDirectionForService
+            ? [currentDirectionForService]
+            : allDirections
+        }
         title={isEditingService ? "Modifier le service" : "Nouveau service"}
       />
 
@@ -1538,7 +1552,11 @@ export default function DirectionPage() {
             ? editingSousDirection || undefined
             : { direction_id: currentDirectionForSousDirection?.id }
         }
-        directions={currentDirectionForSousDirection ? [currentDirectionForSousDirection] : allDirections}
+        directions={
+          currentDirectionForSousDirection
+            ? [currentDirectionForSousDirection]
+            : allDirections
+        }
         title={
           isEditingSousDirection
             ? "Modifier la sous-direction"

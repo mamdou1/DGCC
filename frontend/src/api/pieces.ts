@@ -14,6 +14,11 @@ export const getPieces = async (): Promise<Pieces[]> => {
   return response.data;
 };
 
+export const getPieceById = async (id: string | number): Promise<Pieces> => {
+  const response = await api.get(`/pieces/${id}`);
+  return response.data;
+};
+
 export const updatedPieces = async (
   payload: Partial<Pieces>,
   id: string,

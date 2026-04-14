@@ -114,19 +114,19 @@ export default function UpdatePassword() {
     newPassword && confirmPassword && newPassword === confirmPassword;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-dgcc12 via-white to-dgcc12 flex items-center justify-center p-4">
       <Toast ref={toast} position="top-center" />
 
       <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-orange-700 to-orange-900 p-8 text-white">
+        <div className="bg-gradient-to-r from-dgcc3 to-dgcc p-8 text-white">
           <div className="flex items-center gap-4">
             <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
               <Lock size={28} />
             </div>
             <div>
               <h1 className="text-2xl font-black">Nouveau mot de passe</h1>
-              <p className="text-orange-100 text-sm mt-1">
+              <p className="text-dgcc12 text-sm mt-1">
                 Choisissez un mot de passe sécurisé
               </p>
             </div>
@@ -146,7 +146,7 @@ export default function UpdatePassword() {
 
           {/* Nouveau mot de passe */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider">
+            <label className="text-xs font-bold text-dgcc3 uppercase tracking-wider">
               Nouveau mot de passe
             </label>
             <div className="relative">
@@ -161,13 +161,13 @@ export default function UpdatePassword() {
                 className={`w-full pl-12 pr-12 py-4 bg-slate-50 border-2 rounded-xl outline-none transition-all ${
                   errors.newPassword
                     ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100"
-                    : "border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                    : "border-slate-200 focus:border-dgcc6 focus:ring-4 focus:ring-dgcc12"
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-dgcc5"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -183,7 +183,7 @@ export default function UpdatePassword() {
                         ? "bg-red-100 text-red-700"
                         : passwordStrength.score === 2
                           ? "bg-yellow-100 text-yellow-700"
-                          : "bg-orange-100 text-orange-700"
+                          : "bg-dgcc12 text-dgcc3"
                     }`}
                   >
                     {passwordStrength.message}
@@ -208,7 +208,7 @@ export default function UpdatePassword() {
 
           {/* Confirmation */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-orange-700 uppercase tracking-wider">
+            <label className="text-xs font-bold text-dgcc3 uppercase tracking-wider">
               Confirmer le mot de passe
             </label>
             <div className="relative">
@@ -224,14 +224,14 @@ export default function UpdatePassword() {
                   errors.confirmPassword
                     ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100"
                     : passwordsMatch && confirmPassword
-                      ? "border-orange-500 bg-orange-50/50"
-                      : "border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                      ? "border-dgcc6 bg-dgcc12/50"
+                      : "border-slate-200 focus:border-dgcc6 focus:ring-4 focus:ring-dgcc12"
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-dgcc5"
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -241,8 +241,8 @@ export default function UpdatePassword() {
               <div className="flex items-center gap-2 mt-2">
                 {passwordsMatch ? (
                   <>
-                    <CheckCircle2 size={14} className="text-orange-500" />
-                    <span className="text-xs text-orange-600">
+                    <CheckCircle2 size={14} className="text-dgcc6" />
+                    <span className="text-xs text-dgcc5">
                       Les mots de passe correspondent
                     </span>
                   </>
@@ -266,38 +266,38 @@ export default function UpdatePassword() {
           </div>
 
           {/* Conseils de sécurité */}
-          <div className="p-4 bg-orange-50/50 rounded-xl border border-orange-100">
-            <p className="text-[10px] font-black text-orange-700 uppercase mb-2">
+          <div className="p-4 bg-dgcc12/50 rounded-xl border border-dgcc12">
+            <p className="text-[10px] font-black text-dgcc3 uppercase mb-2">
               Conseils de sécurité
             </p>
             <ul className="space-y-1 text-xs text-slate-600">
               <li className="flex items-center gap-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${newPassword.length >= 8 ? "bg-orange-500" : "bg-slate-300"}`}
+                  className={`w-2 h-2 rounded-full ${newPassword.length >= 8 ? "bg-dgcc6" : "bg-slate-300"}`}
                 />
                 Au moins 8 caractères
               </li>
               <li className="flex items-center gap-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${/[A-Z]/.test(newPassword) ? "bg-orange-500" : "bg-slate-300"}`}
+                  className={`w-2 h-2 rounded-full ${/[A-Z]/.test(newPassword) ? "bg-dgcc6" : "bg-slate-300"}`}
                 />
                 Une majuscule
               </li>
               <li className="flex items-center gap-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${/[a-z]/.test(newPassword) ? "bg-orange-500" : "bg-slate-300"}`}
+                  className={`w-2 h-2 rounded-full ${/[a-z]/.test(newPassword) ? "bg-dgcc6" : "bg-slate-300"}`}
                 />
                 Une minuscule
               </li>
               <li className="flex items-center gap-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${/\d/.test(newPassword) ? "bg-orange-500" : "bg-slate-300"}`}
+                  className={`w-2 h-2 rounded-full ${/\d/.test(newPassword) ? "bg-dgcc6" : "bg-slate-300"}`}
                 />
                 Un chiffre
               </li>
               <li className="flex items-center gap-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? "bg-orange-500" : "bg-slate-300"}`}
+                  className={`w-2 h-2 rounded-full ${/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) ? "bg-dgcc6" : "bg-slate-300"}`}
                 />
                 Un caractère spécial
               </li>
@@ -310,7 +310,7 @@ export default function UpdatePassword() {
             icon={<Save size={18} className="mr-2" />}
             loading={loading}
             disabled={loading}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white border-none py-4 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
+            className="w-full bg-dgcc5 hover:bg-dgcc3 text-white border-none py-4 rounded-xl shadow-lg shadow-dgcc9 transition-all font-bold"
           />
         </form>
       </div>

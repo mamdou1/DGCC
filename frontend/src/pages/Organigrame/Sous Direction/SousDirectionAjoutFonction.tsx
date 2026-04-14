@@ -79,7 +79,7 @@ export default function SousDirectionAjoutFonction({
       <Dialog
         header={
           <div className="flex items-center gap-2 text-slate-800 font-bold">
-            <PlusCircle size={20} className="text-orange-500" />
+            <PlusCircle size={20} className="text-dgcc6" />
             <span>
               {editing ? "Modifier" : "Ajouter"} une fonction à la
               sous-direction
@@ -94,18 +94,16 @@ export default function SousDirectionAjoutFonction({
         }}
       >
         <div className="pt-4 space-y-5">
-          <div className="bg-orange-50 p-4 rounded-xl border border-orange-100">
-            <p className="text-[10px] font-bold text-orange-400 uppercase mb-1">
+          <div className="bg-dgcc12 p-4 rounded-xl border border-dgcc12">
+            <p className="text-[10px] font-bold text-dgcc7 uppercase mb-1">
               Sous-direction sélectionnée
             </p>
-            <p className="text-orange-900 font-bold">
-              {sousDirection?.libelle}
-            </p>
+            <p className="text-dgcc font-bold">{sousDirection?.libelle}</p>
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-              <BookmarkPlus size={16} className="text-orange-500" />
+              <BookmarkPlus size={16} className="text-dgcc6" />
               Nom de la fonction
             </label>
             <InputText
@@ -129,7 +127,7 @@ export default function SousDirectionAjoutFonction({
               icon={!loading && <Save size={18} className="mr-2" />}
               onClick={handleSubmit}
               disabled={!libelle || loading}
-              className="bg-orange-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-orange-700 transition-all"
+              className="bg-dgcc5 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-dgcc3 transition-all"
             />
           </div>
         </div>

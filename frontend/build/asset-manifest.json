@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/digidoc/static/css/main.f977a716.css",
-    "main.js": "/digidoc/static/js/main.b2e474da.js",
+    "main.css": "/digidoc/static/css/main.2eaae653.css",
+    "main.js": "/digidoc/static/js/main.ad35166d.js",
     "static/js/453.16213857.chunk.js": "/digidoc/static/js/453.16213857.chunk.js",
     "static/media/primeicons.svg": "/digidoc/static/media/primeicons.6ed59f962963a4a73af2.svg",
     "static/media/digidoc1.png": "/digidoc/static/media/digidoc1.83ee4e444dc8c08c0f51.png",
@@ -10,12 +10,12 @@
     "static/media/primeicons.ttf": "/digidoc/static/media/primeicons.a5c2a53d1ff7a9ff5933.ttf",
     "static/media/primeicons.woff2": "/digidoc/static/media/primeicons.024b32cc7bf399b1a847.woff2",
     "index.html": "/digidoc/index.html",
-    "main.f977a716.css.map": "/digidoc/static/css/main.f977a716.css.map",
-    "main.b2e474da.js.map": "/digidoc/static/js/main.b2e474da.js.map",
+    "main.2eaae653.css.map": "/digidoc/static/css/main.2eaae653.css.map",
+    "main.ad35166d.js.map": "/digidoc/static/js/main.ad35166d.js.map",
     "453.16213857.chunk.js.map": "/digidoc/static/js/453.16213857.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f977a716.css",
-    "static/js/main.b2e474da.js"
+    "static/css/main.2eaae653.css",
+    "static/js/main.ad35166d.js"
   ]
 }

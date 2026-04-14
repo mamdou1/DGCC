@@ -52,7 +52,7 @@ export default function PiecesDetails({ visible, onHide, pieces }: any) {
       case "number":
         return <Hash size={14} className="text-purple-500" />;
       default:
-        return <Type size={14} className="text-orange-500" />;
+        return <Type size={14} className="text-dgcc6" />;
     }
   };
 
@@ -73,8 +73,8 @@ export default function PiecesDetails({ visible, onHide, pieces }: any) {
     <Dialog
       header={
         <div className="flex items-center gap-2 text-slate-800 font-bold">
-          <div className="bg-orange-100 p-2 rounded-lg">
-            <Info size={18} className="text-orange-600" />
+          <div className="bg-dgcc12 p-2 rounded-lg">
+            <Info size={18} className="text-dgcc5" />
           </div>
           <span>Détails de la pièce</span>
         </div>
@@ -95,15 +95,15 @@ export default function PiecesDetails({ visible, onHide, pieces }: any) {
     >
       <div className="pt-2">
         {/* Card Header Style - orange Theme */}
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200 p-6 rounded-2xl mb-6 flex flex-col items-center text-center">
-          <div className="bg-orange-700 text-white p-4 rounded-full shadow-lg shadow-orange-200 mb-3">
+        <div className="bg-gradient-to-br from-dgcc12 to-dgcc12/50 border border-dgcc10 p-6 rounded-2xl mb-6 flex flex-col items-center text-center">
+          <div className="bg-dgcc3 text-white p-4 rounded-full shadow-lg shadow-dgcc10 mb-3">
             <Split size={32} />
           </div>
-          <h3 className="text-xl font-black text-orange-900 mb-2">
+          <h3 className="text-xl font-black text-dgcc mb-2">
             {pieces.libelle}
           </h3>
-          <div className="bg-orange-200/50 px-4 py-2 rounded-full">
-            <span className="text-xs font-mono font-bold text-orange-800">
+          <div className="bg-dgcc10/50 px-4 py-2 rounded-full">
+            <span className="text-xs font-mono font-bold text-dgcc2">
               {pieces.code_pieces}
             </span>
           </div>
@@ -114,7 +114,7 @@ export default function PiecesDetails({ visible, onHide, pieces }: any) {
           {/* Métadonnées configurées */}
           <div className="bg-slate-50 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Settings size={16} className="text-orange-600" />
+              <Settings size={16} className="text-dgcc5" />
               <span className="text-xs font-black uppercase tracking-wider text-slate-500">
                 Métadonnées configurées ({metaFields.length})
               </span>
@@ -122,14 +122,14 @@ export default function PiecesDetails({ visible, onHide, pieces }: any) {
 
             {loading ? (
               <div className="flex justify-center py-4">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-600"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-dgcc5"></div>
               </div>
             ) : metaFields.length > 0 ? (
               <div className="space-y-2">
                 {metaFields.map((field) => (
                   <div
                     key={field.id}
-                    className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 hover:border-orange-200 transition-all"
+                    className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200 hover:border-dgcc10 transition-all"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">

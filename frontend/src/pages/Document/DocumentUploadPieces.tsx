@@ -287,8 +287,8 @@ export default function DocumentUploadPieces({
     const hasPieces = Object.keys(groupedPieces).length > 0;
 
     return (
-      <div className="bg-white rounded-xl border border-orange-200 p-4 mb-4">
-        <h4 className="text-sm font-bold text-orange-700 mb-3 flex items-center gap-2">
+      <div className="bg-white rounded-xl border border-dgcc10 p-4 mb-4">
+        <h4 className="text-sm font-bold text-dgcc3 mb-3 flex items-center gap-2">
           <CheckSquare size={16} />
           Voulez-vous associer des pièces à ce lot ?
         </h4>
@@ -336,7 +336,7 @@ export default function DocumentUploadPieces({
                             <Checkbox
                               checked={selectedPieces.includes(p.id)}
                               onChange={() => onTogglePiece(p.id)}
-                              className="border border-orange-400"
+                              className="border border-dgcc8"
                             />
                             <span className="text-sm">{p.libelle}</span>
                           </div>
@@ -365,7 +365,7 @@ export default function DocumentUploadPieces({
           <Button
             label="Confirmer la sélection"
             onClick={onConfirm}
-            className="bg-orange-600 text-white border-none text-sm py-2 px-4"
+            className="bg-dgcc5 text-white border-none text-sm py-2 px-4"
             disabled={!hasPieces} // Désactiver s'il n'y a pas de pièces
           />
         </div>
@@ -943,7 +943,7 @@ export default function DocumentUploadPieces({
             <div className="flex items-center gap-2">
               <label
                 htmlFor={`form-file-${pieceId}-${field.id}`}
-                className="flex-1 cursor-pointer bg-orange-50 hover:bg-orange-100 text-orange-700 p-2 rounded-lg text-sm font-medium transition-colors text-center border border-orange-200"
+                className="flex-1 cursor-pointer bg-dgcc13 hover:bg-dgcc12 text-dgcc3 p-2 rounded-lg text-sm font-medium transition-colors text-center border border-dgcc10"
               >
                 {file ? file.name : "Choisir un fichier"}
               </label>
@@ -993,16 +993,16 @@ export default function DocumentUploadPieces({
         className="rounded-3xl overflow-hidden border-none shadow-2xl"
       >
         {/* HEADER */}
-        <div className="bg-gradient-to-r from-orange-700 to-orange-900 p-6 pt-10 -mx-6 -mt-6 mb-6 flex justify-between items-center text-white">
+        <div className="bg-gradient-to-r from-dgcc3 to-dgcc p-6 pt-10 -mx-6 -mt-6 mb-6 flex justify-between items-center text-white">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 p-2 rounded-xl">
               <FileUp size={24} />
             </div>
             <div>
               <h2 className="text-xl font-bold">Dépôt des Justificatifs</h2>
-              <div className="flex items-center gap-2 text-xs font-semibold text-orange-100 mt-1">
+              <div className="flex items-center gap-2 text-xs font-semibold text-dgcc12 mt-1">
                 <span>Document #{document.id}</span>
-                <span className="h-1 w-1 rounded-full bg-orange-300"></span>
+                <span className="h-1 w-1 rounded-full bg-dgcc9"></span>
                 <span className="uppercase font-bold">
                   {uploadMode === "LOT_UNIQUE"
                     ? "📦 LOT UNIQUE"
@@ -1036,7 +1036,7 @@ export default function DocumentUploadPieces({
                   onClick={() => setUploadMode("INDIVIDUEL")}
                   className={`flex-1 p-3 rounded-xl font-bold text-sm transition-all ${
                     uploadMode === "INDIVIDUEL"
-                      ? "bg-orange-600 text-white shadow-lg shadow-orange-200"
+                      ? "bg-dgcc5 text-white shadow-lg shadow-dgcc10"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
@@ -1046,7 +1046,7 @@ export default function DocumentUploadPieces({
                   onClick={() => setUploadMode("LOT_UNIQUE")}
                   className={`flex-1 p-3 rounded-xl font-bold text-sm transition-all ${
                     uploadMode === "LOT_UNIQUE"
-                      ? "bg-orange-600 text-white shadow-lg shadow-orange-200"
+                      ? "bg-dgcc5 text-white shadow-lg shadow-dgcc10"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
@@ -1060,7 +1060,7 @@ export default function DocumentUploadPieces({
               <div className="space-y-4">
                 <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
                   <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
-                    <Archive size={18} className="text-orange-600" />
+                    <Archive size={18} className="text-dgcc5" />
                     Upload du dossier complet
                   </h3>
 
@@ -1073,13 +1073,13 @@ export default function DocumentUploadPieces({
                   />
                   <label
                     htmlFor="lot-unique-upload"
-                    className="block p-6 border-2 border-dashed border-orange-200 rounded-2xl bg-orange-50/50 hover:bg-orange-50 cursor-pointer transition-all text-center"
+                    className="block p-6 border-2 border-dashed border-dgcc10 rounded-2xl bg-dgcc13/50 hover:bg-dgcc13 cursor-pointer transition-all text-center"
                   >
                     <CloudUpload
-                      className="mx-auto text-orange-500 mb-2"
+                      className="mx-auto text-dgcc6 mb-2"
                       size={32}
                     />
-                    <p className="text-sm font-medium text-orange-700">
+                    <p className="text-sm font-medium text-dgcc3">
                       {selectedLotFile
                         ? selectedLotFile.name
                         : "Sélectionner le PDF du dossier"}
@@ -1135,7 +1135,7 @@ export default function DocumentUploadPieces({
             {uploadMode === "INDIVIDUEL" && (
               <div className="space-y-4">
                 <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <Folders size={18} className="text-orange-600" />
+                  <Folders size={18} className="text-dgcc5" />
                   Pièces à fournir
                 </h3>
 
@@ -1153,7 +1153,7 @@ export default function DocumentUploadPieces({
                           className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <Folder size={18} className="text-orange-500" />
+                            <Folder size={18} className="text-dgcc6" />
                             <span className="text-sm font-bold text-slate-700 uppercase">
                               {division}
                             </span>
@@ -1187,17 +1187,17 @@ export default function DocumentUploadPieces({
                                       onClick={() => togglePiece(p.id)}
                                       className={`cursor-pointer p-3 rounded-xl transition-all flex items-center justify-between ${
                                         expandedPieces[p.id]
-                                          ? "bg-orange-50"
+                                          ? "bg-dgcc13"
                                           : "hover:bg-slate-50"
                                       }`}
                                     >
                                       <div className="flex items-center gap-3">
                                         {loadingMeta[p.id] ? (
-                                          <div className="h-4 w-4 rounded-full border-2 border-orange-200 border-t-orange-600 animate-spin" />
+                                          <div className="h-4 w-4 rounded-full border-2 border-dgcc10 border-t-dgcc5 animate-spin" />
                                         ) : hasMetaFields ? (
                                           <Layers
                                             size={16}
-                                            className="text-orange-500"
+                                            className="text-dgcc6"
                                           />
                                         ) : (
                                           <FileText
@@ -1210,7 +1210,7 @@ export default function DocumentUploadPieces({
                                         </span>
                                         {hasMetaFields &&
                                           records.length > 0 && (
-                                            <span className="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-full">
+                                            <span className="bg-dgcc12 text-dgcc3 text-[10px] px-2 py-0.5 rounded-full">
                                               {records.length}
                                             </span>
                                           )}
@@ -1262,7 +1262,7 @@ export default function DocumentUploadPieces({
                                                       {records.map((record) => (
                                                         <tr
                                                           key={record.id}
-                                                          className="hover:bg-orange-50/30 transition-colors"
+                                                          className="hover:bg-dgcc13/30 transition-colors"
                                                         >
                                                           {pieceMetaFields[
                                                             p.id
@@ -1332,7 +1332,7 @@ export default function DocumentUploadPieces({
                                                             {record.files &&
                                                             record.files
                                                               .length > 0 ? (
-                                                              <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-full text-xs whitespace-nowrap">
+                                                              <span className="inline-flex items-center gap-1 bg-dgcc13 text-dgcc3 px-2 py-1 rounded-full text-xs whitespace-nowrap">
                                                                 <FileText
                                                                   size={12}
                                                                 />
@@ -1396,13 +1396,13 @@ export default function DocumentUploadPieces({
                                                   onClick={() =>
                                                     handleNewRecord(p.id)
                                                   }
-                                                  className="bg-orange-600 text-white border-none text-sm py-2 px-4"
+                                                  className="bg-dgcc5 text-white border-none text-sm py-2 px-4"
                                                 />
                                               </div>
                                             )}
 
                                             {showFormForPiece && (
-                                              <div className="bg-white p-4 rounded-lg border border-orange-200 space-y-4">
+                                              <div className="bg-white p-4 rounded-lg border border-dgcc10 space-y-4">
                                                 <h4 className="text-sm font-bold text-slate-700">
                                                   {editingRecord[p.id]
                                                     ? "Modifier"
@@ -1464,7 +1464,7 @@ export default function DocumentUploadPieces({
                                                     onClick={() =>
                                                       handleSaveRecord(p.id)
                                                     }
-                                                    className="bg-orange-600 text-white border-none text-sm py-2 px-4"
+                                                    className="bg-dgcc5 text-white border-none text-sm py-2 px-4"
                                                   />
                                                 </div>
                                               </div>
@@ -1478,7 +1478,7 @@ export default function DocumentUploadPieces({
                                                 pieceFiles[p.id]?.length > 0 ? (
                                                   <CheckCircle2
                                                     size={16}
-                                                    className="text-orange-500"
+                                                    className="text-dgcc6"
                                                   />
                                                 ) : (
                                                   <div className="h-4 w-4 rounded-full border-2 border-slate-200" />
@@ -1507,7 +1507,7 @@ export default function DocumentUploadPieces({
                                                 />
                                                 <label
                                                   htmlFor={`file-simple-${p.id}`}
-                                                  className="cursor-pointer bg-orange-50 text-orange-600 p-2 rounded-lg hover:bg-orange-600 hover:text-white transition-all flex items-center gap-2"
+                                                  className="cursor-pointer bg-dgcc13 text-dgcc5 p-2 rounded-lg hover:bg-dgcc5 hover:text-white transition-all flex items-center gap-2"
                                                 >
                                                   <FileText size={16} />
                                                   <span className="text-xs font-medium">
@@ -1567,13 +1567,13 @@ export default function DocumentUploadPieces({
               viewer.isPreview ? (
                 // Mode prévisualisation avant upload
                 <div className="flex-1 flex flex-col">
-                  <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-orange-600 text-white">
+                  <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-dgcc5 text-white">
                     <div>
                       <h3 className="font-bold flex items-center gap-2">
                         <CloudUpload size={20} />
                         Validation du document
                       </h3>
-                      <p className="text-xs text-orange-100 mt-1 uppercase font-bold">
+                      <p className="text-xs text-dgcc12 mt-1 uppercase font-bold">
                         Mode :{" "}
                         {uploadMode === "LOT_UNIQUE"
                           ? "📦 LOT UNIQUE"
@@ -1589,7 +1589,7 @@ export default function DocumentUploadPieces({
                       <Button
                         label="Confirmer & Envoyer"
                         icon="pi pi-check"
-                        className="bg-white text-orange-600 border-none rounded-2xl px-6 font-black"
+                        className="bg-white text-dgcc5 border-none rounded-2xl px-6 font-black"
                         onClick={() => {
                           if (uploadMode === "LOT_UNIQUE") {
                             handleUploadLotFile();
@@ -1618,7 +1618,7 @@ export default function DocumentUploadPieces({
                 <div className="flex-1 flex flex-col">
                   <div className="p-4 flex justify-between items-center border-b border-slate-200 bg-white">
                     <span className="text-sm font-bold text-slate-600 flex items-center gap-2">
-                      <Eye size={16} className="text-orange-600" />
+                      <Eye size={16} className="text-dgcc5" />
                       Consultation archive
                     </span>
                     <Button

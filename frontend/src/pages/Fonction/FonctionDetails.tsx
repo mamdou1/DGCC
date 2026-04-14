@@ -45,7 +45,7 @@ export default function FonctionDetails({ visible, onHide, fonction }: Props) {
       case "section":
         return <GitMerge size={16} className="text-purple-600" />;
       case "service":
-        return <Map size={16} className="text-orange-600" />;
+        return <Map size={16} className="text-dgcc5" />;
       default:
         return null;
     }
@@ -55,7 +55,7 @@ export default function FonctionDetails({ visible, onHide, fonction }: Props) {
   const getEntityColor = (type: string) => {
     switch (type) {
       case "direction":
-        return "bg-orange-100 text-orange-700";
+        return "bg-dgcc12 text-dgcc3";
       case "sousDirection":
         return "bg-indigo-100 text-indigo-700";
       case "division":
@@ -63,7 +63,7 @@ export default function FonctionDetails({ visible, onHide, fonction }: Props) {
       case "section":
         return "bg-purple-100 text-purple-700";
       case "service":
-        return "bg-orange-100 text-orange-700";
+        return "bg-dgcc12 text-dgcc3";
       default:
         return "bg-slate-100 text-slate-700";
     }
@@ -73,8 +73,8 @@ export default function FonctionDetails({ visible, onHide, fonction }: Props) {
     <Dialog
       header={
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-orange-100 rounded-xl">
-            <Briefcase size={20} className="text-orange-600" />
+          <div className="p-2 bg-dgcc12 rounded-xl">
+            <Briefcase size={20} className="text-dgcc5" />
           </div>
           <div>
             <h2 className="text-xl font-black text-slate-800">
@@ -91,14 +91,14 @@ export default function FonctionDetails({ visible, onHide, fonction }: Props) {
     >
       <div className="space-y-5 p-2">
         {/* Identité */}
-        <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-2xl border border-orange-100">
-          <h3 className="text-xs font-black uppercase text-orange-600 tracking-wider mb-3 flex items-center gap-2">
+        <div className="bg-gradient-to-br from-dgcc13 to-white p-5 rounded-2xl border border-dgcc12">
+          <h3 className="text-xs font-black uppercase text-dgcc5 tracking-wider mb-3 flex items-center gap-2">
             <Briefcase size={14} /> Identité
           </h3>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Hash size={16} className="text-orange-600" />
+              <div className="w-8 h-8 bg-dgcc12 rounded-lg flex items-center justify-center">
+                <Hash size={16} className="text-dgcc5" />
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase">
@@ -108,8 +108,8 @@ export default function FonctionDetails({ visible, onHide, fonction }: Props) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Briefcase size={16} className="text-orange-600" />
+              <div className="w-8 h-8 bg-dgcc12 rounded-lg flex items-center justify-center">
+                <Briefcase size={16} className="text-dgcc5" />
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase">
@@ -124,8 +124,8 @@ export default function FonctionDetails({ visible, onHide, fonction }: Props) {
         </div>
 
         {/* Affectation */}
-        <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-2xl border border-orange-100">
-          <h3 className="text-xs font-black uppercase text-orange-600 tracking-wider mb-3">
+        <div className="bg-gradient-to-br from-dgcc13 to-white p-5 rounded-2xl border border-dgcc12">
+          <h3 className="text-xs font-black uppercase text-dgcc5 tracking-wider mb-3">
             Affectation
           </h3>
           <div className="space-y-3">

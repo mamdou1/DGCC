@@ -45,10 +45,11 @@ export default function DirectionDetails({
     confirmDialog({
       message: `Voulez-vous supprimer cette fonction définitivement ?`,
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -80,7 +81,7 @@ export default function DirectionDetails({
         header={
           <div className="flex items-center gap-2 text-slate-800 font-bold">
             <div className="bg-orange-100 p-2 rounded-lg">
-              <Building2 size={18} className="text-orange-600" />
+              <Building2 size={18} className="text-dgcc5" />
             </div>
             <span>Détails de la direction</span>
           </div>
@@ -101,7 +102,7 @@ export default function DirectionDetails({
         <div className="pt-2 space-y-6">
           {/* Header */}
           <div className="border-b border-slate-100 pb-4">
-            <p className="text-orange-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
+            <p className="text-dgcc6 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
               DIRECTION
             </p>
             <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
@@ -120,7 +121,7 @@ export default function DirectionDetails({
               </p>
               <Button
                 onClick={() => setAjoutFonctionVisible(true)}
-                className="flex items-center gap-2 px-3 py-2 text-orange-600 font-bold bg-orange-50 hover:bg-orange-600 hover:text-white rounded-lg transition-all border-none"
+                className="flex items-center gap-2 px-3 py-2 text-dgcc5 font-bold bg-orange-50 hover:bg-dgcc5 hover:text-white rounded-lg transition-all border-none"
               >
                 <PlusCircle size={15} />
                 <span className="text-xs">Ajouter une fonction</span>

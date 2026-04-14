@@ -286,7 +286,7 @@ export default function UserAcces({
     <Dialog
       header={
         <div className="flex items-center gap-3 px-2 py-1">
-          <div className="p-2 bg-orange-100 rounded-xl text-orange-600">
+          <div className="p-2 bg-dgcc10 rounded-xl text-dgcc5">
             <Building2 size={20} />
           </div>
           <div>
@@ -319,7 +319,7 @@ export default function UserAcces({
             onClick={handleSubmit}
             loading={loading}
             disabled={totalSelections === 0}
-            className="bg-orange-600 text-orange-50 border-none px-8 py-3 rounded-xl shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all font-bold"
+            className="bg-dgcc5 text-dgcc13 border-none px-8 py-3 rounded-xl shadow-lg shadow-dgcc9 hover:bg-dgcc3 transition-all font-bold"
           />
         </div>
       }
@@ -336,7 +336,7 @@ export default function UserAcces({
 
         {/* Section Affectations Multiples */}
         <div className="space-y-5 bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
-          <h3 className="text-xs font-black uppercase text-orange-600 tracking-tighter mb-4 flex items-center gap-2">
+          <h3 className="text-xs font-black uppercase text-dgcc5 tracking-tighter mb-4 flex items-center gap-2">
             <Building2 size={14} />
             Périmètres d'application
           </h3>
@@ -363,7 +363,7 @@ export default function UserAcces({
               placeholder="Sélectionner les directions"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-dgcc8 transition-all"
               maxSelectedLabels={3}
             />
           </div>
@@ -390,7 +390,7 @@ export default function UserAcces({
               placeholder="Sélectionner les sous-directions"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-dgcc8 transition-all"
               maxSelectedLabels={3}
             />
           </div>
@@ -417,7 +417,7 @@ export default function UserAcces({
               placeholder="Sélectionner les divisions"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-dgcc8 transition-all"
               maxSelectedLabels={3}
             />
           </div>
@@ -425,10 +425,10 @@ export default function UserAcces({
           {/* Sections */}
           <div className={inputWrapper}>
             <label className={labelStyle}>
-              <GitMerge size={14} className="text-orange-500" />
+              <GitMerge size={14} className="text-dgcc6" />
               Sections
               {formData.sections_id.length > 0 && (
-                <span className="ml-2 text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                <span className="ml-2 text-[10px] bg-dgcc10 text-dgcc3 px-2 py-0.5 rounded-full">
                   {formData.sections_id.length} sélectionnée(s)
                 </span>
               )}
@@ -444,7 +444,7 @@ export default function UserAcces({
               placeholder="Sélectionner les sections"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-dgcc8 transition-all"
               maxSelectedLabels={3}
             />
           </div>
@@ -471,18 +471,18 @@ export default function UserAcces({
               placeholder="Sélectionner les services"
               display="chip"
               filter
-              className="w-full border border-slate-200 rounded-xl hover:border-orange-400 transition-all"
+              className="w-full border border-slate-200 rounded-xl hover:border-dgcc8 transition-all"
               maxSelectedLabels={3}
             />
           </div>
 
           {/* Résumé des sélections */}
           {totalSelections > 0 && (
-            <div className="mt-4 p-3 bg-orange-50 border border-orange-100 rounded-xl">
-              <p className="text-[11px] font-bold text-orange-700 flex items-center gap-2">
+            <div className="mt-4 p-3 bg-dgcc13 border border-dgcc10 rounded-xl">
+              <p className="text-[11px] font-bold text-dgcc3 flex items-center gap-2">
                 <span>📋 Récapitulatif</span>
               </p>
-              <p className="text-xs text-orange-600 mt-1">
+              <p className="text-xs text-dgcc5 mt-1">
                 {formData.directions_id.length > 0 &&
                   `${formData.directions_id.length} Direction(s) `}
                 {formData.sous_directions_id.length > 0 &&
@@ -493,7 +493,7 @@ export default function UserAcces({
                   `${formData.sections_id.length} Section(s) `}
                 {formData.services_id.length > 0 &&
                   `${formData.services_id.length} Service(s) `}
-                <span className="ml-2 text-orange-500">•</span>
+                <span className="ml-2 text-dgcc6">•</span>
                 <span className="ml-2 font-bold">
                   Total: {totalSelections} accès
                 </span>

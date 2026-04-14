@@ -44,7 +44,7 @@ export default function DroitForm({
 
   return (
     <Dialog
-      header={<div className="text-orange-900 font-bold">{title}</div>}
+      header={<div className="text-dgcc font-bold">{title}</div>}
       visible={visible}
       style={{ width: "400px" }}
       onHide={onHide}
@@ -61,17 +61,17 @@ export default function DroitForm({
               value={String(libelle)}
               //keyfilter="int"
               onChange={(e) => setLibelle(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none text-lg font-semibold text-orange-900"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-dgcc6 focus:ring-4 focus:ring-dgcc6/10 transition-all outline-none text-lg font-semibold text-dgcc"
               placeholder="Technicien, auditeur,..."
             />
             {/* <InputText
                                 value={libelle}
                                 onChange={(e) => setLibelle(e.target.value)}
                                 placeholder="Description ou objet de la dépense"
-                                className="p-3 rounded-xl  border-orange-300  border-2 mx-2 focus:border-orange-200 focus:ring-0 focus:border-4 shadow-sm"
+                                className="p-3 rounded-xl  border-dgcc8  border-2 mx-2 focus:border-dgcc9 focus:ring-0 focus:border-4 shadow-sm"
                               /> */}
             <BookOpenCheck
-              className="absolute right-4 top-3.5 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+              className="absolute right-4 top-3.5 text-slate-400 group-focus-within:text-dgcc6 transition-colors"
               size={20}
             />
           </div>
@@ -92,7 +92,7 @@ export default function DroitForm({
             icon={!loading && <Save size={18} className="mr-2" />}
             disabled={loading || !libelle}
             onClick={handleSubmit}
-            className="bg-orange-600 text-white font-bold py-2 px-6 rounded-xl hover:bg-orange-700 shadow-md shadow-orange-200 transition-all"
+            className="bg-dgcc5 text-white font-bold py-2 px-6 rounded-xl hover:bg-dgcc3 shadow-md shadow-dgcc9 transition-all"
           />
         </div>
       </div>

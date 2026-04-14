@@ -139,7 +139,7 @@ export default function DocumentDisponiblePieces({
         className="rounded-3xl overflow-hidden border-none shadow-2xl"
       >
         {/* HEADER */}
-        <div className="bg-gradient-to-r from-orange-800 to-orange-900 p-6 pt-10 -mx-6 -mt-6 mb-6 flex justify-between items-center text-white no-print">
+        <div className="bg-gradient-to-r from-dgcc2 to-dgcc p-6 pt-10 -mx-6 -mt-6 mb-6 flex justify-between items-center text-white no-print">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 p-2 rounded-xl">
               <FileCheck size={24} />
@@ -148,7 +148,7 @@ export default function DocumentDisponiblePieces({
               <h2 className="text-xl font-bold uppercase">
                 Contrôle de Conformité
               </h2>
-              <p className="text-orange-200 text-xs font-mono">
+              <p className="text-dgcc10 text-xs font-mono">
                 ID: {document.id?.toString().slice(0, 8)}
               </p>
             </div>
@@ -158,7 +158,7 @@ export default function DocumentDisponiblePieces({
               icon={<Printer size={18} />}
               label="Imprimer"
               onClick={handlePrint}
-              className="bg-white text-orange-800 font-bold"
+              className="bg-white text-dgcc2 font-bold"
             />
 
             <button onClick={onHide}>
@@ -189,7 +189,7 @@ export default function DocumentDisponiblePieces({
                       className="flex items-center justify-between p-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors border-b border-slate-100"
                     >
                       <div className="flex items-center gap-2">
-                        <Folder size={16} className="text-orange-600" />
+                        <Folder size={16} className="text-dgcc5" />
                         <span className="text-xs font-black uppercase text-slate-700 tracking-tight">
                           {division}
                         </span>
@@ -222,20 +222,18 @@ export default function DocumentDisponiblePieces({
                               key={p.id}
                               className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
                                 isDisponible
-                                  ? "bg-orange-50 border-orange-200"
+                                  ? "bg-dgcc13 border-dgcc10"
                                   : "bg-white border-slate-100"
                               }`}
                             >
                               <Checkbox
                                 checked={isDisponible}
                                 onChange={() => togglePiece(globalIndex)}
-                                className="flex-shrink-0 border border-orange-300"
+                                className="flex-shrink-0 border border-dgcc9"
                               />
                               <span
                                 className={`text-xs font-semibold leading-tight ${
-                                  isDisponible
-                                    ? "text-orange-900"
-                                    : "text-slate-600"
+                                  isDisponible ? "text-dgcc" : "text-slate-600"
                                 }`}
                               >
                                 {p.libelle}
@@ -329,9 +327,7 @@ export default function DocumentDisponiblePieces({
                             </td>
                             <td className="border border-black p-2 text-center font-bold">
                               {p.DocumentPieces?.disponible ? (
-                                <span className="text-orange-700">
-                                  DISPONIBLE
-                                </span>
+                                <span className="text-dgcc3">DISPONIBLE</span>
                               ) : (
                                 <span className="text-slate-300">
                                   NON DISPONIBLE

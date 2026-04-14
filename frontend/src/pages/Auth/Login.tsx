@@ -71,7 +71,7 @@ export default function LoginPage() {
       {/* Container Principal avec effet de verre - AJOUTER flex ET h-[700px] */}
       <div className="relative w-full max-w-[1200px] h-[700px] flex bg-white/80 backdrop-blur-xl rounded-[3rem] shadow-2xl overflow-hidden m-4 border border-white/20">
         {/* ===== Côté Gauche : Design Premium - Dégradé orange ===== */}
-        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-orange-800 via-orange-700  to-orange-700 p-12 flex-col justify-between relative overflow-hidden">
+        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-dgcc via-dgcc  to-dgcc p-12 flex-col justify-between relative overflow-hidden">
           {/* Effets de lumière */}
           <div className="absolute top-0 -left-40 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 -right-20 w-80 h-80 bg-orange-400/30 rounded-full blur-3xl"></div>
@@ -225,7 +225,7 @@ export default function LoginPage() {
                   value={telephone}
                   onChange={(e) => setTelephone(e.target.value)}
                   placeholder="Ex: mahmoud41"
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-orange-600 focus:ring-4 focus:ring-orange-100 transition-all text-sm font-semibold placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-orange-800 focus:ring-4 focus:ring-orange-100 transition-all text-sm font-semibold placeholder:text-slate-300"
                   required
                 />
               </div>
@@ -257,7 +257,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-orange-600 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm font-semibold placeholder:text-slate-300"
+                  className="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-orange-800 focus:ring-4 focus:ring-orange-100 outline-none transition-all text-sm font-semibold placeholder:text-slate-300"
                   required
                 />
                 <button
@@ -289,7 +289,7 @@ export default function LoginPage() {
                 label={isLoading ? "Connexion en cours..." : "Se connecter"}
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-orange-700 hover:bg-orange-800 text-white font-black py-5 rounded-2xl shadow-xl shadow-orange-200/50 transition-all transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed text-base tracking-wide"
+                className="w-full bg-dgcc hover:bg-orange-800 text-white font-black py-5 rounded-2xl shadow-xl shadow-orange-200/50 transition-all transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed text-base tracking-wide"
               />
             </div>
           </form>

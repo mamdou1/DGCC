@@ -529,7 +529,7 @@ export default function DocumentTypeEntitee() {
       message:
         "Voulez-vous supprimer ce type de document définitivement ? Cette action est irréversible.",
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
       acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
@@ -646,7 +646,7 @@ export default function DocumentTypeEntitee() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5"></div>
         </div>
       </Layout>
     );
@@ -676,7 +676,7 @@ export default function DocumentTypeEntitee() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <div>
           <h1 className="text-3xl font-black text-slate-800 flex items-center gap-3">
-            <div className="p-3 bg-orange-800 text-white rounded-2xl shadow-lg">
+            <div className="p-3 bg-dgcc2 text-white rounded-2xl shadow-lg">
               <Layers size={24} />
             </div>
             Types par Structure
@@ -690,7 +690,7 @@ export default function DocumentTypeEntitee() {
             setFormVisible(true);
             // selectedTypeDoc est déjà conservé avec la valeur de l'entité cliquée
           }}
-          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-md font-bold"
+          className="bg-dgcc3 hover:bg-dgcc2 text-white border-none px-6 py-3 rounded-xl shadow-md font-bold"
         />
       </div>
 
@@ -764,7 +764,7 @@ export default function DocumentTypeEntitee() {
                     className="w-full flex items-center justify-between p-5 transition-all hover:bg-slate-50"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-2 rounded-lg bg-orange-100 text-orange-600">
+                      <div className="p-2 rounded-lg bg-dgcc10 text-dgcc5">
                         <Icon size={20} />
                       </div>
                       <div className="text-left">
@@ -774,7 +774,7 @@ export default function DocumentTypeEntitee() {
                           </h3>
                           {/* 👇 BADGE À PLACER ICI, À CÔTÉ DU TITRE */}
                           {selectedAccordionEntity?.label === groupKey && (
-                            <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
+                            <span className="inline-flex items-center px-2 py-1 bg-dgcc10 text-dgcc3 text-xs font-bold rounded-full">
                               Structure active
                             </span>
                           )}
@@ -834,7 +834,7 @@ export default function DocumentTypeEntitee() {
                                     setSelected(t);
                                     setDetailsVisible(true);
                                   }}
-                                  className="cursor-pointer hover:bg-orange-50/30 transition-colors"
+                                  className="cursor-pointer hover:bg-dgcc12/30 transition-colors"
                                 >
                                   <td className="p-4">
                                     <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-xs font-bold">
@@ -845,7 +845,7 @@ export default function DocumentTypeEntitee() {
                                     <div className="font-semibold text-slate-800 text-sm flex items-center gap-2">
                                       <FileText
                                         size={25}
-                                        className="text-orange-500"
+                                        className="text-dgcc6"
                                       />
                                       {t.nom}
                                     </div>
@@ -884,7 +884,7 @@ export default function DocumentTypeEntitee() {
                                           setFormVisible(true);
                                           e.stopPropagation();
                                         }}
-                                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+                                        className="p-2 text-dgcc5 hover:bg-dgcc12 rounded-lg"
                                         title="Modifier"
                                       >
                                         <Pencil size={25} />

@@ -13,4 +13,11 @@ router.get(
   controller.getAllPermissions,
 );
 
+router.get(
+  "/id",
+  verifyToken,
+  authorizePermission("droit", "read"),
+  controller.getPermissionByID,
+);
+
 module.exports = router;

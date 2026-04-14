@@ -9,7 +9,7 @@ export default function Header() {
   const navigate = useNavigate();
 
   return (
-    <header className="flex justify-between items-center h-20 px-8 bg-orange-800 border-b border-orange-100 sticky top-0 z-40 shadow-sm">
+    <header className="flex justify-between items-center h-20 px-8 bg-dgcc1 border-b border-orange-100 sticky top-0 z-40 shadow-sm">
       {/* Côté Gauche */}
       <div className="flex flex-col">
         <h1 className="text-3xl font-bold text-white tracking-tight">DGCC</h1>

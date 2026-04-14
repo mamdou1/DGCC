@@ -238,7 +238,7 @@ export default function DroitPermissionForm({
       {loading && !allPermissionsGrouped.length ? (
         <div className="flex items-center justify-center h-[450px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5 mx-auto"></div>
             <p className="mt-4 text-slate-600">Chargement des permissions...</p>
           </div>
         </div>
@@ -271,7 +271,7 @@ export default function DroitPermissionForm({
             <div className="flex items-center justify-between pt-2">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
-                  <CheckCircle size={14} className="text-orange-500" />
+                  <CheckCircle size={14} className="text-dgcc6" />
                   <span className="text-xs text-slate-600">
                     {assignedIds.length} permission(s) accordée(s)
                   </span>
@@ -313,7 +313,7 @@ export default function DroitPermissionForm({
                       className="sticky top-0 bg-slate-50 p-3 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <ShieldCheck size={16} className="text-orange-600" />
+                        <ShieldCheck size={16} className="text-dgcc5" />
                         <span className="text-sm font-bold uppercase text-slate-700">
                           {group.resource}
                         </span>
@@ -338,7 +338,7 @@ export default function DroitPermissionForm({
                             <div
                               key={perm.id}
                               className={`flex items-center justify-between p-3 hover:bg-slate-50 transition-colors ${
-                                isGranted ? "bg-orange-50/20" : ""
+                                isGranted ? "bg-dgcc13/20" : ""
                               }`}
                             >
                               <div className="flex items-center gap-3 flex-1">
@@ -388,11 +388,11 @@ export default function DroitPermissionForm({
           </div>
 
           {/* Résumé des modifications */}
-          <div className="bg-orange-50 p-3 rounded-lg flex items-center justify-between">
-            <span className="text-xs text-orange-700">
+          <div className="bg-dgcc13 p-3 rounded-lg flex items-center justify-between">
+            <span className="text-xs text-dgcc3">
               {assignedIds.length} permission(s) sélectionnée(s)
             </span>
-            <span className="text-[10px] text-orange-500">
+            <span className="text-[10px] text-dgcc6">
               Les modifications seront appliquées après validation
             </span>
           </div>

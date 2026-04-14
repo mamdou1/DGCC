@@ -85,7 +85,7 @@ export default function InscriptionForm() {
 
     const strengths = [
       { score: 0, label: "Très faible", color: "bg-red-500" },
-      { score: 1, label: "Faible", color: "bg-orange-500" },
+      { score: 1, label: "Faible", color: "bg-dgcc6" },
       { score: 2, label: "Moyen", color: "bg-yellow-500" },
       { score: 3, label: "Fort", color: "bg-emerald-500" },
       { score: 4, label: "Très fort", color: "bg-green-600" },

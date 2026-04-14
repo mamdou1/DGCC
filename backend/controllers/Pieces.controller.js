@@ -9,15 +9,15 @@ exports.createPieces = async (req, res) => {
   try {
     const { libelle } = req.body;
 
-  // Trouver le dernier code de pièce
+    // Trouver le dernier code de pièce
     const lastPiece = await Pieces.findOne({
-      order: [['id', 'DESC']],
-      attributes: ['code_pieces']
+      order: [["id", "DESC"]],
+      attributes: ["code_pieces"],
     });
 
     let nextNumber = 1;
     if (lastPiece && lastPiece.code_pieces) {
-      const lastNumber = parseInt(lastPiece.code_pieces.split('-')[1]);
+      const lastNumber = parseInt(lastPiece.code_pieces.split("-")[1]);
       nextNumber = lastNumber + 1;
     }
 
@@ -145,6 +145,78 @@ exports.getPieces = async (req, res) => {
     res.status(500).json({
       message: "Impossible de récupérer les types de dépense",
     });
+  }
+};
+
+exports.getPieceByID = async (req, res) => {
+  const startTime = Date.now();
+  const { id } = req.params;
+
+  try {
+    logger.debug("🔍 Récupération d'une pièce par ID", {
+      pieceId: id,
+      userId: req.user?.id,
+    });
+
+    const piece = await Pieces.findByPk(id, {
+      include: [
+        {
+          model: PieceMetaField,
+          as: "metaFields",
+          attributes: [
+            "id",
+            "name",
+            "label",
+            "field_type",
+            "required",
+            "position",
+          ],
+        },
+      ],
+    });
+
+    if (!piece) {
+      logger.warn("⚠️ Pièce introuvable", {
+        pieceId: id,
+        userId: req.user?.id,
+      });
+      return res.status(404).json({ message: "Pièce introuvable" });
+    }
+
+    logger.info("✅ Pièce récupérée", {
+      pieceId: id,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+
+    // Journalisation dans l'historique
+    await HistoriqueService.log({
+      agent_id: req.user?.id || null,
+      action: "read",
+      resource: "pieces",
+      resource_id: id,
+      resource_identifier: piece.nom || `pièce ${id}`,
+      description: `Consultation de la pièce ${id}`,
+      method: req.method,
+      path: req.originalUrl,
+      status: 200,
+      ip: req.ip,
+      user_agent: req.headers["user-agent"],
+      data: {
+        duration: Date.now() - startTime,
+      },
+    });
+
+    res.status(200).json(piece);
+  } catch (err) {
+    logger.error("❌ Erreur récupération pièce:", {
+      pieceId: id,
+      error: err.message,
+      stack: err.stack,
+      userId: req.user?.id,
+      duration: Date.now() - startTime,
+    });
+    res.status(500).json({ message: "Impossible de récupérer la pièce" });
   }
 };
 

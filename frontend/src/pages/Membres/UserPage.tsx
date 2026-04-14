@@ -226,13 +226,13 @@ export default function UserPage() {
       message:
         "Voulez-vous supprimer cet agent définitivement ? Cette action est irréversible.",
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
-      style: { width: "450px" },
       accept: async () => {
         try {
           await deleteMutation.mutateAsync(id);
@@ -332,7 +332,7 @@ export default function UserPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5"></div>
         </div>
       </Layout>
     );
@@ -362,12 +362,12 @@ export default function UserPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
+            <div className="bg-dgcc2 p-3 rounded-2xl text-white shadow-lg shadow-dgcc12">
               <Users size={24} />
             </div>
             <div>
               <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-                Gestion des <span className="text-orange-700">Agent</span>
+                Gestion des <span className="text-dgcc3">Agent</span>
               </h1>
             </div>
           </div>
@@ -380,7 +380,7 @@ export default function UserPage() {
         </div>
 
         <Button
-          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg shadow-orange-200 transition-all active:scale-95"
+          className="bg-dgcc3 hover:bg-dgcc2 text-white border-none px-6 py-3 rounded-xl shadow-lg shadow-dgcc9 transition-all active:scale-95"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -395,11 +395,11 @@ export default function UserPage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-[300px] relative group">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-dgcc6 transition-colors"
             size={18}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 transition-all"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-dgcc6/10 transition-all"
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher un nom, téléphone..."
             value={query}
@@ -444,7 +444,7 @@ export default function UserPage() {
                 Num matricule
               </th>
               <th
-                className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-orange-600 transition-colors"
+                className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-dgcc5 transition-colors"
                 onClick={() => {
                   setChampDeTrie("prenom");
                   setOrdreDeTrie(ordreDeTrie === "asc" ? "desc" : "asc");
@@ -455,7 +455,7 @@ export default function UserPage() {
                 </div>
               </th>
               <th
-                className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-orange-600 transition-colors"
+                className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-dgcc5 transition-colors"
                 onClick={() => {
                   setChampDeTrie("nom");
                   setOrdreDeTrie(ordreDeTrie === "asc" ? "desc" : "asc");
@@ -490,7 +490,7 @@ export default function UserPage() {
                   setSelectedUser(u);
                   setDetailsUser(true);
                 }}
-                className="cursor-pointer hover:bg-orange-50/30 transition-all group"
+                className="cursor-pointer hover:bg-dgcc13/30 transition-all group"
               >
                 <td className="px-6 py-4 flex justify-center">
                   <div className="relative">
@@ -505,7 +505,7 @@ export default function UserPage() {
                         className="w-12 h-12 rounded-xl object-cover ring-2 ring-white shadow-sm"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-800">
+                      <div className="w-12 h-12 rounded-xl bg-dgcc12 flex items-center justify-center text-dgcc2">
                         <Users size={20} />
                       </div>
                     )}
@@ -519,7 +519,7 @@ export default function UserPage() {
                 </td>
                 <td className="px-6 py-4 font-bold text-slate-700">{u.nom}</td>
                 <td className="px-6 py-4">
-                  <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg font-bold text-xs border border-orange-100 flex items-center gap-1 w-fit">
+                  <span className="bg-dgcc13 text-dgcc3 px-3 py-1 rounded-lg font-bold text-xs border border-dgcc12 flex items-center gap-1 w-fit">
                     {typeof u.droit === "object"
                       ? u.droit?.libelle
                       : "Non definie"}
@@ -552,7 +552,7 @@ export default function UserPage() {
                         setSelectedUser(u);
                         setAccesUser(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg"
+                      className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg"
                     >
                       <FolderLock size={18} />
                     </button>
@@ -561,7 +561,7 @@ export default function UserPage() {
                         setSelectedUser(u);
                         setDetailsUser(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
                       title="Voir détails"
                     >
                       <Eye size={18} />
@@ -572,7 +572,7 @@ export default function UserPage() {
                         setFormVisible(true);
                         e.stopPropagation();
                       }}
-                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
                       title="Modifier"
                     >
                       <Edit3 size={18} />

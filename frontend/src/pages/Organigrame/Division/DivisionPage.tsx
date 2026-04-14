@@ -91,7 +91,8 @@ export default function DivisionPage() {
 
   // États pour le formulaire de création de section
   const [sectionFormVisible, setSectionFormVisible] = useState(false);
-  const [currentDivisionForSection, setCurrentDivisionForSection] = useState<Division | null>(null);
+  const [currentDivisionForSection, setCurrentDivisionForSection] =
+    useState<Division | null>(null);
 
   // Editing states
   const [editing, setEditing] = useState<Partial<Division> | null>(null);
@@ -198,10 +199,11 @@ export default function DivisionPage() {
     confirmDialog({
       message: `Voulez-vous supprimer cette division définitivement ? Cette action est irréversible.`,
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -231,7 +233,10 @@ export default function DivisionPage() {
     if (!currentDivisionForSection) return;
     try {
       // Ajouter l'ID de la division parente
-      const payload = { ...formData, division_id: currentDivisionForSection.id };
+      const payload = {
+        ...formData,
+        division_id: currentDivisionForSection.id,
+      };
       await createSection(payload);
       // Rafraîchir les sections de cette division
       await refreshSections(currentDivisionForSection.id);
@@ -247,7 +252,8 @@ export default function DivisionPage() {
       toast.current?.show({
         severity: "error",
         summary: "Erreur",
-        detail: err?.response?.data?.message || "Échec de création de la section",
+        detail:
+          err?.response?.data?.message || "Échec de création de la section",
       });
     }
   };
@@ -310,7 +316,7 @@ export default function DivisionPage() {
                 setSelectedDivision(section.division || null);
                 setSectionAjoutFonctionVisible(true);
               }}
-              className="p-1 text-orange-600 hover:bg-orange-50 rounded"
+              className="p-1 text-dgcc5 hover:bg-dgcc13 rounded"
               title="Ajouter une fonction"
             >
               <PlusCircle size={14} />
@@ -341,7 +347,7 @@ export default function DivisionPage() {
                   className="flex items-center justify-between p-1.5 bg-white rounded border border-slate-100"
                 >
                   <div className="flex items-center gap-1">
-                    <Briefcase size={8} className="text-orange-500" />
+                    <Briefcase size={8} className="text-dgcc6" />
                     <span className="text-[9px] text-slate-700">
                       {f.libelle}
                     </span>
@@ -395,7 +401,7 @@ export default function DivisionPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5"></div>
         </div>
       </Layout>
     );
@@ -424,7 +430,7 @@ export default function DivisionPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
+          <div className="bg-dgcc2 p-3 rounded-2xl text-white shadow-lg shadow-dgcc12">
             <Layers size={28} />
           </div>
           <div>
@@ -439,7 +445,7 @@ export default function DivisionPage() {
         <Button
           label="Nouvelle division"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+          className="bg-dgcc3 hover:bg-dgcc2 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -452,11 +458,11 @@ export default function DivisionPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative group">
             <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-dgcc6 transition-colors"
               size={20}
             />
             <InputText
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
+              className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-dgcc6/10 outline-none"
               placeholder="Rechercher une division..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -464,7 +470,7 @@ export default function DivisionPage() {
           </div>
           <div>
             <select
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-dgcc6/10 outline-none"
               value={selectedSousDirection}
               onChange={(e) => setSelectedSousDirection(e.target.value)}
             >
@@ -494,7 +500,7 @@ export default function DivisionPage() {
                 key={division.id}
                 className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all ${
                   isExpanded
-                    ? "border-orange-500 ring-2 ring-orange-200"
+                    ? "border-dgcc6 ring-2 ring-dgcc9"
                     : "border-slate-100"
                 }`}
               >
@@ -502,14 +508,14 @@ export default function DivisionPage() {
                 <div
                   onClick={() => toggleDivision(division)}
                   className={`w-full flex items-center justify-between p-5 transition-all cursor-pointer ${
-                    isExpanded ? "bg-orange-50/50" : "hover:bg-slate-50"
+                    isExpanded ? "bg-dgcc13" : "hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className={`p-2 rounded-lg ${
                         isExpanded
-                          ? "bg-orange-500 text-white"
+                          ? "bg-dgcc6 text-white"
                           : "bg-slate-100 text-slate-500"
                       }`}
                     >
@@ -518,12 +524,12 @@ export default function DivisionPage() {
                     <div className="text-left">
                       <div className="flex items-center gap-2">
                         <h3
-                          className={`font-bold ${isExpanded ? "text-orange-800" : "text-slate-700"}`}
+                          className={`font-bold ${isExpanded ? "text-dgcc1" : "text-slate-700"}`}
                         >
                           {division.libelle}
                         </h3>
                         {division.code && (
-                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-mono">
+                          <span className="bg-slate-100 text-dgcc5 px-2 py-0.5 rounded text-xs font-mono">
                             {division.code}
                           </span>
                         )}
@@ -531,13 +537,13 @@ export default function DivisionPage() {
                       <div className="flex items-center gap-2 mt-1">
                         {sousDirection && (
                           <div className="flex items-center gap-1">
-                            <MapPin size={12} className="text-orange-400" />
-                            <p className="text-xs text-slate-500">
+                            <MapPin size={12} className="text-dgcc7" />
+                            <p className="text-xs text-dgcc">
                               {sousDirection.libelle}
                             </p>
                           </div>
                         )}
-                        <p className="text-xs text-slate-500 font-medium">
+                        <p className="text-xs text-dgcc font-medium">
                           • {sections.length} section(s)
                         </p>
                       </div>
@@ -550,7 +556,7 @@ export default function DivisionPage() {
                         setSelectedDivision(division);
                         setDetailsVisible(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg"
+                      className="p-2 text-dgcc5 hover:text-dgcc2 hover:bg-dgcc13 rounded-lg"
                       title="Voir les détails"
                     >
                       <Eye size={18} />
@@ -561,7 +567,7 @@ export default function DivisionPage() {
                         setSelectedDivision(division);
                         setDivisionAjoutFonctionVisible(true);
                       }}
-                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+                      className="p-2 text-dgcc5 hover:bg-dgcc13 rounded-lg"
                       title="Ajouter une fonction"
                     >
                       <PlusCircle size={18} />
@@ -572,7 +578,7 @@ export default function DivisionPage() {
                         setEditing(division);
                         setFormVisible(true);
                       }}
-                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg"
+                      className="p-2 text-dgcc5 hover:bg-dgcc13 rounded-lg"
                       title="Modifier"
                     >
                       <Pencil size={18} />
@@ -588,7 +594,7 @@ export default function DivisionPage() {
                       <Trash2 size={18} />
                     </button>
                     {isExpanded ? (
-                      <ChevronDown size={20} className="text-orange-700" />
+                      <ChevronDown size={20} className="text-dgcc3" />
                     ) : (
                       <ChevronRight size={20} className="text-slate-400" />
                     )}
@@ -609,11 +615,13 @@ export default function DivisionPage() {
                           setCurrentDivisionForSection(division);
                           setSectionFormVisible(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl border-none transition-all"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-dgcc5 hover:bg-dgcc3 text-white rounded-xl border-none transition-all"
                         title="Créer une nouvelle section"
                       >
                         <PlusIcon size={16} />
-                        <span className="text-xs font-bold">Nouvelle section</span>
+                        <span className="text-xs font-bold">
+                          Nouvelle section
+                        </span>
                       </Button>
                     </div>
 

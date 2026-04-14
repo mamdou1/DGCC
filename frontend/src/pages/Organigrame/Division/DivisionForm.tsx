@@ -64,8 +64,8 @@ export default function DivisionForm({
     <Dialog
       header={
         <div className="flex items-center gap-2 text-slate-800 font-bold">
-          <div className="bg-orange-100 p-2 rounded-lg">
-            <Layers size={20} className="text-orange-600" />
+          <div className="bg-dgcc12 p-2 rounded-lg">
+            <Layers size={20} className="text-dgcc4" />
           </div>
           <span>{title}</span>
         </div>
@@ -78,7 +78,7 @@ export default function DivisionForm({
       <div className="pt-4 space-y-5">
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <MapPin size={16} className="text-orange-500" /> Sous-direction de
+            <MapPin size={16} className="text-dgcc6" /> Sous-direction de
             rattachement
           </label>
           <Dropdown
@@ -94,25 +94,25 @@ export default function DivisionForm({
 
         {/* <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Hash size={16} className="text-orange-500" /> Code
+            <Hash size={16} className="text-dgcc6" /> Code
           </label>
           <InputText
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-orange-500/10"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-dgcc6/10"
             placeholder="Ex: DIV-RH, DIV-FIN"
           />
         </div> */}
 
         <div>
           <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
-            <Info size={16} className="text-orange-500" /> Libellé{" "}
+            <Info size={16} className="text-dgcc6" /> Libellé{" "}
             <span className="text-red-500">*</span>
           </label>
           <InputText
             value={libelle}
             onChange={(e) => setLibelle(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-dgcc6/10 outline-none"
             placeholder="Ex: Division Administration du Personnel"
           />
         </div>
@@ -128,7 +128,7 @@ export default function DivisionForm({
             icon={!loading && <Save size={18} className="mr-2" />}
             onClick={handleSubmit}
             disabled={!libelle || loading}
-            className="bg-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:bg-orange-700 transition-all"
+            className="bg-dgcc4 text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:bg-dgcc3 transition-all"
           />
         </div>
       </div>

@@ -28,8 +28,8 @@ export default function DocumentDetails({
       <Toast ref={toast} />
       <Dialog
         header={
-          <div className="flex items-center gap-3 text-orange-950">
-            <div className="p-2 bg-orange-100 rounded-lg text-orange-600">
+          <div className="flex items-center gap-3 text-dgcc1">
+            <div className="p-2 bg-dgcc12 rounded-lg text-dgcc5">
               <FileText size={18} />
             </div>
             <span className="font-black tracking-tight">
@@ -42,29 +42,29 @@ export default function DocumentDetails({
         onHide={handleClose}
         className="custom-dialog overflow-hidden"
         footer={
-          <div className="flex justify-end p-4 bg-orange-50/50">
+          <div className="flex justify-end p-4 bg-dgcc13/50">
             <Button
               label="Fermer la vue"
               onClick={handleClose}
-              className="px-8 py-2.5 bg-white text-orange-700 border border-orange-200 rounded-xl font-bold hover:bg-orange-100 transition-all"
+              className="px-8 py-2.5 bg-white text-dgcc3 border border-dgcc10 rounded-xl font-bold hover:bg-dgcc12 transition-all"
             />
           </div>
         }
       >
         <div className="space-y-6 pt-4">
           {/* Banner Référence */}
-          <div className="bg-orange-950 p-6 rounded-3xl shadow-xl shadow-orange-900/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 bg-orange-800/20 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+          <div className="bg-dgcc1 p-6 rounded-3xl shadow-xl shadow-dgcc/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 bg-dgcc2/20 rounded-full -mr-10 -mt-10 blur-2xl"></div>
             <div className="relative z-10 flex justify-between items-end">
               <div>
-                <p className="text-orange-400 text-[10px] uppercase font-black tracking-widest mb-1">
+                <p className="text-dgcc7 text-[10px] uppercase font-black tracking-widest mb-1">
                   ID Archive
                 </p>
                 <h2 className="text-3xl font-black text-white">
                   #{String(doc.id).padStart(4, "0")}
                 </h2>
               </div>
-              <div className="bg-orange-500 text-white px-4 py-1.5 rounded-xl text-xs font-black">
+              <div className="bg-dgcc6 text-white px-4 py-1.5 rounded-xl text-xs font-black">
                 {doc.typeDocument?.nom || "Non classé"}
               </div>
             </div>
@@ -72,30 +72,30 @@ export default function DocumentDetails({
 
           {/* Métadonnées */}
           <div className="space-y-3">
-            <p className="text-[10px] font-black text-orange-800/40 uppercase tracking-widest ml-1">
+            <p className="text-[10px] font-black text-dgcc2/40 uppercase tracking-widest ml-1">
               Métadonnées indexées
             </p>
             <div className="grid grid-cols-1 gap-2">
               {doc.values?.map((v: any) => (
                 <div
                   key={v.id}
-                  className="flex items-center justify-between p-4 bg-white border border-orange-50 rounded-2xl shadow-sm"
+                  className="flex items-center justify-between p-4 bg-white border border-dgcc13 rounded-2xl shadow-sm"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-orange-50 rounded-lg text-orange-500">
+                    <div className="p-2 bg-dgcc13 rounded-lg text-dgcc6">
                       <Tag size={14} />
                     </div>
-                    <span className="text-xs font-bold text-orange-700">
+                    <span className="text-xs font-bold text-dgcc3">
                       {v.metaField?.label}
                     </span>
                   </div>
-                  <span className="text-sm font-black text-orange-950">
+                  <span className="text-sm font-black text-dgcc1">
                     {v.metaField?.field_type === "file" ? (
                       <a
                         href={v.value}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-orange-600 hover:underline"
+                        className="text-dgcc5 hover:underline"
                       >
                         Ouvrir
                       </a>
@@ -108,7 +108,7 @@ export default function DocumentDetails({
               {/* Section des pièces justificatives */}
               {doc.pieces && doc.pieces.length > 0 && (
                 <div className="space-y-3 mt-6">
-                  <p className="text-[10px] font-black text-orange-800/40 uppercase tracking-widest ml-1">
+                  <p className="text-[10px] font-black text-dgcc2/40 uppercase tracking-widest ml-1">
                     Pièces justificatives ({doc.pieces.length})
                   </p>
                   <div className="space-y-2">
@@ -123,7 +123,7 @@ export default function DocumentDetails({
                           key={piece.id}
                           className={`p-3 rounded-xl border ${
                             isDisponible
-                              ? "bg-orange-50 border-orange-200"
+                              ? "bg-dgcc13 border-dgcc10"
                               : "bg-white border-slate-100"
                           }`}
                         >
@@ -131,16 +131,14 @@ export default function DocumentDetails({
                             <div className="flex items-center gap-3">
                               <div
                                 className={`p-1.5 rounded-lg ${
-                                  isDisponible
-                                    ? "bg-orange-200"
-                                    : "bg-slate-100"
+                                  isDisponible ? "bg-dgcc10" : "bg-slate-100"
                                 }`}
                               >
                                 <FileText
                                   size={14}
                                   className={
                                     isDisponible
-                                      ? "text-orange-700"
+                                      ? "text-dgcc3"
                                       : "text-slate-400"
                                   }
                                 />
@@ -149,7 +147,7 @@ export default function DocumentDetails({
                                 <span
                                   className={`text-sm font-bold ${
                                     isDisponible
-                                      ? "text-orange-900"
+                                      ? "text-dgcc"
                                       : "text-slate-600"
                                   }`}
                                 >
@@ -159,7 +157,7 @@ export default function DocumentDetails({
                                   <span
                                     className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                                       isDisponible
-                                        ? "bg-orange-200 text-orange-800"
+                                        ? "bg-dgcc10 text-dgcc2"
                                         : "bg-slate-200 text-slate-600"
                                     }`}
                                   >
@@ -182,7 +180,7 @@ export default function DocumentDetails({
                                     `http://localhost:5000/${piece.fichiers[0].fichier}`,
                                   )
                                 }
-                                className="p-2 text-orange-600 hover:bg-orange-100 rounded-lg"
+                                className="p-2 text-dgcc5 hover:bg-dgcc12 rounded-lg"
                               >
                                 <Eye size={14} />
                               </button>
@@ -206,7 +204,7 @@ export default function DocumentDetails({
                                         `http://localhost:5000/${file.fichier}`,
                                       )
                                     }
-                                    className="text-orange-600 hover:text-orange-800 ml-2"
+                                    className="text-dgcc5 hover:text-dgcc2 ml-2"
                                   >
                                     <Eye size={12} />
                                   </button>

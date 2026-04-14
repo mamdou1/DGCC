@@ -141,8 +141,8 @@ export default function FonctionPage() {
         libelle: fonction.service.libelle,
         code: fonction.service.code,
         type: "Service",
-        couleur: "bg-orange-100 text-orange-700 border-orange-200",
-        icone: <Map size={14} className="text-orange-600" />,
+        couleur: "bg-dgcc12 text-dgcc3 border-dgcc9",
+        icone: <Map size={14} className="text-dgcc5" />,
         parent: fonction.direction,
         grandParent: null,
         arriereGrandParent: null,
@@ -280,10 +280,11 @@ export default function FonctionPage() {
     confirmDialog({
       message: "Voulez-vous supprimer cette fonction définitivement ?",
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -310,7 +311,7 @@ export default function FonctionPage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5"></div>
         </div>
       </Layout>
     );
@@ -323,7 +324,7 @@ export default function FonctionPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-orange-600 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
+          <div className="bg-dgcc5 p-3 rounded-2xl text-white shadow-lg shadow-dgcc12">
             <Briefcase size={28} />
           </div>
           <div>
@@ -338,7 +339,7 @@ export default function FonctionPage() {
         <Button
           label="Nouvelle fonction"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-orange-600 hover:bg-orange-700 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+          className="bg-dgcc5 hover:bg-dgcc3 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -385,7 +386,7 @@ export default function FonctionPage() {
                 <GitMerge size={14} className="text-purple-600" />
               )}
               {option.type === "service" && (
-                <Map size={14} className="text-orange-600" />
+                <Map size={14} className="text-dgcc5" />
               )}
               <span>{option.label}</span>
             </div>
@@ -412,10 +413,10 @@ export default function FonctionPage() {
                   setSelectedFonction(f);
                   setDetailsVisible(true);
                 }}
-                className="cursor-pointer hover:bg-orange-50/30 transition-all group"
+                className="cursor-pointer hover:bg-dgcc13/30 transition-all group"
               >
                 <td className="px-6 py-4">
-                  <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg font-mono font-bold text-xs border border-orange-100">
+                  <span className="bg-dgcc13 text-dgcc3 px-3 py-1 rounded-lg font-mono font-bold text-xs border border-dgcc12">
                     #{String(f.id).padStart(3, "0")}
                   </span>
                 </td>
@@ -423,7 +424,7 @@ export default function FonctionPage() {
                   <div className="flex items-center gap-2">
                     <Briefcase
                       size={16}
-                      className="text-slate-300 group-hover:text-orange-400"
+                      className="text-slate-300 group-hover:text-dgcc8"
                     />
                     {f.libelle}
                   </div>
@@ -488,7 +489,7 @@ export default function FonctionPage() {
                         setSelectedFonction(f);
                         setDetailsVisible(true);
                       }}
-                      className="p-3 text-slate-400 hover:text-orange-600 hover:bg-white hover:shadow-md rounded-xl transition-all"
+                      className="p-3 text-slate-400 hover:text-dgcc5 hover:bg-white hover:shadow-md rounded-xl transition-all"
                       title="Voir détails"
                     >
                       <Eye size={20} />

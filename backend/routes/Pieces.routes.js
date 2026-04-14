@@ -8,6 +8,7 @@ const {
   getPieces,
   updatePieces,
   deletePiece,
+  getPieceByID,
 } = require("../controllers/Pieces.controller");
 const { verifyToken } = require("../middlewares/auth.middleware");
 const { authorizeRoles } = require("../middlewares/role.middleware");
@@ -24,6 +25,13 @@ router.put(
   verifyToken,
   authorizePermission("pieces", "update"),
   updatePieces,
+);
+
+router.get(
+  "/:id",
+  verifyToken,
+  authorizePermission("pieces", "read"),
+  getPieceByID,
 );
 
 router.delete(

@@ -153,8 +153,8 @@ export default function DocumentForm({
       <Toast ref={toast} />
       <Dialog
         header={
-          <div className="flex items-center gap-3 text-orange-950">
-            <div className="p-2 bg-orange-600 rounded-lg text-white">
+          <div className="flex items-center gap-3 text-dgcc1">
+            <div className="p-2 bg-dgcc5 rounded-lg text-white">
               <Plus size={18} />
             </div>
             <span className="font-black tracking-tight">
@@ -166,24 +166,24 @@ export default function DocumentForm({
         style={{ width: "500px" }}
         onHide={onHide}
         footer={
-          <div className="flex justify-end gap-3 p-4 bg-orange-50/30">
+          <div className="flex justify-end gap-3 p-4 bg-dgcc13/30">
             <Button
               label="Annuler"
               onClick={onHide}
-              className="p-button-text text-orange-600 font-bold"
+              className="p-button-text text-dgcc5 font-bold"
             />
             <Button
               label={editingDoc ? "Modifier" : "Enregistrer"}
               icon={<Save size={18} className="mr-2" />}
-              className="bg-orange-600 hover:bg-orange-700 text-white border-none px-6 py-2.5 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
+              className="bg-dgcc5 hover:bg-dgcc3 text-white border-none px-6 py-2.5 rounded-xl shadow-lg shadow-dgcc9 transition-all font-bold"
               onClick={handleSubmit}
             />
           </div>
         }
       >
         <div className="space-y-6 pt-4">
-          <div className="bg-orange-50/50 p-5 rounded-3xl border border-orange-100">
-            <label className="text-[10px] font-black text-orange-700 uppercase tracking-widest mb-3 block">
+          <div className="bg-dgcc13/50 p-5 rounded-3xl border border-dgcc12">
+            <label className="text-[10px] font-black text-dgcc3 uppercase tracking-widest mb-3 block">
               Type de dossier
             </label>
             <Dropdown
@@ -193,7 +193,7 @@ export default function DocumentForm({
               optionLabel="nom"
               optionValue="id"
               placeholder="Sélectionner..."
-              className="w-full bg-white border-orange-100 rounded-xl shadow-sm"
+              className="w-full bg-white border-dgcc12 rounded-xl shadow-sm"
               filter
               disabled={!!editingDoc}
             />
@@ -201,14 +201,14 @@ export default function DocumentForm({
 
           {metaFields.length > 0 && (
             <div className="space-y-4 animate-in fade-in duration-500">
-              <p className="text-[10px] font-black text-orange-800/40 uppercase tracking-widest ml-1">
+              <p className="text-[10px] font-black text-dgcc2/40 uppercase tracking-widest ml-1">
                 Champs requis
               </p>
               <div className="grid grid-cols-1 gap-4">
                 {metaFields.map((f: any) => (
                   <div key={f.id} className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-orange-900 ml-1 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>{" "}
+                    <label className="text-xs font-bold text-dgcc ml-1 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-dgcc6 rounded-full"></div>{" "}
                       {f.label}{" "}
                       {f.required && <span className="text-red-500">*</span>}
                     </label>
@@ -217,7 +217,7 @@ export default function DocumentForm({
                       value={
                         f.field_type !== "file" ? values[f.id] || "" : undefined
                       }
-                      className="w-full bg-white border border-orange-100 p-3.5 rounded-2xl text-sm focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all shadow-sm text-orange-950"
+                      className="w-full bg-white border border-dgcc12 p-3.5 rounded-2xl text-sm focus:ring-4 focus:ring-dgcc6/10 focus:border-dgcc6 outline-none transition-all shadow-sm text-dgcc1"
                       onChange={(e) =>
                         setValues({
                           ...values,

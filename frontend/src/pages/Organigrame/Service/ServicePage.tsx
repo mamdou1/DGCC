@@ -20,6 +20,7 @@ import {
   Trash2,
   Pencil,
   XCircle,
+  Building,
 } from "lucide-react";
 
 // Hooks
@@ -93,10 +94,11 @@ export default function ServicePage() {
     confirmDialog({
       message: `Voulez-vous supprimer ce service définitivement ? Cette action est irréversible.`,
       header: "Confirmation",
-      icon: "pi pi-info-circle",
+      icon: "pi pi-info-circle text-red-500",
       acceptLabel: "Supprimer",
       rejectLabel: "Annuler",
-      acceptClassName: "p-button-danger p-button-raised p-button-rounded p-2",
+      acceptClassName:
+        "p-button-danger bg-red-500 text-white p-button-raised p-button-rounded p-2",
       rejectClassName:
         "p-button-secondary p-button-outlined p-button-rounded mr-4 p-2",
       style: { width: "450px" },
@@ -159,7 +161,7 @@ export default function ServicePage() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dgcc5"></div>
         </div>
       </Layout>
     );
@@ -191,8 +193,8 @@ export default function ServicePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
-            <Briefcase size={28} />
+          <div className="bg-dgcc2 p-3 rounded-2xl text-white shadow-lg shadow-dgcc13">
+            <Building size={28} />
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
@@ -206,7 +208,7 @@ export default function ServicePage() {
         <Button
           label="Nouveau service"
           icon={<Plus size={20} className="mr-2" />}
-          className="bg-orange-700 hover:bg-orange-800 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
+          className="bg-dgcc3 hover:bg-dgcc2 text-white border-none px-6 py-3 rounded-xl shadow-lg transition-all"
           onClick={() => {
             setEditing(null);
             setFormVisible(true);
@@ -218,11 +220,11 @@ export default function ServicePage() {
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
         <div className="relative group max-w-md">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-dgcc6 transition-colors"
             size={20}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-dgcc6/10 outline-none"
             placeholder="Rechercher un service..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -249,9 +251,9 @@ export default function ServicePage() {
                   setSelected(service);
                   setDetailsVisible(true);
                 }}
-                className="hover:bg-orange-50/30 transition-all group cursor-pointer"
+                className="hover:bg-dgcc13/30 transition-all group cursor-pointer"
               >
-                <td className="px-6 py-4 font-mono text-sm font-bold text-orange-700">
+                <td className="px-6 py-4 font-mono text-sm font-bold text-dgcc3">
                   {service.code || "---"}
                 </td>
                 <td className="px-6 py-4 font-bold text-slate-700">
@@ -271,7 +273,7 @@ export default function ServicePage() {
                         setSelected(service);
                         setDetailsVisible(true);
                       }}
-                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg"
+                      className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg"
                       title="Voir les détails"
                     >
                       <Eye size={18} />
@@ -293,7 +295,7 @@ export default function ServicePage() {
                         setEditing(service);
                         setFormVisible(true);
                       }}
-                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                      className="p-2 text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
                       title="Modifier"
                     >
                       <Pencil size={18} />
@@ -343,7 +345,6 @@ export default function ServicePage() {
         visible={ajoutFonctionVisible}
         onHide={() => setAjoutFonctionVisible(false)}
         service={selected}
-        
       />
 
       <ServiceDetails

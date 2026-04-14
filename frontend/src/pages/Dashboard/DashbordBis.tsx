@@ -74,7 +74,7 @@ export default function WelcomeLandingPage() {
 
           <div className="flex-1 relative">
             {/* Illustration ou décoratif style dashboard */}
-            <div className="bg-gradient-to-br from-orange-700 to-orange-800 w-full aspect-square rounded-[3rem] shadow-2xl rotate-3 flex items-center justify-center relative overflow-hidden">
+            <div className="bg-gradient-to-br from-[#795439] to-dgcc w-full aspect-square rounded-[3rem] shadow-2xl rotate-3 flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
               <CircleDollarSign
                 size={160}

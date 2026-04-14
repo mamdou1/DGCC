@@ -12,17 +12,15 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      tableName: "permissions",
+      timestamps: true,
+      underscored: true,
       indexes: [
         {
           unique: true,
           fields: ["resource", "action"],
         },
       ],
-    },
-    {
-      tableName: "permissions",
-      timestamps: true,
-      underscored: true,
     },
   );
 

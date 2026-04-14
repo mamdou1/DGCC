@@ -66,7 +66,7 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
   return (
     <Dialog
       header={
-        <div className="flex items-center gap-2 text-orange-900">
+        <div className="flex items-center gap-2 text-dgcc">
           <ShieldCheck size={20} />
           <span>Détails de l'autorisation</span>
         </div>
@@ -86,13 +86,11 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
     >
       <div className="space-y-6 pt-2">
         {/* Header Libellé */}
-        <div className="bg-orange-50 border border-orange-100 p-4 rounded-2xl flex items-center justify-between">
-          <span className="text-orange-700 font-semibold italic text-sm uppercase">
+        <div className="bg-dgcc13 border border-dgcc12 p-4 rounded-2xl flex items-center justify-between">
+          <span className="text-dgcc3 font-semibold italic text-sm uppercase">
             Libellé
           </span>
-          <span className="text-2xl font-black text-orange-900">
-            {droit.libelle}
-          </span>
+          <span className="text-2xl font-black text-dgcc">{droit.libelle}</span>
         </div>
 
         {/* Navigation par Onglets Stylisée */}
@@ -111,7 +109,7 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
                   flex items-center cursor-pointer select-none px-5 py-3 border-b-2 font-bold text-sm transition-all duration-300 rounded-t-xl
                   ${
                     context.active
-                      ? "border-orange-600 text-orange-600 bg-orange-50/50"
+                      ? "border-dgcc5 text-dgcc5 bg-dgcc13/50"
                       : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                   }
                 `,
@@ -135,7 +133,7 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
                   flex items-center cursor-pointer select-none px-5 py-3 border-b-2 font-bold text-sm transition-all duration-300 rounded-t-xl
                   ${
                     context.active
-                      ? "border-orange-600 text-orange-600 bg-orange-50/50"
+                      ? "border-dgcc5 text-dgcc5 bg-dgcc13/50"
                       : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                   }
                 `,
@@ -162,7 +160,7 @@ export default function DroitDetails({ visible, onHide, droit }: Props) {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
+            <div className="p-2 bg-dgcc13 text-dgcc5 rounded-lg">
               <Edit3 size={18} />
             </div>
             <div>

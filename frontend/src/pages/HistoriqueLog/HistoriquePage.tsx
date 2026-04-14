@@ -1,3 +1,397 @@
+// import { useEffect, useRef, useState } from "react";
+// import Layout from "../../components/layout/Layoutt";
+// import HistoriqueDetails from "./HistoriqueDetails";
+// import type { HistoriqueLog, Droit } from "../../interfaces";
+// import { getHistoriqueLogs } from "../../api/historiqueLog";
+// import { Toast } from "primereact/toast";
+// import Pagination from "../../components/layout/Pagination";
+// import { InputText } from "primereact/inputtext";
+// import {
+//   History,
+//   Search,
+//   Eye,
+//   Calendar,
+//   UserCheck,
+//   Layers,
+// } from "lucide-react";
+
+// export default function HistoriquePage() {
+//   const [logs, setLogs] = useState<HistoriqueLog[]>([]);
+//   const [selectedLog, setSelectedLog] = useState<HistoriqueLog | null>(null);
+//   const [detailsVisible, setDetailsVisible] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [query, setQuery] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const itemsPerPage = 10;
+//   const toast = useRef<Toast>(null);
+
+//   const [dateFrom, setDateFrom] = useState<string>("");
+//   const [dateTo, setDateTo] = useState<string>("");
+//   const [actionFilter, setActionFilter] = useState<string>("");
+//   const [resourceFilter, setResourceFilter] = useState<string>("");
+
+//   const [pagination, setPagination] = useState({
+//     total: 0,
+//     page: 1,
+//     limit: itemsPerPage,
+//     pages: 1,
+//   });
+
+//   const fetchLogs = async () => {
+//     setLoading(true);
+//     try {
+//       const response = await getHistoriqueLogs({
+//         page: currentPage,
+//         limit: itemsPerPage,
+//       });
+//       setLogs(response.data);
+//       setPagination(response.pagination); // ✅ stocker la pagination backend
+//     } catch (err) {
+//       toast.current?.show({
+//         severity: "error",
+//         summary: "Erreur",
+//         detail: "Impossible de charger l'historique",
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchLogs();
+//   }, [currentPage]);
+
+//   const filteredLogs = logs.filter((log) => {
+//     if (log.action === "other") return false;
+
+//     const agent = log.agent;
+
+//     const searchString =
+//       `${agent?.nom ?? ""} ${agent?.prenom ?? ""} ${log.action} ${log.resource} ${log.createdAt}`.toLowerCase();
+
+//     if (!searchString.includes(query.toLowerCase())) return false;
+
+//     if (actionFilter && log.action !== actionFilter) return false;
+
+//     if (
+//       resourceFilter &&
+//       !log.resource.toLowerCase().includes(resourceFilter.toLowerCase())
+//     )
+//       return false;
+
+//     if (dateFrom) {
+//       if (new Date(log.createdAt) < new Date(dateFrom)) return false;
+//     }
+
+//     if (dateTo) {
+//       const end = new Date(dateTo);
+//       end.setHours(23, 59, 59, 999);
+//       if (new Date(log.createdAt) > end) return false;
+//     }
+
+//     return true;
+//   });
+
+//   useEffect(() => {
+//     setCurrentPage(1);
+//   }, [query, dateFrom, dateTo, actionFilter, resourceFilter]);
+
+//   // const paginated = filteredLogs.slice(
+//   //   (currentPage - 1) * itemsPerPage,
+//   //   currentPage * itemsPerPage,
+//   // );
+
+//   function getDroitLibelle(droit?: Droit | string): string {
+//     return typeof droit === "object" ? droit.libelle : "N/A";
+//   }
+
+//   function formatAction(action: string) {
+//     const map: Record<string, string> = {
+//       create: "Création",
+//       update: "Modification",
+//       delete: "Suppression",
+//       read: "Consultation",
+//       access: "Accès",
+//       login: "Connexion",
+//       logout: "Déconnexion",
+//       upload: "Téléversement",
+//     };
+
+//     return map[action] || action;
+//   }
+
+//   function formatResource(resource: string) {
+//     const map: Record<string, string> = {
+//       user: "Agent",
+//       droits: "Profil",
+//       exercices: "Exercice",
+//       fonctions: "Fonction",
+//       pieces: "Pièce",
+//       document: "Document",
+//       documentType: "Type de document",
+
+//       salle: "Salle",
+//       rayon: "Rayon",
+//       trave: "Travée",
+//       box: "Box",
+//       site: "Site",
+//       auth: "Authentification",
+//     };
+
+//     return map[resource] || resource;
+//   }
+
+//   function formatMessage(log: HistoriqueLog) {
+//     const action = formatAction(log.action);
+//     const resource = formatResource(log.resource);
+
+//     return `${action} ${resource}`;
+//   }
+
+//   function actionColor(action: string) {
+//     switch (action) {
+//       case "create":
+//         return "bg-green-50 text-green-700";
+//       case "update":
+//         return "bg-blue-50 text-blue-700";
+//       case "delete":
+//         return "bg-red-50 text-red-700";
+//       case "access":
+//         return "bg-yellow-50 text-yellow-700";
+//       case "login":
+//         return "bg-purple-50 text-purple-700";
+//       default:
+//         return "bg-slate-50 text-slate-700";
+//     }
+//   }
+
+//   return (
+//     <Layout>
+//       <Toast ref={toast} />
+
+//       {/* Header */}
+//       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+//         <div className="flex items-center gap-4">
+//           <div className="bg-dgcc2 p-3 rounded-2xl text-white shadow-lg shadow-dgcc12">
+//             <History size={28} />
+//           </div>
+//           <div>
+//             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
+//               Journal <span className="text-dgcc5">d'audit</span>
+//             </h1>
+//             <p className="text-slate-500 font-medium font-sans">
+//               Suivi en temps réel des actions effectuées sur la plateforme
+//             </p>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Barre de recherche */}
+//       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
+//         <div className="relative group max-w-md">
+//           <Search
+//             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-dgcc6 transition-colors"
+//             size={20}
+//           />
+//           <InputText
+//             className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-dgcc6/10 transition-all outline-none"
+//             placeholder="Rechercher par agent, action ou ressource..."
+//             value={query}
+//             onChange={(e) => setQuery(e.target.value)}
+//           />
+//         </div>
+//         {/* Filtres */}
+//         <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
+//           <div className="grid grid-cols-4 md:grid-cols-4 gap-4">
+//             {/* Date début */}
+//             <div>
+//               <label className="text-xs font-bold text-slate-500">Du</label>
+//               <input
+//                 type="date"
+//                 value={dateFrom}
+//                 onChange={(e) => setDateFrom(e.target.value)}
+//                 className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
+//               />
+//             </div>
+
+//             {/* Date fin */}
+//             <div>
+//               <label className="text-xs font-bold text-slate-500">Au</label>
+//               <input
+//                 type="date"
+//                 value={dateTo}
+//                 onChange={(e) => setDateTo(e.target.value)}
+//                 className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
+//               />
+//             </div>
+
+//             {/* Action */}
+//             <div>
+//               <label className="text-xs font-bold text-slate-500">Action</label>
+//               <select
+//                 value={actionFilter}
+//                 onChange={(e) => setActionFilter(e.target.value)}
+//                 className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
+//               >
+//                 <option value="">Toutes</option>
+//                 <option value="create">Create</option>
+//                 <option value="update">Update</option>
+//                 <option value="delete">Delete</option>
+//                 <option value="read">Read</option>
+//                 <option value="access">Access</option>
+//                 <option value="login">Login</option>
+//                 <option value="logout">Logout</option>
+//               </select>
+//             </div>
+
+//             {/* Resource */}
+//             {/* <div>
+//               <label className="text-xs font-bold text-slate-500">
+//                 Ressource
+//               </label>
+//               <input
+//                 type="text"
+//                 placeholder="agent, liquidation..."
+//                 value={resourceFilter}
+//                 onChange={(e) => setResourceFilter(e.target.value)}
+//                 className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
+//               />
+//             </div> */}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Tableau */}
+//       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+//         <table className="w-full text-left border-collapse">
+//           <thead>
+//             <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
+//               <th className="px-6 py-4">#</th>
+//               <th className="px-6 py-4">Profil</th>
+//               <th className="px-6 py-4">Agent</th>
+//               <th className="px-6 py-4">Fonction</th>
+//               <th className="px-6 py-4">Action</th>
+//               <th className="px-6 py-4">Ressource</th>
+//               <th className="px-6 py-4">Date</th>
+//               <th className="px-6 py-4 text-center">Détails</th>
+//             </tr>
+//           </thead>
+//           <tbody className="divide-y divide-slate-50">
+//             {filteredLogs.map((log, index) => {
+//               const agent = log.agent || null;
+//               const rowNumber = (currentPage - 1) * itemsPerPage + index + 1; // ✅ numérotation continue
+
+//               return (
+//                 <tr
+//                   key={log.id}
+//                   onClick={() => {
+//                     setSelectedLog(log);
+//                     setDetailsVisible(true);
+//                   }}
+//                   className="cursor-pointer hover:bg-dgcc13/30 transition-all group"
+//                 >
+//                   <td className="px-6 py-4 text-slate-500 font-bold">
+//                     {rowNumber}
+//                   </td>
+//                   {/* ✅ affichage numéro */}
+//                   <td className="px-6 py-4">
+//                     <div className="flex flex-col">
+//                       <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded w-fit font-bold uppercase mt-1">
+//                         {getDroitLibelle(agent?.droit) || "N/A"}
+//                       </span>
+//                     </div>
+//                   </td>
+//                   <td className="px-6 py-4">
+//                     <div className="flex flex-col">
+//                       <span className="font-bold text-slate-700">
+//                         {agent ? `${agent.nom} ${agent.prenom}` : "---"}
+//                       </span>
+//                     </div>
+//                   </td>
+//                   <td className="px-6 py-4 text-sm text-slate-600">
+//                     <div className="flex items-center gap-2">
+//                       <Layers size={14} className="text-slate-400" />
+//                       {agent?.fonction_details?.libelle || "Non définie"}
+//                     </div>
+//                   </td>
+//                   <td className="px-6 py-4">
+//                     <span
+//                       className={`px-3 py-1 rounded-lg font-bold text-xs border shadow-sm ${actionColor(log.action)}`}
+//                     >
+//                       {formatAction(log.action)}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4">
+//                     <span className="text-sm font-medium text-slate-500 italic">
+//                       {formatResource(log.resource)}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4">
+//                     <div className="flex items-center gap-2 text-xs text-slate-500">
+//                       <Calendar size={14} />
+//                       {new Date(log.createdAt).toLocaleString("fr-FR", {
+//                         day: "2-digit",
+//                         month: "2-digit",
+//                         year: "numeric",
+//                         hour: "2-digit",
+//                         minute: "2-digit",
+//                         second: "2-digit",
+//                       })}
+//                     </div>
+//                   </td>
+//                   <td className="px-6 py-4 text-center">
+//                     <button
+//                       onClick={(e) => {
+//                         setSelectedLog(log);
+//                         setDetailsVisible(true);
+//                         e.stopPropagation();
+//                       }}
+//                       className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
+//                     >
+//                       <Eye size={18} />
+//                     </button>
+//                   </td>
+//                 </tr>
+//               );
+//             })}
+//           </tbody>
+//         </table>
+
+//         {loading && (
+//           <div className="p-12 flex flex-col items-center gap-2">
+//             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div>
+//             <p className="text-slate-400 font-medium">Analyse du journal...</p>
+//           </div>
+//         )}
+
+//         {!loading && filteredLogs.length === 0 && (
+//           <div className="p-12 text-center">
+//             <History size={48} className="mx-auto text-slate-200 mb-4" />
+//             <p className="text-slate-500 font-medium">
+//               Aucune activité enregistrée
+//             </p>
+//           </div>
+//         )}
+//       </div>
+
+//       <div className="mt-6 flex justify-center">
+//         <Pagination
+//           currentPage={currentPage}
+//           itemsPerPage={itemsPerPage}
+//           totalItems={pagination.total} // ✅ utiliser le total du backend
+//           onPageChange={setCurrentPage}
+//         />
+//       </div>
+
+//       <HistoriqueDetails
+//         visible={detailsVisible}
+//         onHide={() => setDetailsVisible(false)}
+//         log={selectedLog}
+//       />
+//     </Layout>
+//   );
+// }
+
 import { useEffect, useRef, useState } from "react";
 import Layout from "../../components/layout/Layoutt";
 import HistoriqueDetails from "./HistoriqueDetails";
@@ -16,7 +410,8 @@ import {
 } from "lucide-react";
 
 export default function HistoriquePage() {
-  const [logs, setLogs] = useState<HistoriqueLog[]>([]);
+  const [allLogs, setAllLogs] = useState<HistoriqueLog[]>([]); // ✅ tous les logs
+  const [filteredLogs, setFilteredLogs] = useState<HistoriqueLog[]>([]); // ✅ logs filtrés
   const [selectedLog, setSelectedLog] = useState<HistoriqueLog | null>(null);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,22 +425,23 @@ export default function HistoriquePage() {
   const [actionFilter, setActionFilter] = useState<string>("");
   const [resourceFilter, setResourceFilter] = useState<string>("");
 
-  const [pagination, setPagination] = useState({
-    total: 0,
-    page: 1,
-    limit: itemsPerPage,
-    pages: 1,
-  });
+  // ✅ Pagination côté client
+  const totalItems = filteredLogs.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedLogs = filteredLogs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
 
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const response = await getHistoriqueLogs({
-        page: currentPage,
-        limit: itemsPerPage,
-      });
-      setLogs(response.data);
-      setPagination(response.pagination); // ✅ stocker la pagination backend
+      const response = await getHistoriqueLogs({});
+
+      // ✅ La réponse contient { data: [...], total: ... }
+      const logsData = response.data || response; // Adaptation selon la structure
+      setAllLogs(logsData);
+      setFilteredLogs(logsData);
     } catch (err) {
       toast.current?.show({
         severity: "error",
@@ -59,47 +455,54 @@ export default function HistoriquePage() {
 
   useEffect(() => {
     fetchLogs();
-  }, [currentPage]);
+  }, []);
 
-  const filteredLogs = logs.filter((log) => {
-    if (log.action === "other") return false;
-
-    const agent = log.agent;
-
-    const searchString =
-      `${agent?.nom ?? ""} ${agent?.prenom ?? ""} ${log.action} ${log.resource} ${log.createdAt}`.toLowerCase();
-
-    if (!searchString.includes(query.toLowerCase())) return false;
-
-    if (actionFilter && log.action !== actionFilter) return false;
-
-    if (
-      resourceFilter &&
-      !log.resource.toLowerCase().includes(resourceFilter.toLowerCase())
-    )
-      return false;
-
-    if (dateFrom) {
-      if (new Date(log.createdAt) < new Date(dateFrom)) return false;
-    }
-
-    if (dateTo) {
-      const end = new Date(dateTo);
-      end.setHours(23, 59, 59, 999);
-      if (new Date(log.createdAt) > end) return false;
-    }
-
-    return true;
-  });
-
+  // ✅ Filtrage côté client
   useEffect(() => {
-    setCurrentPage(1);
-  }, [query, dateFrom, dateTo, actionFilter, resourceFilter]);
+    let filtered = [...allLogs];
 
-  // const paginated = filteredLogs.slice(
-  //   (currentPage - 1) * itemsPerPage,
-  //   currentPage * itemsPerPage,
-  // );
+    // Filtre par action
+    if (actionFilter) {
+      filtered = filtered.filter((log) => log.action === actionFilter);
+    }
+
+    // Filtre par ressource
+    if (resourceFilter) {
+      filtered = filtered.filter((log) =>
+        log.resource.toLowerCase().includes(resourceFilter.toLowerCase()),
+      );
+    }
+
+    // Filtre par date début
+    if (dateFrom) {
+      filtered = filtered.filter(
+        (log) => new Date(log.createdAt) >= new Date(dateFrom),
+      );
+    }
+
+    // Filtre par date fin
+    if (dateTo) {
+      const endDate = new Date(dateTo);
+      endDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter((log) => new Date(log.createdAt) <= endDate);
+    }
+
+    // Filtre par recherche texte
+    if (query) {
+      filtered = filtered.filter((log) => {
+        if (log.action === "other") return false;
+        const agent = log.agent;
+        const searchString =
+          `${agent?.nom ?? ""} ${agent?.prenom ?? ""} ${log.action} ${
+            log.resource
+          } ${log.createdAt}`.toLowerCase();
+        return searchString.includes(query.toLowerCase());
+      });
+    }
+
+    setFilteredLogs(filtered);
+    setCurrentPage(1); // ✅ Reset à la première page après filtrage
+  }, [query, dateFrom, dateTo, actionFilter, resourceFilter, allLogs]);
 
   function getDroitLibelle(droit?: Droit | string): string {
     return typeof droit === "object" ? droit.libelle : "N/A";
@@ -116,7 +519,6 @@ export default function HistoriquePage() {
       logout: "Déconnexion",
       upload: "Téléversement",
     };
-
     return map[action] || action;
   }
 
@@ -129,7 +531,6 @@ export default function HistoriquePage() {
       pieces: "Pièce",
       document: "Document",
       documentType: "Type de document",
-
       salle: "Salle",
       rayon: "Rayon",
       trave: "Travée",
@@ -137,15 +538,7 @@ export default function HistoriquePage() {
       site: "Site",
       auth: "Authentification",
     };
-
     return map[resource] || resource;
-  }
-
-  function formatMessage(log: HistoriqueLog) {
-    const action = formatAction(log.action);
-    const resource = formatResource(log.resource);
-
-    return `${action} ${resource}`;
   }
 
   function actionColor(action: string) {
@@ -172,12 +565,12 @@ export default function HistoriquePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="bg-orange-800 p-3 rounded-2xl text-white shadow-lg shadow-orange-100">
+          <div className="bg-dgcc2 p-3 rounded-2xl text-white shadow-lg shadow-dgcc12">
             <History size={28} />
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-              Journal <span className="text-orange-600">d'audit</span>
+              Journal <span className="text-dgcc5">d'audit</span>
             </h1>
             <p className="text-slate-500 font-medium font-sans">
               Suivi en temps réel des actions effectuées sur la plateforme
@@ -186,180 +579,197 @@ export default function HistoriquePage() {
         </div>
       </div>
 
-      {/* Barre de recherche */}
+      {/* Barre de recherche et filtres */}
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
-        <div className="relative group max-w-md">
+        <div className="relative group max-w-md mb-4">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-dgcc6 transition-all"
             size={20}
           />
           <InputText
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-orange-500/10 transition-all outline-none"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-4 focus:ring-dgcc6/10 transition-all outline-none"
             placeholder="Rechercher par agent, action ou ressource..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
+
         {/* Filtres */}
-        <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
-          <div className="grid grid-cols-4 md:grid-cols-4 gap-4">
-            {/* Date début */}
-            <div>
-              <label className="text-xs font-bold text-slate-500">Du</label>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
-              />
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Date début */}
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+              Du
+            </label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-dgcc5/20 focus:border-dgcc5 outline-none transition-all"
+            />
+          </div>
 
-            {/* Date fin */}
-            <div>
-              <label className="text-xs font-bold text-slate-500">Au</label>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
-              />
-            </div>
+          {/* Date fin */}
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+              Au
+            </label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-dgcc5/20 focus:border-dgcc5 outline-none transition-all"
+            />
+          </div>
 
-            {/* Action */}
-            <div>
-              <label className="text-xs font-bold text-slate-500">Action</label>
-              <select
-                value={actionFilter}
-                onChange={(e) => setActionFilter(e.target.value)}
-                className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
-              >
-                <option value="">Toutes</option>
-                <option value="create">Create</option>
-                <option value="update">Update</option>
-                <option value="delete">Delete</option>
-                <option value="read">Read</option>
-                <option value="access">Access</option>
-                <option value="login">Login</option>
-                <option value="logout">Logout</option>
-              </select>
-            </div>
+          {/* Action */}
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+              Action
+            </label>
+            <select
+              value={actionFilter}
+              onChange={(e) => setActionFilter(e.target.value)}
+              className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-dgcc5/20 focus:border-dgcc5 outline-none transition-all"
+            >
+              <option value="">Toutes</option>
+              <option value="create">Création</option>
+              <option value="update">Modification</option>
+              <option value="delete">Suppression</option>
+              <option value="read">Consultation</option>
+              <option value="access">Accès</option>
+              <option value="login">Connexion</option>
+              <option value="logout">Déconnexion</option>
+            </select>
+          </div>
 
-            {/* Resource */}
-            {/* <div>
-              <label className="text-xs font-bold text-slate-500">
-                Ressource
-              </label>
-              <input
-                type="text"
-                placeholder="agent, liquidation..."
-                value={resourceFilter}
-                onChange={(e) => setResourceFilter(e.target.value)}
-                className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"
-              />
-            </div> */}
+          {/* Resource */}
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+              Ressource
+            </label>
+            <input
+              type="text"
+              placeholder="agent, document..."
+              value={resourceFilter}
+              onChange={(e) => setResourceFilter(e.target.value)}
+              className="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-dgcc5/20 focus:border-dgcc5 outline-none transition-all"
+            />
           </div>
         </div>
       </div>
 
+      {/* Statistiques des résultats */}
+      <div className="mb-4 flex justify-between items-center">
+        <p className="text-sm text-slate-500">
+          <span className="font-bold text-dgcc5">{totalItems}</span> activité(s)
+          trouvée(s)
+        </p>
+        {filteredLogs.length > 0 && (
+          <p className="text-xs text-slate-400">
+            Page {currentPage} sur {totalPages || 1}
+          </p>
+        )}
+      </div>
+
       {/* Tableau */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
-              <th className="px-6 py-4">#</th>
-              <th className="px-6 py-4">Profil</th>
-              <th className="px-6 py-4">Agent</th>
-              <th className="px-6 py-4">Fonction</th>
-              <th className="px-6 py-4">Action</th>
-              <th className="px-6 py-4">Ressource</th>
-              <th className="px-6 py-4">Date</th>
-              <th className="px-6 py-4 text-center">Détails</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {filteredLogs.map((log, index) => {
-              const agent = log.agent || null;
-              const rowNumber = (currentPage - 1) * itemsPerPage + index + 1; // ✅ numérotation continue
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
+                <th className="px-6 py-4">#</th>
+                <th className="px-6 py-4">Profil</th>
+                <th className="px-6 py-4">Agent</th>
+                <th className="px-6 py-4">Fonction</th>
+                <th className="px-6 py-4">Action</th>
+                <th className="px-6 py-4">Ressource</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4 text-center">Détails</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {paginatedLogs.map((log, index) => {
+                const agent = log.agent || null;
+                const rowNumber = (currentPage - 1) * itemsPerPage + index + 1;
 
-              return (
-                <tr
-                  key={log.id}
-                  onClick={() => {
-                    setSelectedLog(log);
-                    setDetailsVisible(true);
-                  }}
-                  className="cursor-pointer hover:bg-orange-50/30 transition-all group"
-                >
-                  <td className="px-6 py-4 text-slate-500 font-bold">
-                    {rowNumber}
-                  </td>
-                  {/* ✅ affichage numéro */}
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded w-fit font-bold uppercase mt-1">
+                return (
+                  <tr
+                    key={log.id}
+                    onClick={() => {
+                      setSelectedLog(log);
+                      setDetailsVisible(true);
+                    }}
+                    className="cursor-pointer hover:bg-dgcc13/30 transition-all group"
+                  >
+                    <td className="px-6 py-4 text-slate-500 font-bold">
+                      {rowNumber}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase">
                         {getDroitLibelle(agent?.droit) || "N/A"}
                       </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-slate-700">
-                        {agent ? `${agent.nom} ${agent.prenom}` : "---"}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-700">
+                          {agent ? `${agent.nom} ${agent.prenom}` : "---"}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      <div className="flex items-center gap-2">
+                        <Layers size={14} className="text-slate-400" />
+                        {agent?.fonction_details?.libelle || "Non définie"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-3 py-1 rounded-lg font-bold text-xs border shadow-sm ${actionColor(log.action)}`}
+                      >
+                        {formatAction(log.action)}
                       </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">
-                    <div className="flex items-center gap-2">
-                      <Layers size={14} className="text-slate-400" />
-                      {agent?.fonction_details?.libelle || "Non définie"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-3 py-1 rounded-lg font-bold text-xs border shadow-sm ${actionColor(log.action)}`}
-                    >
-                      {formatAction(log.action)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-medium text-slate-500 italic">
-                      {formatResource(log.resource)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <Calendar size={14} />
-                      {new Date(log.createdAt).toLocaleString("fr-FR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      })}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={(e) => {
-                        setSelectedLog(log);
-                        setDetailsVisible(true);
-                        e.stopPropagation();
-                      }}
-                      className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-                    >
-                      <Eye size={18} />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-medium text-slate-500 italic">
+                        {formatResource(log.resource)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                        <Calendar size={14} />
+                        {new Date(log.createdAt).toLocaleString("fr-FR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={(e) => {
+                          setSelectedLog(log);
+                          setDetailsVisible(true);
+                          e.stopPropagation();
+                        }}
+                        className="p-2 text-slate-400 hover:text-dgcc5 hover:bg-dgcc13 rounded-lg transition-all"
+                      >
+                        <Eye size={18} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
 
         {loading && (
           <div className="p-12 flex flex-col items-center gap-2">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dgcc5"></div>
             <p className="text-slate-400 font-medium">Analyse du journal...</p>
           </div>
         )}
@@ -374,14 +784,17 @@ export default function HistoriquePage() {
         )}
       </div>
 
-      <div className="mt-6 flex justify-center">
-        <Pagination
-          currentPage={currentPage}
-          itemsPerPage={itemsPerPage}
-          totalItems={pagination.total} // ✅ utiliser le total du backend
-          onPageChange={setCurrentPage}
-        />
-      </div>
+      {/* Pagination - seulement si plus d'une page */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
 
       <HistoriqueDetails
         visible={detailsVisible}

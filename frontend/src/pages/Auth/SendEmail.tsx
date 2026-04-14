@@ -78,7 +78,7 @@ export default function SendEmail() {
 
       <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-orange-700 to-orange-900 p-8 text-white">
+        <div className="bg-gradient-to-r from-orange-900 to-dgcc p-8 text-white">
           <div className="flex items-center gap-4">
             <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
               <Lock size={28} />
@@ -130,14 +130,14 @@ export default function SendEmail() {
             icon={<ArrowRight size={18} className="mr-2" />}
             loading={loading}
             disabled={loading}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white border-none py-4 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
+            className="w-full bg-dgcc hover:bg-orange-700 text-white border-none py-4 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
           />
 
           <div className="text-center">
             <button
               type="button"
               onClick={() => navigate("/connexion")}
-              className="text-sm text-orange-600 hover:text-orange-800 font-medium transition-colors"
+              className="text-sm text-orange-800 hover:text-dgcc font-medium transition-colors"
             >
               Retour à la connexion
             </button>

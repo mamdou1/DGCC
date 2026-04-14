@@ -204,7 +204,7 @@ export default function DocumentTypeAffectationForm({
     <Dialog
       header={
         <div className="text-xl font-bold flex items-center gap-2">
-          <GitMerge className="text-orange-600" />{" "}
+          <GitMerge className="text-dgcc5" />{" "}
           {title || "Affectation à une entité"}
         </div>
       }
@@ -219,20 +219,20 @@ export default function DocumentTypeAffectationForm({
             onClick={onSave}
             loading={loading}
             disabled={!selectedPath}
-            className="bg-orange-600 hover:bg-orange-700 text-white border-none px-6 py-2.5 rounded-xl shadow-lg shadow-orange-200 transition-all font-bold"
+            className="bg-dgcc5 hover:bg-dgcc3 text-white border-none px-6 py-2.5 rounded-xl shadow-lg shadow-dgcc10 transition-all font-bold"
           />
         </div>
       }
     >
       <div className="space-y-6 pt-4">
-        <div className="p-4 bg-orange-50 rounded-2xl mb-2 text-orange-800 text-sm">
+        <div className="p-4 bg-dgcc13 rounded-2xl mb-2 text-dgcc2 text-sm">
           Choisissez le chemin d'affectation pour ce document.
         </div>
 
         {/* CHEMIN 1: Direction → Service */}
-        <div className="border rounded-xl p-4 hover:border-orange-200 transition-all">
+        <div className="border rounded-xl p-4 hover:border-dgcc10 transition-all">
           <h3 className="text-sm font-bold mb-3 flex items-center gap-2">
-            <Building2 size={18} className="text-orange-600" />
+            <Building2 size={18} className="text-dgcc5" />
             Chemin 1 : Direction → Service
           </h3>
 
@@ -289,7 +289,7 @@ export default function DocumentTypeAffectationForm({
         </div>
 
         {/* CHEMIN 2: Sous-direction → Division → Section */}
-        <div className="border rounded-xl p-4 hover:border-orange-200 transition-all">
+        <div className="border rounded-xl p-4 hover:border-dgcc10 transition-all">
           <h3 className="text-sm font-bold mb-3 flex items-center gap-2">
             <Split size={18} className="text-blue-600" />
             Chemin 2 : Sous-direction → Division → Section

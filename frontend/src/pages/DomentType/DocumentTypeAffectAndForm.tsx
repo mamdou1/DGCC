@@ -54,7 +54,7 @@ export default function DocumentTypeAffectAndForm({
     <div className="flex items-center justify-between w-full pr-8">
       <div className="flex items-center gap-3">
         <div
-          className={`p-2 rounded-xl ${initial?.id ? "bg-amber-100 text-amber-700" : "bg-orange-100 text-orange-700"}`}
+          className={`p-2 rounded-xl ${initial?.id ? "bg-amber-100 text-amber-700" : "bg-dgcc12 text-dgcc3"}`}
         >
           {initial?.id ? <Edit3 size={22} /> : <PlusCircle size={22} />}
         </div>
@@ -72,9 +72,9 @@ export default function DocumentTypeAffectAndForm({
 
       {/* Badge indicateur de structure si sélectionnée */}
       {isFiltered && structureLabel && (
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-orange-50 rounded-full border border-orange-200">
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-dgcc13 rounded-full border border-dgcc10">
           {getStructureIcon()}
-          <span className="text-[10px] font-bold text-orange-700 uppercase tracking-tighter">
+          <span className="text-[10px] font-bold text-dgcc3 uppercase tracking-tighter">
             Cible : {structureLabel}
           </span>
         </div>

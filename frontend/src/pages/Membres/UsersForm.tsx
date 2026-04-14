@@ -295,13 +295,13 @@
 //   const labelClass =
 //     "flex items-center gap-2 text-sm font-bold text-slate-700 mb-2";
 //   const inputClass =
-//     "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none text-orange-900 font-medium";
+//     "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-dgcc6 focus:ring-4 focus:ring-dgcc6/10 transition-all outline-none text-dgcc font-medium";
 
 //   return (
 //     <Dialog
 //       header={
-//         <div className="flex items-center gap-2 text-orange-900 font-bold">
-//           <UserPlus size={20} className="text-orange-500" />
+//         <div className="flex items-center gap-2 text-dgcc font-bold">
+//           <UserPlus size={20} className="text-dgcc6" />
 //           <span>{title}</span>
 //         </div>
 //       }
@@ -397,13 +397,13 @@
 
 //           <div>
 //             <label className={labelClass}>Photo de profil</label>
-//             <div className="flex items-center gap-3 p-4 bg-orange-50/50 border-2 border-dashed border-orange-200 rounded-xl">
-//               <Camera className="text-orange-500" size={24} />
+//             <div className="flex items-center gap-3 p-4 bg-dgcc13/50 border-2 border-dashed border-dgcc9 rounded-xl">
+//               <Camera className="text-dgcc6" size={24} />
 //               <input
 //                 type="file"
 //                 accept="image/*"
 //                 onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
-//                 className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-orange-500 file:text-white cursor-pointer"
+//                 className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-dgcc6 file:text-white cursor-pointer"
 //               />
 //             </div>
 //           </div>
@@ -411,14 +411,14 @@
 
 //         {/* Colonne Droite: Affectation */}
 //         <div className="space-y-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
-//           <h3 className="text-xs font-black uppercase text-orange-500 tracking-widest border-b border-orange-100 pb-2">
+//           <h3 className="text-xs font-black uppercase text-dgcc6 tracking-widest border-b border-dgcc12 pb-2">
 //             Affectation
 //           </h3>
 
 //           {/* CHEMIN 1: Direction → Service */}
-//           <div className="border rounded-xl p-3 hover:border-orange-200 transition-all">
+//           <div className="border rounded-xl p-3 hover:border-dgcc9 transition-all">
 //             <h4 className="text-xs font-bold mb-2 flex items-center gap-1">
-//               <Building2 size={14} className="text-orange-600" />
+//               <Building2 size={14} className="text-dgcc5" />
 //               Chemin 1 : Direction → Service
 //             </h4>
 
@@ -462,7 +462,7 @@
 //           </div>
 
 //           {/* CHEMIN 2: Sous-direction → Division → Section */}
-//           <div className="border rounded-xl p-3 hover:border-orange-200 transition-all">
+//           <div className="border rounded-xl p-3 hover:border-dgcc9 transition-all">
 //             <h4 className="text-xs font-bold mb-2 flex items-center gap-1">
 //               <Split size={14} className="text-blue-600" />
 //               Chemin 2 : Sous-direction → Division → Section
@@ -598,7 +598,7 @@
 //             type="submit"
 //             label="Enregistrer l'agent"
 //             icon={<Save size={18} className="mr-2" />}
-//             className="bg-orange-600 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all"
+//             className="bg-dgcc5 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-dgcc9 hover:bg-dgcc3 transition-all"
 //           />
 //         </div>
 //       </form>
@@ -1005,13 +1005,13 @@ export default function UserForm({
   const labelClass =
     "flex items-center gap-2 text-sm font-bold text-slate-700 mb-2";
   const inputClass =
-    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none text-orange-900 font-medium";
+    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-dgcc6 focus:ring-4 focus:ring-dgcc6/10 transition-all outline-none text-dgcc font-medium";
 
   return (
     <Dialog
       header={
-        <div className="flex items-center gap-2 text-orange-900 font-bold">
-          <UserPlus size={20} className="text-orange-500" />
+        <div className="flex items-center gap-2 text-dgcc font-bold">
+          <UserPlus size={20} className="text-dgcc6" />
           <span>{title}</span>
         </div>
       }
@@ -1105,13 +1105,13 @@ export default function UserForm({
 
           <div>
             <label className={labelClass}>Photo de profil</label>
-            <div className="flex items-center gap-3 p-4 bg-orange-50/50 border-2 border-dashed border-orange-200 rounded-xl">
-              <Camera className="text-orange-500" size={24} />
+            <div className="flex items-center gap-3 p-4 bg-dgcc13/50 border-2 border-dashed border-dgcc9 rounded-xl">
+              <Camera className="text-dgcc6" size={24} />
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
-                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-orange-500 file:text-white cursor-pointer"
+                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-dgcc6 file:text-white cursor-pointer"
               />
             </div>
           </div>
@@ -1119,15 +1119,14 @@ export default function UserForm({
 
         {/* Colonne Droite: Affectation */}
         <div className="space-y-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
-          <h3 className="text-xs font-black uppercase text-orange-500 tracking-widest border-b border-orange-100 pb-2">
+          <h3 className="text-xs font-black uppercase text-dgcc6 tracking-widest border-b border-dgcc12 pb-2">
             Affectation
           </h3>
 
           {/* CHEMIN 1 */}
           <div className="border rounded-xl p-3">
             <h4 className="text-xs font-bold mb-2 flex items-center gap-1">
-              <Building2 size={14} className="text-orange-600" /> Direction →
-              Service
+              <Building2 size={14} className="text-dgcc5" /> Direction → Service
             </h4>
             <div className="space-y-2">
               <Dropdown
@@ -1213,7 +1212,7 @@ export default function UserForm({
 
           {/* CHECKBOX CASCADE */}
           {cascadeState.enabled && (
-            <div className="p-3 bg-orange-50 border border-orange-200 rounded-xl">
+            <div className="p-3 bg-dgcc13 border border-dgcc9 rounded-xl">
               <div className="flex items-start gap-3">
                 <Checkbox
                   inputId="cascadeAccess"
@@ -1229,12 +1228,12 @@ export default function UserForm({
                 <div>
                   <label
                     htmlFor="cascadeAccess"
-                    className="text-sm font-bold text-orange-700 cursor-pointer flex items-center gap-2"
+                    className="text-sm font-bold text-dgcc3 cursor-pointer flex items-center gap-2"
                   >
                     <TreePine size={16} /> Accorder l'accès à toutes les
                     sous-entités
                   </label>
-                  <p className="text-xs text-orange-600 mt-1">
+                  <p className="text-xs text-dgcc5 mt-1">
                     {cascadeState.subEntitiesCount} sous-entité(s) seront
                     accessibles
                   </p>
@@ -1274,7 +1273,7 @@ export default function UserForm({
             type="submit"
             label="Enregistrer"
             icon={<Save size={18} className="mr-2" />}
-            className="bg-orange-600 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all"
+            className="bg-dgcc5 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-dgcc9 hover:bg-dgcc3 transition-all"
           />
         </div>
       </form>
